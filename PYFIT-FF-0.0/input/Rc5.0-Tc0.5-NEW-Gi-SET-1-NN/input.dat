@@ -1,0 +1,10 @@
+train.dat none - database file
+nn0.dat nn1.dat - input and output parameter files for Neural Network
+1.0e-9 1.0e-9 1.0e-3 1.0e-4 0 500 - tolerances and annealing schedule
+1 - Potential type (0:BOP  1:NNET  2:NNET+BOP)
+0.795023 - amount by which all DFT energies per atom will be shifted.
+diam 5.4687 5.4687 5.4687 - equil. structure and lattice constant.
+1.e-7 1.e-4 0.e-9 0.e-8
+0 LSParam.dat -
+1 - if non zero, compute analytical derivatives.
+0 - random number seed.
