@@ -39,3 +39,13 @@ TRAIN_TO_TOTAL_RATIO = 1.0
 # should be when computing the error.
 WEIGHTS = {}
 # Example: WEIGHTS['Si_B1']=1.0
+
+# Standard NN learning rate.
+LEARNING_RATE = 0.1
+
+# Which torch.optim algorithm to use.
+OPTIMIZATION_ALGORITHM = 'LBFGS'
+
+# Maximum number of epochs to run through for training.
+MAXIMUM_TRAINING_ITERATIONS = 10**5
+

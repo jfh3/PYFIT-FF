@@ -13,6 +13,7 @@ import matplotlib.pyplot   as plt
 import numpy               as np
 import Util
 from   Util import log, log_indent, log_unindent
+from   time import time
 
 
 if __name__ == '__main__':
@@ -175,6 +176,21 @@ if __name__ == '__main__':
 
 	torch_net = TorchNet(neural_network_data, reduction_matrix)
 
+	optimizer = None
+	if OPTIMIZATION_ALGORITHM == 'LBFGS':
+		optimizer = optim.LBFGS(torch_net.parameters(), lr=LEARNING_RATE)
+	else:
+		# TODO: Figure out if this should also be a configuration value.
+		optimizer = optim.SGD(torch_net.parameters(), lr=0.001, momentum=0.9)
+
+
+	def closure():
+		calculated_values = torch_net(structure_params)
+
+		RMSE = None
+		difference = torch.mul(calculated_values - energies, inverse_n_atoms)
+
+
 	log_unindent()
 
 
@@ -187,6 +203,29 @@ if __name__ == '__main__':
 	# TODO: Write code that writes detailed training information
 	#       to a JSON file with an accompanying program that 
 	#       displays progress.
+
+	current_iteration = 0
+	start_time        = time()
+	while current_iteration < MAXIMUM_TRAINING_ITERATIONS:
+		optimizer.zero_grad()
+
+		if OPTIMIZATION_ALGORITHM == 'LBFGS':
+			optimizer.step(closure)
+		else:
+			loss = closure()
+			loss.backward()
+			optimizer.step()
+
+		# TODO: Implement automatic saving of the network at some
+		#       interval in case there is a crash.
+		#      
+		#       Implement periodic storage of training progress so
+		#       it can be graphed an analyzed.
+		current_iteration += 1
+
+	end_time = time()
+	print("Training Finished")
+	print("Time Elapsed: %.1fs"%(end_time - start_time))
 
 	log_unindent()
 
