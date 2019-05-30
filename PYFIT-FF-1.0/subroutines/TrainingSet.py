@@ -105,6 +105,7 @@ class TrainingInput:
 		# This is a built-in function that should be defined for all classes. Python automatically
 		# calls this to convert an object to a string whenever an object is passed to a function
 		# that normally takes a string as an argument. An example would be print(object)
+		result  = ""
 		result += "Group Name           = %s\n"%(self.group_name)
 		result += "Group ID             = %s\n"%(self.group_id)
 		result += "Structure ID         = %s\n"%(self.structure_id)

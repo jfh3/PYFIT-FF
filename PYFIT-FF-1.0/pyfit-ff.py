@@ -5,6 +5,7 @@ from   Config                 import *
 from   TrainingSet            import TrainingSetFile
 from   NeuralNetwork          import NeuralNetwork
 from   PyTorchNet             import TorchNet
+import torch
 import torch.nn            as nn
 import torch.nn.functional as F
 import torch.optim         as optim
@@ -75,14 +76,14 @@ if __name__ == '__main__':
 
 	# This reduction matrix will be multiplied by the output column vector
 	# to reduce the energy of each atom to the energy of each structure.
-	reduction_matrix = np.zeroes((len(training_indices), n_train_atoms))
+	reduction_matrix = np.zeros((len(training_indices), n_train_atoms))
 	energies         = []
 	volumes          = []
 	inverse_n_atoms  = []
 	group_weights    = []
 	structure_params = []
 
-	val_reduction_matrix = np.zeroes((len(validation_indices), n_val_atoms))
+	val_reduction_matrix = np.zeros((len(validation_indices), n_val_atoms))
 	val_energies         = []
 	val_volumes          = []
 	val_inverse_n_atoms  = []
@@ -172,7 +173,7 @@ if __name__ == '__main__':
 	# PyTorch neural network objects as well as the optimizer
 	# and any closure functions necessary for it.
 
-	torch_net = TorchNet(neural_network_data)
+	torch_net = TorchNet(neural_network_data, reduction_matrix)
 
 	log_unindent()
 

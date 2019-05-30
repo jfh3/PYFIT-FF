@@ -31,7 +31,7 @@ class TorchNet(nn.Module):
 		# Next we populate the "Linear" objects with the weights and biases
 		# loaded from the nn file.
 
-		for layer, idx in zip(self.layers, len(self.layers)):
+		for layer, idx in zip(self.layers, range(len(self.layers))):
 			current_layer = network_data.layers[idx]
 			for node, n_idx in zip(current_layer, range(len(current_layer))):
 				# Copy the weights for this node into the Linear transform.
