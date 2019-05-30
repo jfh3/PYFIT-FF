@@ -1,0 +1,36 @@
+---------- Program Started ----------
+
+---------- Begin Configuration ----------
+CONFIG_FNAME                        =  __file__
+DEBUG                               =  True
+WARN_ON_WHITESPACE_IN_TRAINING_SET  =  True
+NORMALIZE_LINE_ENDINGS              =  False
+LOG_PATH                            =  'output/log.txt'
+TRAINING_SET_FILE                   =  'input/LSParam-mod.dat'
+NEURAL_NETWORK_FILE                 =  'input/nn1.dat'
+OUTPUT_NBL_PATH                     =  'Nbdlist.dat'
+E_SHIFT                             =  0.0
+POTENTIAL_TYPE                      =  1
+TRAIN_TO_TOTAL_RATIO                =  1.0
+WEIGHTS                             =  {}
+----------- End Configuration -----------
+
+Loading Data
+	Loading Neural Network
+		Path = input/nn1.dat
+		Network Properties:
+			Gi Mode             = Shifted
+			Gi Shift            = 0.500000
+			Activation Function = Shifted Sigmoid
+			Network Randomized  = No (Read from file)
+			Max Random Init.    = 0.500000
+			Cutoff Radius       = 5.000000
+			Truncation Distance = 0.500000
+			Gi Sigma            = 1.000000
+			R0 Values           = 1.5 1.7727 2.0455 2.3182 2.5909 2.8636 3.1364 3.4091 3.6818 3.9545 4.2273 4.5
+			Layer Dimensions    = 60 16 16 1
+			
+		
+	Loading Training Set File
+		Path = input/LSParam-mod.dat
+		First Entry in File:
