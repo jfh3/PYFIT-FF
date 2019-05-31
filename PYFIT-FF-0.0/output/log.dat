@@ -1,0 +1,23 @@
+# NUM THREADS=4
+# READING NN FILE FROM FILE: input/Rc5.0-Tc0.5-NEW-Gi-SET-1-NN/nn1.dat
+# INPUT VARIABLES
+# 	pot_type=NN
+# 	wb_bnd=0.1
+# 	e_shift=0.0
+# 	NNlayers=[60, 16, 16, 1]
+# 	Activation function type=1 (0=sigmoid)(1=sigmoid-0.5)
+# 	Number of fitting param (weights+bias)=1265
+# 	Gi ro locations=[1.5, 1.7727, 2.0455, 2.3182, 2.5909, 2.8636, 3.1364, 3.4091, 3.6818, 3.9545, 4.2273, 4.5]
+# 	Gi sigma=1.0
+# 	Gi_type=1
+# 	Gi_shift=0.5
+# 	Rc (cutoff distance)=5.0
+# 	Tc (cutoff truncation range)=0.5
+# 	SUBMATRIX-SIZES: torch.Size([16, 60]) torch.Size([16, 1]) torch.Size([16, 16]) torch.Size([16, 1]) torch.Size([1, 16]) torch.Size([1, 1])
+# READING NB LIST FROM FILE: input/Rc5.0-Tc0.5-NEW-Gi-SET-1-NN/LSParam-mod.dat
+# 	TIME TO READ LSPARAM FILE(sec): 0.05041980743408203
+# 	FILE CONTAINS: N_STRUCTURES=100    N_ATOMS=796
+# 	BREAKING TOTAL SET INTO 100.0% TRAINING AND 0.0% VALIDATION
+# 		N_TRAIN_STRCT=100 N_TEST_STRCT=0
+#iteration  RMSE(eV/atom)  time(s)
+ALG=LBFGS LR=0.1

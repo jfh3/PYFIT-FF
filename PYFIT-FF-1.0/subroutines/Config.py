@@ -16,10 +16,10 @@ LOG_PATH                           = 'output/log.txt'
 
 # The structure file that contains POSCAR structures
 # and DFT energies.
-TRAINING_SET_FILE                  = 'input/LSParam-mod.dat'
+TRAINING_SET_FILE                  = 'input/small/LSParam-mod.dat'
 
 # The neural network file to load.
-NEURAL_NETWORK_FILE                = 'input/nn1.dat'
+NEURAL_NETWORK_FILE                = 'input/small/nn1.dat'
 
 
 # The path to the file to output the results of this program
@@ -47,5 +47,7 @@ LEARNING_RATE = 0.1
 OPTIMIZATION_ALGORITHM = 'LBFGS'
 
 # Maximum number of epochs to run through for training.
-MAXIMUM_TRAINING_ITERATIONS = 10**5
+MAXIMUM_TRAINING_ITERATIONS = 100
 
+# Print training error every PROGRESS_INTERVAL epochs.
+PROGRESS_INTERVAL = 1

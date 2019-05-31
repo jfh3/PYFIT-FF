@@ -59,7 +59,10 @@ if __name__ == '__main__':
 	# and use the rest as a validation set.
 	n_pick             = int(TRAIN_TO_TOTAL_RATIO * training_set.n_structures)
 	training_indices   = list(np.random.choice(training_set.n_structures, n_pick, replace=False))
+	training_indices   = list(range(training_set.n_structures))
 	validation_indices = [i for i in range(training_set.n_structures) if i not in training_indices]
+
+	n_training_indices = len(training_indices)
 
 	# We need to know how many atoms are part of the training set and 
 	# how many are part of the validation set.
@@ -152,17 +155,20 @@ if __name__ == '__main__':
 
 		idx += 1
 
+
+
 	# Now we should have all of the training data ready, just not in PyTorch tensor format
 	# quite yet.
 	# TODO: Go further with the code that handles validation data set.
 
-	energies         = torch.tensor(np.transpose([energies]))
-	inverse_n_atoms  = torch.tensor(np.transpose([inverse_n_atoms]))
-	group_weights    = torch.tensor(np.transpose([group_weights]))
-	structure_params = torch.tensor(structure_params)
-	reduction_matrix = torch.tensor(reduction_matrix)
+	energies         = torch.tensor(np.transpose([energies]), requires_grad=True).type(torch.FloatTensor)
+	inverse_n_atoms  = torch.tensor(np.transpose([inverse_n_atoms]), requires_grad=True).type(torch.FloatTensor)
+	group_weights    = torch.tensor(np.transpose([group_weights]), requires_grad=True).type(torch.FloatTensor)
+	structure_params = torch.tensor(structure_params, requires_grad=True).type(torch.FloatTensor)
+	reduction_matrix = torch.tensor(reduction_matrix, requires_grad=True).type(torch.FloatTensor)
 
 	# The dataset is now ready, minus the validation part (TODO).
+
 
 	log_unindent()
 
@@ -178,17 +184,34 @@ if __name__ == '__main__':
 
 	optimizer = None
 	if OPTIMIZATION_ALGORITHM == 'LBFGS':
-		optimizer = optim.LBFGS(torch_net.parameters(), lr=LEARNING_RATE)
+		optimizer = optim.LBFGS(torch_net.get_parameters(), lr=LEARNING_RATE, max_iter=10)
 	else:
 		# TODO: Figure out if this should also be a configuration value.
-		optimizer = optim.SGD(torch_net.parameters(), lr=0.001, momentum=0.9)
+		optimizer = optim.SGD(torch_net.get_parameters(), lr=0.001, momentum=0.9)
 
-
+	# This is called by the optimizer in order to actually evaluate the
+	# neural net and to calculate the error.
 	def closure():
+
+		if OPTIMIZATION_ALGORITHM == 'LBFGS':
+			optimizer.zero_grad()
+
+		
 		calculated_values = torch_net(structure_params)
 
-		RMSE = None
+		# Here we are multiplying each structure energy error (as calculated by the neural network),
+		# by the reciprocal of the number of atoms in the structure. This is so that we are effectively
+		# calculating the error per atom, not the error per structure.
 		difference = torch.mul(calculated_values - energies, inverse_n_atoms)
+		RMSE       = torch.sqrt(torch.mul(group_weights, (difference**2)).sum() / n_training_indices)
+		
+		print("%i %E"%(current_iteration, RMSE.item()))
+		if OPTIMIZATION_ALGORITHM == 'LBFGS':
+			RMSE.backward()
+		
+
+		return RMSE
+
 
 
 	log_unindent()
@@ -204,17 +227,21 @@ if __name__ == '__main__':
 	#       to a JSON file with an accompanying program that 
 	#       displays progress.
 
-	current_iteration = 0
-	start_time        = time()
-	while current_iteration < MAXIMUM_TRAINING_ITERATIONS:
-		optimizer.zero_grad()
 
+	global current_iteration
+	current_iteration = 1
+	start_time        = time()
+	while current_iteration <= MAXIMUM_TRAINING_ITERATIONS:
 		if OPTIMIZATION_ALGORITHM == 'LBFGS':
 			optimizer.step(closure)
 		else:
+			optimizer.zero_grad()
 			loss = closure()
 			loss.backward()
 			optimizer.step()
+
+		# if current_iteration % PROGRESS_INTERVAL == 0:
+		# 	print("Iteration = %6i, RMSE = %E"%(current_iteration, current_error))
 
 		# TODO: Implement automatic saving of the network at some
 		#       interval in case there is a crash.
@@ -228,8 +255,6 @@ if __name__ == '__main__':
 	print("Time Elapsed: %.1fs"%(end_time - start_time))
 
 	log_unindent()
-
-
 
 	log("Writing Output Files")
 	log_indent()

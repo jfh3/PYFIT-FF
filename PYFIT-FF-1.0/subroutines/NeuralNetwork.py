@@ -153,7 +153,7 @@ class NeuralNetwork:
 				for node_index in range(layer_size):
 					# For each node in this layer, retrieve the bias.
 					offset = weight_start_offset + bias_offset + node_index
-					self.layers[idx - 1][node_index][1] = self.network_values[node_index]
+					self.layers[idx - 1][node_index][1] = self.network_values[offset]
 
 				# We have now loaded all of the relevant information for the layer.
 				# We need to update weight_start_offset so that the next layer

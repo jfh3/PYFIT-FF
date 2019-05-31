@@ -17,7 +17,11 @@ class TorchNet(nn.Module):
 		# populate its data members with the weights and biases
 		# that we want.
 
+		# We have to use the ParameterList class here because the 
+		# regular Python list isn't recognized by PyTorch and 
+		# subsequent calls to TorchNet.parameters() will not work.
 		self.layers           = []
+		self.params           = nn.ParameterList()
 		self.activation_mode  = network_data.activation_function
 		self.reduction_matrix = reduction_matrix
 
@@ -26,22 +30,20 @@ class TorchNet(nn.Module):
 			if idx != 0:
 				prev_layer_size = network_data.layer_sizes[idx - 1]
 				curr_layer_size = network_data.layer_sizes[idx]
-				self.layers.append(nn.Linear(prev_layer_size, curr_layer_size))
-
-		# Next we populate the "Linear" objects with the weights and biases
-		# loaded from the nn file.
-
-		for layer, idx in zip(self.layers, range(len(self.layers))):
-			current_layer = network_data.layers[idx]
-			for node, n_idx in zip(current_layer, range(len(current_layer))):
-				# Copy the weights for this node into the Linear transform.
-				for weight, w_idx in zip(node[0], range(len(node[0]))):
-					layer.weight[n_idx][w_idx] = weight
-
-				# Copy the bias for this node into the linear transform.
-				layer.bias[n_idx] = node[1]
+				layer           = nn.Linear(prev_layer_size, curr_layer_size)
+				current_layer     = network_data.layers[idx - 1]
+				with torch.no_grad():
+					layer.weight.copy_(torch.tensor([node[0] for node in current_layer]))
+					layer.bias.copy_(torch.tensor([node[1] for node in current_layer]))
+				self.layers.append(layer)
+				self.params.extend(layer.parameters())
+			
+			
 
 		
+
+	def get_parameters(self):
+		return self.params
 
 	# This function actually defines the operation of the Neural Network
 	# during feed forward.
@@ -49,13 +51,13 @@ class TorchNet(nn.Module):
 		# Activation mode 0 is regular sigmoid and mode 
 		# 1 is sigmoid shifted by -0.5
 		if self.activation_mode == 0:
-			x0 = nn.Sigmoid(self.layers[0](x))
+			x0 = torch.sigmoid(self.layers[0](x))
 			for layer in self.layers[1:-1]:
-				x0 = nn.Sigmoid(layer(x0))
+				x0 = torch.sigmoid(layer(x0))
 		else:
-			x0 = nn.Sigmoid(self.layers[0](x)) - 0.5
+			x0 = torch.sigmoid(self.layers[0](x)) - 0.5
 			for layer in self.layers[1:-1]:
-				x0 = nn.Sigmoid(layer(x0)) - 0.5
+				x0 = torch.sigmoid(layer(x0)) - 0.5
 
 
 		x0 = self.reduction_matrix.mm(self.layers[-1](x0))

@@ -106,6 +106,7 @@ except:
 
 	#EXTRACT TRAINING SET
 	train_indices=np.random.choice(len(structs),int(percent_train*len(structs)), replace=False) #  set
+	train_indices = list(range(len(structs)))
 	
 	#VALIDATION SET  (structures not included in training)
 	val_indices=[];
@@ -140,8 +141,9 @@ except:
 		i=i+1
 
 	R=R.type(dtype);  
+
 	y=torch.tensor(np.transpose([y])).type(dtype) 
-	Ninv=torch.tensor(np.transpose([Ninv])).type(dtype) 
+	Ninv=torch.tensor(np.transpose([Ninv])).type(dtype)
 	grp_w=torch.tensor(np.transpose([grp_weighs])).type(dtype) 
 	x=torch.tensor(x).type(dtype);  
 	M1=torch.tensor([np.ones(len(x))]).type(dtype)

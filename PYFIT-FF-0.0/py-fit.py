@@ -16,7 +16,6 @@ from write import *
 #DEFINES (OR READS) ALL GLOBAL VARIABLES AND GIVES VARIOUS SCRIPTS ACCESS TO THEM (see initialize.py)
 from initialize import *  
 from functions import *
-
 #------------------------------------------------------------------------
 #DEFINE MODEL
 #------------------------------------------------------------------------
@@ -31,6 +30,9 @@ def model():
 		elif(tfunc==0 and len(NNlayers)==3):
 			ypred=R.mm((torch.sigmoid(x.mm(torch.t(w1))+torch.t(b1.mm(M1)))).mm(torch.t(w2))+torch.t(b2.mm(M1))) 
 		elif(tfunc==1 and len(NNlayers)==4):
+
+			# l1  = x.mm(torch.t(w1))
+			# l1a = 
 			ypred=R.mm((torch.sigmoid((torch.sigmoid(x.mm(torch.t(w1))+torch.t(b1.mm(M1)))-0.5).mm(torch.t(w2)) 
 			+torch.t(b2.mm(M1)))-0.5).mm(torch.t(w3))+torch.t(b3.mm(M1)))
 		elif(tfunc==0 and len(NNlayers)==4):
@@ -78,7 +80,7 @@ with open(logfile, 'a') as out:
 	out.write('%s\n' % ('#iteration  RMSE(eV/atom)  time(s)'))
 
 RMSE=1000; t=0;  batch_i=Nbatch-1; #send(batch_i)  #SEND ARRAYS TO GPU
-max_iter=4000
+max_iter=100
 
 #OPTIMIZATION CHOICE
 alpha=0.1 #LEARNING RATE
