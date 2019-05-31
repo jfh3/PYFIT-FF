@@ -1,6 +1,0 @@
- 1 0.5 1 - Gi method, reference Gi, and logistic function type
- 1 - number of chemical species in the system ( .le. 4)
- 'Si'  28.0855 - element symbol and weight
- 1 0.500000 5.0 0.5 1.000000
- 12 1.5000 1.7727 2.0455 2.3182 2.5909 2.8636 3.1364 3.4091 3.6818 3.9545 4.2273 4.5000
- 4 60 16 16 1
