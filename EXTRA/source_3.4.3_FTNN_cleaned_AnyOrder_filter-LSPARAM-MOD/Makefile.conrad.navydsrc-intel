@@ -1,0 +1,21 @@
+# use CC for C++ and cc for C
+CCC = CC
+CFLAGS = -w2 -Wcheck -g -O3 -fPIC -std=c++11 -align -axCORE-AVX2 -ip -fp-model fast=2 -fast
+LDFLAGS = -mkl
+SOURCES = $(wildcard *.cpp)
+OBJECTS = $(SOURCES:.cpp=.o)
+EXECUTABLE = fit
+
+all: $(SOURCES) $(EXECUTABLE)
+
+$(EXECUTABLE): $(OBJECTS)
+	$(CCC) $(LDFLAGS) $(OBJECTS) -o $@
+
+-include $(OBJECTS:.o=.d)
+
+.cpp.o:
+	$(CCC) $(CFLAGS) -c $<
+	$(CCC) -MM $(CFLAGS) $< > $*.d
+
+clean:
+	rm -fv $(OBJECTS) $(EXECUTABLE) *.d

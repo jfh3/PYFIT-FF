@@ -41,11 +41,15 @@ def read_NN_file(file_path):
 				Rc=float(parts[2])
 				Tc=float(parts[3])
 				sigma=float(parts[4])
-			if(line_num==5):
+			#if(line_num==5):
+				##TODO: READ LG POLY ORDERS AND COMPARE WITH VALUES IN NN FILE
+			if(line_num==6):
 				parts=line.split()
 				for i in range(1,len(parts)):
 					ro.append(float(parts[i]))
-			if(line_num==6):
+			#if(line_num==7):
+				##TODO: READ BOP VALUES FOR PINN 
+			if(line_num==8):
 				parts=line.split()
 				for i in range(1,len(parts)):
 					NNlayers.append(int(parts[i]))
@@ -63,7 +67,7 @@ def read_NN_file(file_path):
 
 
 
-			if(line_num>6):
+			if(line_num>8):
 				if(irandomize==0): 
 					#write_to_log("# 	READING NEURAL NETWORK FROM FILE")
 					parts=line.split()
@@ -110,19 +114,19 @@ def read_LSPARAM(file_path,NN_INFO):
 			if(Rc != float(parts[3])): write_to_log("ERROR: NN+NBL FILES DONT MATCH: (Rc) (EXITING CODE)"); exit()  
 			if(Tc != float(parts[4])): write_to_log("ERROR: NN+NBL FILES DONT MATCH: (Tc) (EXITING CODE)"); exit()  
 			if(sigma != float(parts[5])): write_to_log("ERROR: NN+NBL FILES DONT MATCH: (sigma) (EXITING CODE)"); exit()  
-		if(line_num==5):
+		if(line_num==6):
 			for i in range(2,len(parts)):
 				ro1.append(float(parts[i]))
 			if(ro != ro1): write_to_log("ERROR: NN+NBL FILES DONT MATCH: (ro) (EXITING CODE)"); exit()  
-		if(line_num==6):
+		if(line_num==9):
 			
 			#NB LIST IS ONLY A PROBLEM FOR PINN AND BOP (IN THIS CASE NEIRBOR LIST TYPE MUST MATCH)
 			if(pot_type==2 or pot_type==0):
 				if(int(parts[1])!=pot_type): write_to_log("ERROR: NN+NBL FILES DONT MATCH: (pot_type) (EXITING CODE)"); exit()  
-		if(line_num==8):
+		if(line_num==11):
 			Natoms1=int(parts[1])
 
-		if(line_num>9): 
+		if(line_num>12): 
 			#GROUP-NAME GROUP-ID STRUCTURE-ID STRUCTURE-Natom STRUCTURE-E_DFT Gi
 
 			if(parts[0][0:4]=="ATOM"):

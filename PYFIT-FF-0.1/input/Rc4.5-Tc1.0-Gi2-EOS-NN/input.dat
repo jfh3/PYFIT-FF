@@ -1,0 +1,16 @@
+train.dat none - database file
+nn0.dat nn1.dat - input and output parameter files
+1.0e-9 1.0e-9 1.0e-3 1.0e-4 0 500 - tolerances and annealing schedule
+1 - Potential type (0:BOP  1:ANN  2:PINN)
+0.795023 - amount by which all DFT energies per atom will be shifted.
+diam 5.4687 5.4687 5.4687 - equil. structure and lattice constant.
+1.e-7 1.e-5 0.0 1.e-5 - regularization factors for BOP, NN, HB and HB2 constraints.
+0 LSParam.dat - flag and file to read Gis from (see readinput() in readinput.cpp for detail).
+1 - if non zero, compute analytical derivatives.
+0 - random seed; if zero use current time in second else use this (non negative integer).
+0 - optimization method (0:DFP 1:GA); if GA read following line.
+0 100 - flag for methods of crossing parents and interval to write statistics of the generation.
+1000 10 1000 3 - number of population, fittest population, generation and mutation stages.
+0.5 100 - mutation size and steps.
+0.2 100
+0.1 100

@@ -1,0 +1,20 @@
+CC = /opt/mpich2/osu_ch3_mrail_gen2-intel10/bin/mpicc
+CFLAGS = -Wall -g -align -fPIC -std=c++11 -xSSE4.1 -fast -DMPICH_IGNORE_CXX_SEEK
+LDFLAGS = -mkl -shared-intel
+SOURCES = $(wildcard *.cpp)
+OBJECTS = $(SOURCES:.cpp=.o)
+EXECUTABLE = fit
+
+all: $(SOURCES) $(EXECUTABLE)
+
+$(EXECUTABLE): $(OBJECTS)
+	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
+
+-include $(OBJECTS:.o=.d)
+
+.cpp.o:
+	$(CC) $(CFLAGS) -c $<
+	$(CC) -MM $(CFLAGS) $< > $*.d
+
+clean:
+	rm -fv $(OBJECTS) $(EXECUTABLE) *.d

@@ -1,0 +1,2334 @@
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINING OPTION VALUES:
+  -inline-factor: 100
+  -inline-min-size: 30
+  -inline-max-size: 230
+  -inline-max-total-size: 2000
+  -inline-max-per-routine: disabled
+  -inline-max-per-compile: disabled
+
+
+Begin optimization report for: NNET_Eng(const double *, const int *, const double *, int)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (NNET_Eng(const double *, const int *, const double *, int)) [1] NNetInterface.cpp(548,1)
+  -> INLINE: (556,29) NNetOutput(const int *, const double *, int, double &, int)
+    -> (461,3) evaluate_nnet()
+    -> INLINE: (465,18) NRvector<double>::NRvector(NRvector<double> *, int)
+    -> (465,18) NRvector<double>::~NRvector(NRvector<double> *)
+    -> INLINE: (469,11) NRvector<double>::operator[](NRvector<double> *, int)
+    -> INLINE: (472,13) NRvector<double>::operator[](NRvector<double> *, int)
+    -> INLINE: (475,5) NRvector<double>::~NRvector(NRvector<double> *)
+    -> (475,10) Atomic_Eng(const int *, const double *, int, const VecDoub *)
+    -> INLINE: (475,42) NRvector<double>::NRvector(NRvector<double> *, const NRvector<double> &)
+    -> (475,42) NRvector<double>::~NRvector(NRvector<double> *)
+    -> INLINE: (476,3) NRvector<double>::~NRvector(NRvector<double> *)
+  -> INLINE: (558,7) NNetOutput(const int *, const double *, int, double &, int)
+    -> (461,3) evaluate_nnet()
+    -> INLINE: (465,18) NRvector<double>::NRvector(NRvector<double> *, int)
+    -> (465,18) NRvector<double>::~NRvector(NRvector<double> *)
+    -> INLINE: (469,11) NRvector<double>::operator[](NRvector<double> *, int)
+    -> INLINE: (472,13) NRvector<double>::operator[](NRvector<double> *, int)
+    -> INLINE: (475,5) NRvector<double>::~NRvector(NRvector<double> *)
+    -> (475,10) Atomic_Eng(const int *, const double *, int, const VecDoub *)
+    -> INLINE: (475,42) NRvector<double>::NRvector(NRvector<double> *, const NRvector<double> &)
+    -> (475,42) NRvector<double>::~NRvector(NRvector<double> *)
+    -> INLINE: (476,3) NRvector<double>::~NRvector(NRvector<double> *)
+  -> (560,7) errmsg(const char *, const char *, const char *, int)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at NNetInterface.cpp(555,5)
+   remark #25401: memcopy(with guard) generated
+   remark #15398: loop was not vectorized: loop was transformed to memset or memcpy
+
+   LOOP BEGIN at NNetInterface.cpp(555,5)
+   <Multiversioned v2>
+      remark #15304: loop was not vectorized: non-vectorizable loop instance from multiversioning
+      remark #25439: unrolled with remainder by 2  
+   LOOP END
+
+   LOOP BEGIN at NNetInterface.cpp(555,5)
+   <Remainder, Multiversioned v2>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at NNetInterface.cpp(468,21) inlined into NNetInterface.cpp(556,29)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+
+LOOP BEGIN at NNetInterface.cpp(471,7) inlined into NNetInterface.cpp(556,29)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+
+LOOP BEGIN at nrvector.h(68,5) inlined into NNetInterface.cpp(556,29)
+   remark #25401: memcopy(with guard) generated
+   remark #15398: loop was not vectorized: loop was transformed to memset or memcpy
+
+   LOOP BEGIN at nrvector.h(68,5) inlined into NNetInterface.cpp(556,29)
+   <Multiversioned v2>
+      remark #15304: loop was not vectorized: non-vectorizable loop instance from multiversioning
+      remark #25439: unrolled with remainder by 2  
+   LOOP END
+
+   LOOP BEGIN at nrvector.h(68,5) inlined into NNetInterface.cpp(556,29)
+   <Remainder, Multiversioned v2>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at NNetInterface.cpp(468,21) inlined into NNetInterface.cpp(558,7)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+
+LOOP BEGIN at NNetInterface.cpp(471,7) inlined into NNetInterface.cpp(558,7)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+
+LOOP BEGIN at nrvector.h(68,5) inlined into NNetInterface.cpp(558,7)
+   remark #25401: memcopy(with guard) generated
+   remark #15398: loop was not vectorized: loop was transformed to memset or memcpy
+
+   LOOP BEGIN at nrvector.h(68,5) inlined into NNetInterface.cpp(558,7)
+   <Multiversioned v2>
+      remark #15304: loop was not vectorized: non-vectorizable loop instance from multiversioning
+      remark #25439: unrolled with remainder by 2  
+   LOOP END
+
+   LOOP BEGIN at nrvector.h(68,5) inlined into NNetInterface.cpp(558,7)
+   <Remainder, Multiversioned v2>
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at NNetInterface.cpp(553,3)
+   remark #15341: loop was not vectorized: nonstandard loop is not a vectorization candidate
+LOOP END
+
+    Report from: Code generation optimizations [cg]
+
+NNetInterface.cpp(555,32):remark #34026: call to memcpy implemented as a call to optimized library version
+nrvector.h(68,30):remark #34026: call to memcpy implemented as a call to optimized library version
+nrvector.h(68,30):remark #34026: call to memcpy implemented as a call to optimized library version
+===========================================================================
+
+Begin optimization report for: readinput(const char *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (readinput(const char *)) [2] readinput.cpp(205,1)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at readinput.cpp(336,2)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+LOOP END
+===========================================================================
+
+Begin optimization report for: ReadBOPParam(const char *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (ReadBOPParam(const char *)) [3] readinput.cpp(401,1)
+  -> (415,5) errmsg(const char *, const char *, const char *, int)
+  -> INLINE: (420,12) NRvector<double>::resize(NRvector<double> *, int)
+  -> INLINE: (421,11) NRvector<double>::resize(NRvector<double> *, int)
+  -> INLINE: (429,41) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (429,63) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (430,50) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (430,72) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (431,46) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (431,68) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (432,49) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (432,70) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (433,46) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (433,70) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (434,46) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (434,70) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (435,51) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (435,74) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (436,50) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (436,72) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (438,47) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (438,66) NRvector<double>::operator[](NRvector<double> *, int)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at readinput.cpp(426,3)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+===========================================================================
+
+Begin optimization report for: ReadNNetParams(const char *, VecDoub &, VecDoub &, double &)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (ReadNNetParams(const char *, VecDoub &, VecDoub &, double &)) [4] NNetInterface.cpp(92,1)
+  -> (106,7) errmsg(const char *, const char *, const char *, int)
+  -> (133,7) errmsg(const char *, const char *, const char *, int)
+  -> INLINE: (150,12) strchr(char *, int)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (153,16) count_words(const char *)
+    -> INLINE: globals.cpp:(192,10) grow<char>(char *&, int, const char *)
+      -> INLINE: mem.h:(27,29) create<char>(char *&, int, const char *)
+        -> INLINE: (16,17) smalloc(int, const char *)
+      -> INLINE: mem.h:(30,17) srealloc(void *, int, const char *)
+    -> INLINE: globals.cpp:(196,14) strchr(char *, int)
+       {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (156,19) atoi(const char *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (174,30) atoi(const char *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (189,12) strchr(char *, int)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (192,16) count_words(const char *)
+    -> INLINE: globals.cpp:(192,10) grow<char>(char *&, int, const char *)
+      -> INLINE: mem.h:(27,29) create<char>(char *&, int, const char *)
+        -> INLINE: (16,17) smalloc(int, const char *)
+      -> INLINE: mem.h:(30,17) srealloc(void *, int, const char *)
+    -> INLINE: globals.cpp:(196,14) strchr(char *, int)
+       {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (195,17) atoi(const char *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> (199,2) errmsg(const char *, const char *, const char *, int)
+  -> INLINE: (212,18) atof(const char *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> (217,7) errmsg(const char *, const char *, const char *, int)
+  -> INLINE: (254,12) strchr(char *, int)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (257,16) count_words(const char *)
+    -> INLINE: globals.cpp:(192,10) grow<char>(char *&, int, const char *)
+      -> INLINE: mem.h:(27,29) create<char>(char *&, int, const char *)
+        -> INLINE: (16,17) smalloc(int, const char *)
+      -> INLINE: mem.h:(30,17) srealloc(void *, int, const char *)
+    -> INLINE: globals.cpp:(196,14) strchr(char *, int)
+       {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (260,17) atoi(const char *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> (264,2) errmsg(const char *, const char *, const char *, int)
+  -> (272,2) errmsg(const char *, const char *, const char *, int)
+  -> INLINE: (287,24) atoi(const char *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> (291,7) errmsg(const char *, const char *, const char *, int)
+  -> INLINE: (399,5) NRvector<double>::resize(NRvector<double> *, int)
+  -> INLINE: (400,6) NRvector<double>::resize(NRvector<double> *, int)
+  -> INLINE: (408,25) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (408,32) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (410,8) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (410,20) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (410,28) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (410,34) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (412,15) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (420,17) Ranq1::Ranq1(Ranq1 *, Ullong)
+    -> INLINE: ran.h:(28,9) Ranq1::int64(Ranq1 *)
+  -> INLINE: (425,34) Ranq1::doub(Ranq1 *)
+    -> INLINE: ran.h:(34,57) Ranq1::int64(Ranq1 *)
+  -> INLINE: (427,3) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (428,4) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (429,15) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (437,35) NRvector<double>::size(const NRvector<double> *) const
+  -> INLINE: (438,22) NRvector<double>::size(const NRvector<double> *) const
+  -> INLINE: (438,22) NRvector<double>::size(const NRvector<double> *) const
+  -> INLINE: (438,49) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (439,27) NRvector<double>::size(const NRvector<double> *) const
+  -> INLINE: (441,24) NRvector<double>::size(const NRvector<double> *) const
+  -> INLINE: (441,24) NRvector<double>::size(const NRvector<double> *) const
+  -> INLINE: (441,39) NRvector<double>::operator[](NRvector<double> *, int)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at NNetInterface.cpp(119,5)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed OUTPUT dependence between  line 120 and  line 121
+LOOP END
+
+LOOP BEGIN at globals.cpp(205,3) inlined into NNetInterface.cpp(153,16)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+
+LOOP BEGIN at NNetInterface.cpp(172,2)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+
+LOOP BEGIN at globals.cpp(205,3) inlined into NNetInterface.cpp(192,16)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+
+LOOP BEGIN at NNetInterface.cpp(210,2)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+
+LOOP BEGIN at globals.cpp(205,3) inlined into NNetInterface.cpp(257,16)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+
+LOOP BEGIN at NNetInterface.cpp(285,2)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+
+LOOP BEGIN at NNetInterface.cpp(343,3)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+LOOP END
+
+LOOP BEGIN at NNetInterface.cpp(356,3)
+   remark #25084: Preprocess Loopnests: Moving Out Store    [ NNetInterface.cpp(357,5) ]
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at NNetInterface.cpp(356,3)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at NNetInterface.cpp(366,5)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+LOOP END
+
+LOOP BEGIN at NNetInterface.cpp(406,7)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+LOOP END
+
+LOOP BEGIN at NNetInterface.cpp(423,7)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+
+LOOP BEGIN at NNetInterface.cpp(438,22)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+
+LOOP BEGIN at NNetInterface.cpp(441,24)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+===========================================================================
+
+Begin optimization report for: ReadDatabase(const char *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (ReadDatabase(const char *)) [5] readinput.cpp(107,1)
+  -> (117,5) errmsg(const char *, const char *, const char *, int)
+  -> INLINE: (123,13) create<Struc_Data>(Struc_Data *&, int, const char *)
+    -> INLINE: mem.h:(16,17) smalloc(int, const char *)
+  -> INLINE: (149,30) VolumePerAtom(const double (*)[3], int)
+  -> INLINE: (151,29) create<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(42,27) smalloc(int, const char *)
+    -> INLINE: mem.h:(44,23) smalloc(int, const char *)
+  -> INLINE: (153,34) create<int>(int *&, int, const char *)
+    -> INLINE: mem.h:(16,17) smalloc(int, const char *)
+  -> INLINE: (155,29) create<char>(char **&, int, int, const char *)
+    -> INLINE: mem.h:(42,27) smalloc(int, const char *)
+    -> INLINE: mem.h:(44,23) smalloc(int, const char *)
+  -> INLINE: (179,17) grow<Struc_Data>(Struc_Data *&, int, const char *)
+    -> INLINE: mem.h:(27,29) create<Struc_Data>(Struc_Data *&, int, const char *)
+      -> INLINE: (16,17) smalloc(int, const char *)
+    -> INLINE: mem.h:(30,17) srealloc(void *, int, const char *)
+  -> INLINE: (185,13) grow<Struc_Data>(Struc_Data *&, int, const char *)
+    -> INLINE: mem.h:(27,29) create<Struc_Data>(Struc_Data *&, int, const char *)
+      -> INLINE: (16,17) smalloc(int, const char *)
+    -> INLINE: mem.h:(30,17) srealloc(void *, int, const char *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at readinput.cpp(128,3)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at mem.h(47,5) inlined into readinput.cpp(151,29)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+      remark #15346: vector dependence: assumed FLOW dependence between array line 48 and array line 48
+      remark #25439: unrolled with remainder by 2  
+   LOOP END
+
+   LOOP BEGIN at mem.h(47,5) inlined into readinput.cpp(151,29)
+   <Remainder>
+   LOOP END
+
+   LOOP BEGIN at mem.h(47,5) inlined into readinput.cpp(155,29)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+      remark #15346: vector dependence: assumed FLOW dependence between array line 48 and array line 48
+      remark #25439: unrolled with remainder by 2  
+   LOOP END
+
+   LOOP BEGIN at mem.h(47,5) inlined into readinput.cpp(155,29)
+   <Remainder>
+   LOOP END
+
+   LOOP BEGIN at readinput.cpp(159,5)
+      remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+      remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+   LOOP END
+
+   LOOP BEGIN at readinput.cpp(138,5)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+      remark #15346: vector dependence: assumed OUTPUT dependence between  line 139 and  line 140
+      remark #25436: completely unrolled by 3  
+   LOOP END
+LOOP END
+
+LOOP BEGIN at readinput.cpp(189,3)
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at readinput.cpp(189,3)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at readinput.cpp(191,3)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed OUTPUT dependence between Lattice line 196 and Lattice line 196
+
+   LOOP BEGIN at readinput.cpp(194,5)
+      remark #15527: loop was not vectorized: function call to strcmp(const char *, const char *) cannot be vectorized   [ readinput.cpp(196,11) ]
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: CreateNeighborList()
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (CreateNeighborList()) [6] readinput.cpp(19,1)
+  -> INLINE: (37,28) create<double>(double *&, int, const char *)
+    -> INLINE: mem.h:(16,17) smalloc(int, const char *)
+  -> INLINE: (75,28) grow<double>(double *&, int, const char *)
+    -> INLINE: mem.h:(27,29) create<double>(double *&, int, const char *)
+      -> INLINE: (16,17) smalloc(int, const char *)
+    -> INLINE: mem.h:(30,17) srealloc(void *, int, const char *)
+  -> (90,7) errmsg(const char *, const char *, const char *, int)
+  -> INLINE: (100,28) grow<double>(double *&, int, const char *)
+    -> INLINE: mem.h:(27,29) create<double>(double *&, int, const char *)
+      -> INLINE: (16,17) smalloc(int, const char *)
+    -> INLINE: mem.h:(30,17) srealloc(void *, int, const char *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at readinput.cpp(34,3)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at readinput.cpp(39,5)
+      remark #15300: LOOP WAS VECTORIZED
+   LOOP END
+
+   LOOP BEGIN at readinput.cpp(49,5)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at readinput.cpp(50,7)
+         remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+         LOOP BEGIN at readinput.cpp(51,2)
+            remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+            LOOP BEGIN at readinput.cpp(52,4)
+               remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+               LOOP BEGIN at readinput.cpp(59,6)
+                  remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+                  remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+               LOOP END
+            LOOP END
+         LOOP END
+      LOOP END
+   LOOP END
+
+   LOOP BEGIN at readinput.cpp(85,5)
+   <Peeled>
+   LOOP END
+
+   LOOP BEGIN at readinput.cpp(85,5)
+      remark #15300: LOOP WAS VECTORIZED
+   LOOP END
+
+   LOOP BEGIN at readinput.cpp(85,5)
+   <Remainder>
+   LOOP END
+
+   LOOP BEGIN at readinput.cpp(39,5)
+   <Remainder>
+      remark #25436: completely unrolled by 1  
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: mpi_dist_data3()
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (mpi_dist_data3()) [7] mpi_stuff.cpp(634,1)
+  -> INLINE: (658,13) create<Atom>(Atom *&, int, const char *)
+    -> INLINE: mem.h:(16,17) smalloc(int, const char *)
+  -> INLINE: (669,29) create<double>(double *&, int, const char *)
+    -> INLINE: mem.h:(16,17) smalloc(int, const char *)
+  -> INLINE: (701,37) grow<double>(double *&, int, const char *)
+    -> INLINE: mem.h:(27,29) create<double>(double *&, int, const char *)
+      -> INLINE: (16,17) smalloc(int, const char *)
+    -> INLINE: mem.h:(30,17) srealloc(void *, int, const char *)
+  -> INLINE: (702,23) create<double>(double *&, int, const char *)
+    -> INLINE: mem.h:(16,17) smalloc(int, const char *)
+  -> INLINE: (747,13) create<Atom>(Atom *&, int, const char *)
+    -> INLINE: mem.h:(16,17) smalloc(int, const char *)
+  -> INLINE: (769,42) grow<double>(double *&, int, const char *)
+    -> INLINE: mem.h:(27,29) create<double>(double *&, int, const char *)
+      -> INLINE: (16,17) smalloc(int, const char *)
+    -> INLINE: mem.h:(30,17) srealloc(void *, int, const char *)
+  -> INLINE: (770,28) create<double>(double *&, int, const char *)
+    -> INLINE: mem.h:(16,17) smalloc(int, const char *)
+  -> (782,2) errmsg(const char *, const char *, const char *, int)
+  -> INLINE: (795,25) create<double>(double *&, int, const char *)
+    -> INLINE: mem.h:(16,17) smalloc(int, const char *)
+  -> INLINE: (806,15) grow<Atom>(Atom *&, int, const char *)
+    -> INLINE: mem.h:(27,29) create<Atom>(Atom *&, int, const char *)
+      -> INLINE: (16,17) smalloc(int, const char *)
+    -> INLINE: mem.h:(30,17) srealloc(void *, int, const char *)
+  -> INLINE: (809,13) grow<Atom>(Atom *&, int, const char *)
+    -> INLINE: mem.h:(27,29) create<Atom>(Atom *&, int, const char *)
+      -> INLINE: (16,17) smalloc(int, const char *)
+    -> INLINE: mem.h:(30,17) srealloc(void *, int, const char *)
+  -> INLINE: (819,22) sfree(void *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at mpi_stuff.cpp(661,5)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+
+   LOOP BEGIN at mpi_stuff.cpp(672,7)
+      remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+      remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+   LOOP END
+LOOP END
+
+LOOP BEGIN at mpi_stuff.cpp(688,5)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at mpi_stuff.cpp(689,7)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at mpi_stuff.cpp(708,2)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+         remark #15346: vector dependence: assumed FLOW dependence between packet_double line 709 and Lattice line 709
+         remark #25439: unrolled with remainder by 2  
+      LOOP END
+
+      LOOP BEGIN at mpi_stuff.cpp(708,2)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at mpi_stuff.cpp(729,5)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+
+LOOP BEGIN at mpi_stuff.cpp(749,5)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at mpi_stuff.cpp(803,7)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+      remark #15346: vector dependence: assumed FLOW dependence between atoms line 803 and atoms line 803
+      remark #25439: unrolled with remainder by 2  
+   LOOP END
+
+   LOOP BEGIN at mpi_stuff.cpp(803,7)
+   <Remainder>
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: read_Modified_Gis_cpus(char *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (read_Modified_Gis_cpus(char *)) [8] readinput.cpp(688,1)
+  -> INLINE: (696,17) std::basic_ifstream<char, std::char_traits<char>>::basic_ifstream(std::basic_ifstream<char, std::char_traits<char>> *const)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (697,6) std::basic_ifstream<char, std::char_traits<char>>::open(std::basic_ifstream<char, std::char_traits<char>> *, const char *, std::ios_base::openmode)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (699,7) std::basic_ios<char, std::char_traits<char>>::operator!(const std::basic_ios<char, std::char_traits<char>> *) const
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (708,16) std::fpos<mbstate_t>::operator std::streamoff(const std::fpos<mbstate_t> *) const
+  -> INLINE: (716,6) std::basic_ifstream<char, std::char_traits<char>>::close(std::basic_ifstream<char, std::char_traits<char>> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (718,15) std::basic_string<char, std::char_traits<char>, std::allocator<char>>::~basic_string(std::basic_string<char, std::char_traits<char>, std::allocator<char>> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (718,15) std::basic_string<char, std::char_traits<char>, std::allocator<char>>::basic_string(std::basic_string<char, std::char_traits<char>, std::allocator<char>> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (719,8) std::basic_string<char, std::char_traits<char>, std::allocator<char>>::assign(std::basic_string<char, std::char_traits<char>, std::allocator<char>> *, const char *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (720,21) std::basic_stringstream<char, std::char_traits<char>, std::allocator<char>>::basic_stringstream(std::basic_stringstream<char, std::char_traits<char>, std::allocator<char>> *const, std::ios_base::openmode)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (721,6) std::basic_stringstream<char, std::char_traits<char>, std::allocator<char>>::str(std::basic_stringstream<char, std::char_traits<char>, std::allocator<char>> *, const std::basic_stringstream<char, std::char_traits<char>, std::allocator<char>>::__string_type &)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (725,15) std::basic_string<char, std::char_traits<char>, std::allocator<char>>::~basic_string(std::basic_string<char, std::char_traits<char>, std::allocator<char>> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (725,15) std::basic_string<char, std::char_traits<char>, std::allocator<char>>::basic_string(std::basic_string<char, std::char_traits<char>, std::allocator<char>> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (726,21) std::basic_stringstream<char, std::char_traits<char>, std::allocator<char>>::basic_stringstream(std::basic_stringstream<char, std::char_traits<char>, std::allocator<char>> *const, std::ios_base::openmode)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (727,15) std::basic_string<char, std::char_traits<char>, std::allocator<char>>::~basic_string(std::basic_string<char, std::char_traits<char>, std::allocator<char>> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (727,15) std::basic_string<char, std::char_traits<char>, std::allocator<char>>::basic_string(std::basic_string<char, std::char_traits<char>, std::allocator<char>> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (734,31) std::basic_ios<char, std::char_traits<char>>::good(const std::basic_ios<char, std::char_traits<char>> *) const
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (735,5) std::getline<char, std::char_traits<char>, std::allocator<char>>(std::basic_istream<char, std::char_traits<char>> &, std::basic_string<char, std::char_traits<char>, std::allocator<char>> &)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (736,9) std::basic_stringstream<char, std::char_traits<char>, std::allocator<char>>::str(std::basic_stringstream<char, std::char_traits<char>, std::allocator<char>> *, const std::basic_stringstream<char, std::char_traits<char>, std::allocator<char>>::__string_type &)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (738,15) atoi(const char *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (738,25) std::basic_string<char, std::char_traits<char>, std::allocator<char>>::c_str(const std::basic_string<char, std::char_traits<char>, std::allocator<char>> *) const
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (741,25) create<double>(double *&, int, const char *)
+    -> INLINE: mem.h:(16,17) smalloc(int, const char *)
+  -> INLINE: (744,35) grow<double>(double *&, int, const char *)
+    -> INLINE: mem.h:(27,29) create<double>(double *&, int, const char *)
+      -> INLINE: (16,17) smalloc(int, const char *)
+    -> INLINE: mem.h:(30,17) srealloc(void *, int, const char *)
+  -> INLINE: (752,28) atof(const char *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (752,38) std::basic_string<char, std::char_traits<char>, std::allocator<char>>::c_str(const std::basic_string<char, std::char_traits<char>, std::allocator<char>> *) const
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (760,3) std::basic_ifstream<char, std::char_traits<char>>::~basic_ifstream(std::basic_ifstream<char, std::char_traits<char>> *const)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (760,3) std::basic_string<char, std::char_traits<char>, std::allocator<char>>::~basic_string(std::basic_string<char, std::char_traits<char>, std::allocator<char>> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (760,3) std::basic_string<char, std::char_traits<char>, std::allocator<char>>::~basic_string(std::basic_string<char, std::char_traits<char>, std::allocator<char>> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (760,3) std::basic_string<char, std::char_traits<char>, std::allocator<char>>::~basic_string(std::basic_string<char, std::char_traits<char>, std::allocator<char>> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (760,3) std::basic_stringstream<char, std::char_traits<char>, std::allocator<char>>::~basic_stringstream(std::basic_stringstream<char, std::char_traits<char>, std::allocator<char>> *const)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (760,3) std::basic_stringstream<char, std::char_traits<char>, std::allocator<char>>::~basic_stringstream(std::basic_stringstream<char, std::char_traits<char>, std::allocator<char>> *const)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (770,7) std::getline<char, std::char_traits<char>, std::allocator<char>>(std::basic_istream<char, std::char_traits<char>> &, std::basic_string<char, std::char_traits<char>, std::allocator<char>> &)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (771,11) std::basic_stringstream<char, std::char_traits<char>, std::allocator<char>>::str(std::basic_stringstream<char, std::char_traits<char>, std::allocator<char>> *, const std::basic_stringstream<char, std::char_traits<char>, std::allocator<char>>::__string_type &)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (773,17) atoi(const char *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (773,27) std::basic_string<char, std::char_traits<char>, std::allocator<char>>::c_str(const std::basic_string<char, std::char_traits<char>, std::allocator<char>> *) const
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (776,17) atoi(const char *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (776,27) std::basic_string<char, std::char_traits<char>, std::allocator<char>>::c_str(const std::basic_string<char, std::char_traits<char>, std::allocator<char>> *) const
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (781,28) atof(const char *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (781,38) std::basic_string<char, std::char_traits<char>, std::allocator<char>>::c_str(const std::basic_string<char, std::char_traits<char>, std::allocator<char>> *) const
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at readinput.cpp(750,7)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+
+LOOP BEGIN at readinput.cpp(779,7)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at readinput.cpp(734,3)
+   remark #15341: loop was not vectorized: nonstandard loop is not a vectorization candidate
+LOOP END
+
+LOOP BEGIN at readinput.cpp(769,5)
+   remark #15341: loop was not vectorized: nonstandard loop is not a vectorization candidate
+LOOP END
+===========================================================================
+
+Begin optimization report for: ReadData(const char *, Struc_Data *&, int &, int &)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (ReadData(const char *, Struc_Data *&, int &, int &)) [20] readinput.cpp(453,1)
+  -> (463,5) errmsg(const char *, const char *, const char *, int)
+  -> INLINE: (469,10) create<Struc_Data>(Struc_Data *&, int, const char *)
+    -> INLINE: mem.h:(16,17) smalloc(int, const char *)
+  -> INLINE: (495,27) VolumePerAtom(const double (*)[3], int)
+  -> INLINE: (497,26) create<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(42,27) smalloc(int, const char *)
+    -> INLINE: mem.h:(44,23) smalloc(int, const char *)
+  -> INLINE: (499,31) create<int>(int *&, int, const char *)
+    -> INLINE: mem.h:(16,17) smalloc(int, const char *)
+  -> INLINE: (500,26) create<char>(char **&, int, int, const char *)
+    -> INLINE: mem.h:(42,27) smalloc(int, const char *)
+    -> INLINE: mem.h:(44,23) smalloc(int, const char *)
+  -> INLINE: (521,14) grow<Struc_Data>(Struc_Data *&, int, const char *)
+    -> INLINE: mem.h:(27,29) create<Struc_Data>(Struc_Data *&, int, const char *)
+      -> INLINE: (16,17) smalloc(int, const char *)
+    -> INLINE: mem.h:(30,17) srealloc(void *, int, const char *)
+  -> INLINE: (527,10) grow<Struc_Data>(Struc_Data *&, int, const char *)
+    -> INLINE: mem.h:(27,29) create<Struc_Data>(Struc_Data *&, int, const char *)
+      -> INLINE: (16,17) smalloc(int, const char *)
+    -> INLINE: mem.h:(30,17) srealloc(void *, int, const char *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at readinput.cpp(474,3)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at mem.h(47,5) inlined into readinput.cpp(497,26)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+      remark #15346: vector dependence: assumed FLOW dependence between array line 48 and array line 48
+      remark #25439: unrolled with remainder by 2  
+   LOOP END
+
+   LOOP BEGIN at mem.h(47,5) inlined into readinput.cpp(497,26)
+   <Remainder>
+   LOOP END
+
+   LOOP BEGIN at mem.h(47,5) inlined into readinput.cpp(500,26)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+      remark #15346: vector dependence: assumed FLOW dependence between array line 48 and array line 48
+      remark #25439: unrolled with remainder by 2  
+   LOOP END
+
+   LOOP BEGIN at mem.h(47,5) inlined into readinput.cpp(500,26)
+   <Remainder>
+   LOOP END
+
+   LOOP BEGIN at readinput.cpp(503,5)
+      remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+      remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+   LOOP END
+
+   LOOP BEGIN at readinput.cpp(484,5)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+      remark #15346: vector dependence: assumed OUTPUT dependence between  line 485 and  line 486
+      remark #25436: completely unrolled by 3  
+   LOOP END
+LOOP END
+
+LOOP BEGIN at readinput.cpp(531,3)
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at readinput.cpp(531,3)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at readinput.cpp(533,3)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed OUTPUT dependence between data line 538 and data line 538
+
+   LOOP BEGIN at readinput.cpp(536,5)
+      remark #15527: loop was not vectorized: function call to strcmp(const char *, const char *) cannot be vectorized   [ readinput.cpp(538,11) ]
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: CreateNeighborList(Struc_Data *&, int)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (CreateNeighborList(Struc_Data *&, int)) [21] readinput.cpp(549,1)
+  -> INLINE: (567,25) create<double>(double *&, int, const char *)
+    -> INLINE: mem.h:(16,17) smalloc(int, const char *)
+  -> INLINE: (605,25) grow<double>(double *&, int, const char *)
+    -> INLINE: mem.h:(27,29) create<double>(double *&, int, const char *)
+      -> INLINE: (16,17) smalloc(int, const char *)
+    -> INLINE: mem.h:(30,17) srealloc(void *, int, const char *)
+  -> (620,7) errmsg(const char *, const char *, const char *, int)
+  -> INLINE: (630,25) grow<double>(double *&, int, const char *)
+    -> INLINE: mem.h:(27,29) create<double>(double *&, int, const char *)
+      -> INLINE: (16,17) smalloc(int, const char *)
+    -> INLINE: mem.h:(30,17) srealloc(void *, int, const char *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at readinput.cpp(564,3)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at readinput.cpp(569,5)
+      remark #15300: LOOP WAS VECTORIZED
+   LOOP END
+
+   LOOP BEGIN at readinput.cpp(579,5)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at readinput.cpp(580,7)
+         remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+         LOOP BEGIN at readinput.cpp(581,2)
+            remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+            LOOP BEGIN at readinput.cpp(582,4)
+               remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+               LOOP BEGIN at readinput.cpp(589,6)
+                  remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+                  remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+               LOOP END
+            LOOP END
+         LOOP END
+      LOOP END
+   LOOP END
+
+   LOOP BEGIN at readinput.cpp(615,5)
+   <Peeled>
+   LOOP END
+
+   LOOP BEGIN at readinput.cpp(615,5)
+      remark #15300: LOOP WAS VECTORIZED
+   LOOP END
+
+   LOOP BEGIN at readinput.cpp(615,5)
+   <Remainder>
+   LOOP END
+
+   LOOP BEGIN at readinput.cpp(569,5)
+   <Remainder>
+      remark #25436: completely unrolled by 1  
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: mpi_exchange_slaves_nnet()
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (mpi_exchange_slaves_nnet()) [22] mpi_stuff.cpp(227,1)
+  -> INLINE: (289,14) NRvector<double>::assign(NRvector<double> *, int, const double *)
+  -> (290,17) NRvector<double>::~NRvector(NRvector<double> *)
+  -> INLINE: (290,17) NRvector<double>::NRvector(NRvector<double> *, int)
+  -> (297,33) iEnergy(int, const double *, const VecDoub &)
+  -> INLINE: (302,7) PartitionNNetParams(VecDoub &)
+    -> INLINE: NNetInterface.cpp:(70,43) NRvector<double>::operator[](NRvector<double> *, int)
+    -> INLINE: NNetInterface.cpp:(75,29) NRvector<double>::operator[](NRvector<double> *, int)
+    -> INLINE: NNetInterface.cpp:(79,14) NRvector<double>::size(const NRvector<double> *) const
+    -> INLINE: NNetInterface.cpp:(81,9) NRvector<double>::size(const NRvector<double> *) const
+  -> INLINE: (304,33) NNET_Eng(const double *, int)
+    -> INLINE: NNetInterface.cpp:(496,5) NNetOutput(double &, int)
+      -> (452,3) evaluate_nnet()
+  -> INLINE: (308,7) PartitionNNetParams(VecDoub &)
+    -> INLINE: NNetInterface.cpp:(70,43) NRvector<double>::operator[](NRvector<double> *, int)
+    -> INLINE: NNetInterface.cpp:(75,29) NRvector<double>::operator[](NRvector<double> *, int)
+    -> INLINE: NNetInterface.cpp:(79,14) NRvector<double>::size(const NRvector<double> *) const
+    -> INLINE: NNetInterface.cpp:(81,9) NRvector<double>::size(const NRvector<double> *) const
+  -> INLINE: (316,9) NRmatrix<Doub>::assign(NRmatrix<Doub> *, int, int, const Doub &)
+  -> INLINE: (319,33) iNNET_Eng(const double *, const double *, int, VecDoub &)
+    -> NNetInterface.cpp:(616,3) evaluate_nnet()
+    -> INLINE: NNetInterface.cpp:(627,33) NRvector<double>::operator[](NRvector<double> *, int)
+    -> INLINE: NNetInterface.cpp:(629,33) NRvector<double>::operator[](NRvector<double> *, int)
+    -> NNetInterface.cpp:(632,15) iEnergy(int, const double *, const VecDoub &)
+  -> INLINE: (324,18) specific_bop_constraint(VecDoub &)
+    -> INLINE: compute.cpp:(1560,17) NRvector<double>::operator[](NRvector<double> *, int)
+    -> INLINE: compute.cpp:(1560,33) NRvector<double>::operator[](NRvector<double> *, int)
+    -> INLINE: compute.cpp:(1561,17) NRvector<double>::operator[](NRvector<double> *, int)
+    -> INLINE: compute.cpp:(1561,33) NRvector<double>::operator[](NRvector<double> *, int)
+    -> INLINE: compute.cpp:(1562,17) NRvector<double>::operator[](NRvector<double> *, int)
+    -> INLINE: compute.cpp:(1562,33) NRvector<double>::operator[](NRvector<double> *, int)
+    -> INLINE: compute.cpp:(1563,17) NRvector<double>::operator[](NRvector<double> *, int)
+    -> INLINE: compute.cpp:(1563,32) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (325,18) mean_sqr(const VecDoub &, double)
+    -> INLINE: compute.cpp:(1354,21) NRvector<double>::size(const NRvector<double> *) const
+    -> INLINE: compute.cpp:(1354,21) NRvector<double>::size(const NRvector<double> *) const
+    -> INLINE: compute.cpp:(1354,42) NRvector<double>::operator[](const NRvector<double> *, int) const
+    -> INLINE: compute.cpp:(1354,47) NRvector<double>::operator[](const NRvector<double> *, int) const
+    -> INLINE: compute.cpp:(1355,18) NRvector<double>::size(const NRvector<double> *) const
+  -> INLINE: (327,75) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (331,9) NRmatrix<Doub>::assign(NRmatrix<Doub> *, int, int, const Doub &)
+  -> (334,4) iCompute_NN_Deriv(int, MatDoub &)
+  -> (336,21) NRmatrix<Doub>::~NRmatrix(NRmatrix<Doub> *)
+  -> (336,21) NRmatrix<Doub>::operator*(NRmatrix<Doub> *, NRmatrix<Doub> *, const NRmatrix<Doub> &)
+  -> INLINE: (338,64) NRmatrix<Doub>::operator[](NRmatrix<Doub> *, int)
+  -> INLINE: (344,76) NRmatrix<Doub>::operator[](NRmatrix<Doub> *, int)
+  -> INLINE: (349,11) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (350,84) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (350,98) NRmatrix<Doub>::operator[](NRmatrix<Doub> *, int)
+  -> INLINE: (351,11) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (352,84) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (352,98) NRmatrix<Doub>::operator[](NRmatrix<Doub> *, int)
+  -> INLINE: (353,11) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (354,84) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (354,98) NRmatrix<Doub>::operator[](NRmatrix<Doub> *, int)
+  -> INLINE: (355,11) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (356,84) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (356,97) NRmatrix<Doub>::operator[](NRmatrix<Doub> *, int)
+  -> INLINE: (368,24) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (368,34) NRmatrix<Doub>::operator[](NRmatrix<Doub> *, int)
+  -> INLINE: (374,2) NRmatrix<Doub>::~NRmatrix(NRmatrix<Doub> *)
+  -> INLINE: (419,3) NRvector<double>::~NRvector(NRvector<double> *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at mpi_stuff.cpp(264,5)
+   remark #25408: memset generated
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at mpi_stuff.cpp(264,5)
+   <Peeled>
+   LOOP END
+
+   LOOP BEGIN at mpi_stuff.cpp(264,5)
+      remark #15300: LOOP WAS VECTORIZED
+   LOOP END
+
+   LOOP BEGIN at mpi_stuff.cpp(264,5)
+   <Remainder>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at mpi_stuff.cpp(270,7)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at mpi_stuff.cpp(271,2)
+      remark #25408: memset generated
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at mpi_stuff.cpp(271,2)
+         remark #15300: LOOP WAS VECTORIZED
+      LOOP END
+
+      LOOP BEGIN at mpi_stuff.cpp(271,2)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at mpi_stuff.cpp(279,7)
+   remark #25408: memset generated
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at mpi_stuff.cpp(279,7)
+   <Peeled>
+   LOOP END
+
+   LOOP BEGIN at mpi_stuff.cpp(279,7)
+      remark #15300: LOOP WAS VECTORIZED
+   LOOP END
+
+   LOOP BEGIN at mpi_stuff.cpp(279,7)
+   <Remainder>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at nrvector.h(135,5) inlined into mpi_stuff.cpp(289,14)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between v line 135 and a line 135
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at nrvector.h(135,5) inlined into mpi_stuff.cpp(289,14)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at nrvector.h(140,5) inlined into mpi_stuff.cpp(289,14)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between v line 140 and a line 140
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at nrvector.h(140,5) inlined into mpi_stuff.cpp(289,14)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at mpi_stuff.cpp(296,7)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+LOOP END
+
+LOOP BEGIN at NNetInterface.cpp(69,7) inlined into mpi_stuff.cpp(302,7)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 2
+LOOP END
+
+LOOP BEGIN at NNetInterface.cpp(74,5) inlined into mpi_stuff.cpp(302,7)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+
+LOOP BEGIN at mpi_stuff.cpp(303,7)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+
+   LOOP BEGIN at NNetInterface.cpp(495,5) inlined into mpi_stuff.cpp(304,33)
+      remark #25401: memcopy(with guard) generated
+      remark #15398: loop was not vectorized: loop was transformed to memset or memcpy
+
+      LOOP BEGIN at NNetInterface.cpp(495,5) inlined into mpi_stuff.cpp(304,33)
+      <Multiversioned v2>
+         remark #15304: loop was not vectorized: non-vectorizable loop instance from multiversioning
+         remark #25439: unrolled with remainder by 2  
+      LOOP END
+
+      LOOP BEGIN at NNetInterface.cpp(495,5) inlined into mpi_stuff.cpp(304,33)
+      <Remainder, Multiversioned v2>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at NNetInterface.cpp(69,7) inlined into mpi_stuff.cpp(308,7)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 2
+LOOP END
+
+LOOP BEGIN at NNetInterface.cpp(74,5) inlined into mpi_stuff.cpp(308,7)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+
+LOOP BEGIN at nrmatrix.h(284,5) inlined into mpi_stuff.cpp(316,9)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed ANTI dependence between v line 284 and v line 284
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at nrmatrix.h(284,5) inlined into mpi_stuff.cpp(316,9)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at nrmatrix.h(286,3) inlined into mpi_stuff.cpp(316,9)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed ANTI dependence between v line 286 and v line 286
+
+   LOOP BEGIN at nrmatrix.h(286,25) inlined into mpi_stuff.cpp(316,9)
+      remark #25408: memset generated
+      remark #15398: loop was not vectorized: loop was transformed to memset or memcpy
+
+      LOOP BEGIN at nrmatrix.h(286,25) inlined into mpi_stuff.cpp(316,9)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+         remark #15346: vector dependence: assumed FLOW dependence between v line 286 and v line 286
+         remark #25439: unrolled with remainder by 2  
+      LOOP END
+
+      LOOP BEGIN at nrmatrix.h(286,25) inlined into mpi_stuff.cpp(316,9)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at NNetInterface.cpp(614,3) inlined into mpi_stuff.cpp(319,33)
+   remark #25401: memcopy(with guard) generated
+   remark #15398: loop was not vectorized: loop was transformed to memset or memcpy
+
+   LOOP BEGIN at NNetInterface.cpp(614,3) inlined into mpi_stuff.cpp(319,33)
+   <Multiversioned v2>
+      remark #15304: loop was not vectorized: non-vectorizable loop instance from multiversioning
+      remark #25439: unrolled with remainder by 2  
+   LOOP END
+
+   LOOP BEGIN at NNetInterface.cpp(614,3) inlined into mpi_stuff.cpp(319,33)
+   <Remainder, Multiversioned v2>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at NNetInterface.cpp(627,5) inlined into mpi_stuff.cpp(319,33)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+
+LOOP BEGIN at NNetInterface.cpp(629,5) inlined into mpi_stuff.cpp(319,33)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+
+LOOP BEGIN at compute.cpp(1354,21) inlined into mpi_stuff.cpp(325,18)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+
+LOOP BEGIN at nrmatrix.h(284,5) inlined into mpi_stuff.cpp(331,9)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed ANTI dependence between v line 284 and v line 284
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at nrmatrix.h(284,5) inlined into mpi_stuff.cpp(331,9)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at nrmatrix.h(286,3) inlined into mpi_stuff.cpp(331,9)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed ANTI dependence between v line 286 and v line 286
+
+   LOOP BEGIN at nrmatrix.h(286,25) inlined into mpi_stuff.cpp(331,9)
+      remark #25408: memset generated
+      remark #15398: loop was not vectorized: loop was transformed to memset or memcpy
+
+      LOOP BEGIN at nrmatrix.h(286,25) inlined into mpi_stuff.cpp(331,9)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+         remark #15346: vector dependence: assumed FLOW dependence between v line 286 and v line 286
+         remark #25439: unrolled with remainder by 2  
+      LOOP END
+
+      LOOP BEGIN at nrmatrix.h(286,25) inlined into mpi_stuff.cpp(331,9)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at mpi_stuff.cpp(337,4)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between local_sum_partial_deriv line 338 and local_sum_partial_deriv line 338
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mpi_stuff.cpp(337,4)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at mpi_stuff.cpp(342,4)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at mpi_stuff.cpp(343,6)
+   <Peeled>
+   LOOP END
+
+   LOOP BEGIN at mpi_stuff.cpp(343,6)
+      remark #15300: LOOP WAS VECTORIZED
+   LOOP END
+
+   LOOP BEGIN at mpi_stuff.cpp(343,6)
+   <Remainder>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at mpi_stuff.cpp(350,6)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+
+LOOP BEGIN at mpi_stuff.cpp(352,6)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+
+LOOP BEGIN at mpi_stuff.cpp(354,6)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+
+LOOP BEGIN at mpi_stuff.cpp(356,6)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+
+LOOP BEGIN at mpi_stuff.cpp(367,16)
+   remark #15521: loop was not vectorized: explicitly compute the iteration count before executing the loop or try using canonical loop form
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at mpi_stuff.cpp(247,3)
+   remark #15536: loop was not vectorized: inner loop throttling prevents vectorization of this outer loop. Refer to inner loop message for more details.
+
+   LOOP BEGIN at NNetInterface.cpp(66,3) inlined into mpi_stuff.cpp(302,7)
+      remark #15536: loop was not vectorized: inner loop throttling prevents vectorization of this outer loop. Refer to inner loop message for more details.
+
+      LOOP BEGIN at NNetInterface.cpp(68,5) inlined into mpi_stuff.cpp(302,7)
+         remark #15341: loop was not vectorized: nonstandard loop is not a vectorization candidate
+      LOOP END
+   LOOP END
+
+   LOOP BEGIN at NNetInterface.cpp(66,3) inlined into mpi_stuff.cpp(308,7)
+      remark #15536: loop was not vectorized: inner loop throttling prevents vectorization of this outer loop. Refer to inner loop message for more details.
+
+      LOOP BEGIN at NNetInterface.cpp(68,5) inlined into mpi_stuff.cpp(308,7)
+         remark #15341: loop was not vectorized: nonstandard loop is not a vectorization candidate
+      LOOP END
+   LOOP END
+
+   LOOP BEGIN at mpi_stuff.cpp(310,7)
+      remark #15536: loop was not vectorized: inner loop throttling prevents vectorization of this outer loop. Refer to inner loop message for more details.
+
+      LOOP BEGIN at mpi_stuff.cpp(327,2)
+         remark #15341: loop was not vectorized: nonstandard loop is not a vectorization candidate
+      LOOP END
+
+      LOOP BEGIN at mpi_stuff.cpp(365,4)
+         remark #15341: loop was not vectorized: nonstandard loop is not a vectorization candidate
+      LOOP END
+   LOOP END
+LOOP END
+
+    Report from: Code generation optimizations [cg]
+
+mpi_stuff.cpp(264,35):remark #34026: call to memset implemented as a call to optimized library version
+NNetInterface.cpp(495,32):remark #34026: call to memcpy implemented as a call to optimized library version
+nrmatrix.h(286,46):remark #34026: call to memset implemented as a call to optimized library version
+NNetInterface.cpp(614,30):remark #34026: call to memcpy implemented as a call to optimized library version
+nrmatrix.h(286,46):remark #34026: call to memset implemented as a call to optimized library version
+mpi_stuff.cpp(272,4):remark #34026: call to memset implemented as a call to optimized library version
+mpi_stuff.cpp(280,2):remark #34026: call to memset implemented as a call to optimized library version
+===========================================================================
+
+Begin optimization report for: evaluate_nnet()
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (evaluate_nnet()) [23] NNetInterface.cpp(14,1)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at NNetInterface.cpp(17,3)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+
+   LOOP BEGIN at NNetInterface.cpp(30,7)
+      remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+      remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+   LOOP END
+
+   LOOP BEGIN at NNetInterface.cpp(36,7)
+      remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+      remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: mpi_exchange_master_nnet(VecDoub &)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (mpi_exchange_master_nnet(VecDoub &)) [24] mpi_stuff.cpp(20,1)
+  -> INLINE: (31,25) NRvector<double>::size(const NRvector<double> *) const
+  -> INLINE: (32,21) NRvector<double>::size(const NRvector<double> *) const
+  -> INLINE: (32,21) NRvector<double>::size(const NRvector<double> *) const
+  -> INLINE: (32,46) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (67,26) NRvector<double>::size(const NRvector<double> *) const
+  -> (71,15) NRvector<double>::~NRvector(NRvector<double> *)
+  -> INLINE: (71,15) NRvector<double>::NRvector(NRvector<double> *, int)
+  -> (77,38) iEnergy(int, const double *, const VecDoub &)
+  -> INLINE: (81,5) PartitionNNetParams(VecDoub &)
+    -> INLINE: NNetInterface.cpp:(70,43) NRvector<double>::operator[](NRvector<double> *, int)
+    -> INLINE: NNetInterface.cpp:(75,29) NRvector<double>::operator[](NRvector<double> *, int)
+    -> INLINE: NNetInterface.cpp:(79,14) NRvector<double>::size(const NRvector<double> *) const
+    -> INLINE: NNetInterface.cpp:(81,9) NRvector<double>::size(const NRvector<double> *) const
+  -> INLINE: (83,38) NNET_Eng(const double *, int)
+    -> INLINE: NNetInterface.cpp:(496,5) NNetOutput(double &, int)
+      -> (452,3) evaluate_nnet()
+  -> INLINE: (87,5) PartitionNNetParams(VecDoub &)
+    -> INLINE: NNetInterface.cpp:(70,43) NRvector<double>::operator[](NRvector<double> *, int)
+    -> INLINE: NNetInterface.cpp:(75,29) NRvector<double>::operator[](NRvector<double> *, int)
+    -> INLINE: NNetInterface.cpp:(79,14) NRvector<double>::size(const NRvector<double> *) const
+    -> INLINE: NNetInterface.cpp:(81,9) NRvector<double>::size(const NRvector<double> *) const
+  -> INLINE: (94,14) NRmatrix<Doub>::assign(NRmatrix<Doub> *, int, int, const Doub &)
+  -> INLINE: (96,38) iNNET_Eng(const double *, const double *, int, VecDoub &)
+    -> NNetInterface.cpp:(616,3) evaluate_nnet()
+    -> INLINE: NNetInterface.cpp:(627,33) NRvector<double>::operator[](NRvector<double> *, int)
+    -> INLINE: NNetInterface.cpp:(629,33) NRvector<double>::operator[](NRvector<double> *, int)
+    -> NNetInterface.cpp:(632,15) iEnergy(int, const double *, const VecDoub &)
+  -> INLINE: (101,23) specific_bop_constraint(VecDoub &)
+    -> INLINE: compute.cpp:(1560,17) NRvector<double>::operator[](NRvector<double> *, int)
+    -> INLINE: compute.cpp:(1560,33) NRvector<double>::operator[](NRvector<double> *, int)
+    -> INLINE: compute.cpp:(1561,17) NRvector<double>::operator[](NRvector<double> *, int)
+    -> INLINE: compute.cpp:(1561,33) NRvector<double>::operator[](NRvector<double> *, int)
+    -> INLINE: compute.cpp:(1562,17) NRvector<double>::operator[](NRvector<double> *, int)
+    -> INLINE: compute.cpp:(1562,33) NRvector<double>::operator[](NRvector<double> *, int)
+    -> INLINE: compute.cpp:(1563,17) NRvector<double>::operator[](NRvector<double> *, int)
+    -> INLINE: compute.cpp:(1563,32) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (102,23) mean_sqr(const VecDoub &, double)
+    -> INLINE: compute.cpp:(1354,21) NRvector<double>::size(const NRvector<double> *) const
+    -> INLINE: compute.cpp:(1354,21) NRvector<double>::size(const NRvector<double> *) const
+    -> INLINE: compute.cpp:(1354,42) NRvector<double>::operator[](const NRvector<double> *, int) const
+    -> INLINE: compute.cpp:(1354,47) NRvector<double>::operator[](const NRvector<double> *, int) const
+    -> INLINE: compute.cpp:(1355,18) NRvector<double>::size(const NRvector<double> *) const
+  -> INLINE: (104,82) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (108,14) NRmatrix<Doub>::assign(NRmatrix<Doub> *, int, int, const Doub &)
+  -> (111,9) iCompute_NN_Deriv(int, MatDoub &)
+  -> (114,26) NRmatrix<Doub>::~NRmatrix(NRmatrix<Doub> *)
+  -> (114,26) NRmatrix<Doub>::operator*(NRmatrix<Doub> *, NRmatrix<Doub> *, const NRmatrix<Doub> &)
+  -> INLINE: (117,69) NRmatrix<Doub>::operator[](NRmatrix<Doub> *, int)
+  -> INLINE: (124,81) NRmatrix<Doub>::operator[](NRmatrix<Doub> *, int)
+  -> INLINE: (129,16) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (131,60) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (131,74) NRmatrix<Doub>::operator[](NRmatrix<Doub> *, int)
+  -> INLINE: (132,16) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (134,60) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (134,74) NRmatrix<Doub>::operator[](NRmatrix<Doub> *, int)
+  -> INLINE: (135,16) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (137,60) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (137,74) NRmatrix<Doub>::operator[](NRmatrix<Doub> *, int)
+  -> INLINE: (138,16) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (140,60) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (140,73) NRmatrix<Doub>::operator[](NRmatrix<Doub> *, int)
+  -> INLINE: (147,24) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (147,34) NRmatrix<Doub>::operator[](NRmatrix<Doub> *, int)
+  -> INLINE: (158,25) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (158,51) NRmatrix<Doub>::operator[](NRmatrix<Doub> *, int)
+  -> INLINE: (159,27) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (159,59) NRmatrix<Doub>::operator[](NRmatrix<Doub> *, int)
+  -> INLINE: (166,7) NRmatrix<Doub>::~NRmatrix(NRmatrix<Doub> *)
+  -> INLINE: (221,3) NRvector<double>::~NRvector(NRvector<double> *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at mpi_stuff.cpp(32,21)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+
+LOOP BEGIN at mpi_stuff.cpp(39,3)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between local_eng_sum line 40 and local_eng_sum line 40
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mpi_stuff.cpp(39,3)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at mpi_stuff.cpp(48,5)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between local_sum_partial_deriv line 50 and local_sum_partial_deriv line 50
+
+   LOOP BEGIN at mpi_stuff.cpp(49,7)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+      remark #15346: vector dependence: assumed FLOW dependence between local_sum_partial_deriv line 50 and local_sum_partial_deriv line 50
+      remark #25439: unrolled with remainder by 2  
+   LOOP END
+
+   LOOP BEGIN at mpi_stuff.cpp(49,7)
+   <Remainder>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at mpi_stuff.cpp(57,5)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between local_sum_hbconst_partial_deriv line 58 and local_sum_hbconst_partial_deriv line 58
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mpi_stuff.cpp(57,5)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at mpi_stuff.cpp(65,3)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+
+LOOP BEGIN at mpi_stuff.cpp(76,5)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+LOOP END
+
+LOOP BEGIN at NNetInterface.cpp(69,7) inlined into mpi_stuff.cpp(81,5)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 2
+LOOP END
+
+LOOP BEGIN at NNetInterface.cpp(74,5) inlined into mpi_stuff.cpp(81,5)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+
+LOOP BEGIN at mpi_stuff.cpp(82,5)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+
+   LOOP BEGIN at NNetInterface.cpp(495,5) inlined into mpi_stuff.cpp(83,38)
+      remark #25401: memcopy(with guard) generated
+      remark #15398: loop was not vectorized: loop was transformed to memset or memcpy
+
+      LOOP BEGIN at NNetInterface.cpp(495,5) inlined into mpi_stuff.cpp(83,38)
+      <Multiversioned v2>
+         remark #15304: loop was not vectorized: non-vectorizable loop instance from multiversioning
+         remark #25439: unrolled with remainder by 2  
+      LOOP END
+
+      LOOP BEGIN at NNetInterface.cpp(495,5) inlined into mpi_stuff.cpp(83,38)
+      <Remainder, Multiversioned v2>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at NNetInterface.cpp(69,7) inlined into mpi_stuff.cpp(87,5)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 2
+LOOP END
+
+LOOP BEGIN at NNetInterface.cpp(74,5) inlined into mpi_stuff.cpp(87,5)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+
+LOOP BEGIN at nrmatrix.h(284,5) inlined into mpi_stuff.cpp(94,14)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed ANTI dependence between v line 284 and v line 284
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at nrmatrix.h(284,5) inlined into mpi_stuff.cpp(94,14)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at nrmatrix.h(286,3) inlined into mpi_stuff.cpp(94,14)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed ANTI dependence between v line 286 and v line 286
+
+   LOOP BEGIN at nrmatrix.h(286,25) inlined into mpi_stuff.cpp(94,14)
+      remark #25408: memset generated
+      remark #15398: loop was not vectorized: loop was transformed to memset or memcpy
+
+      LOOP BEGIN at nrmatrix.h(286,25) inlined into mpi_stuff.cpp(94,14)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+         remark #15346: vector dependence: assumed FLOW dependence between v line 286 and v line 286
+         remark #25439: unrolled with remainder by 2  
+      LOOP END
+
+      LOOP BEGIN at nrmatrix.h(286,25) inlined into mpi_stuff.cpp(94,14)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at NNetInterface.cpp(614,3) inlined into mpi_stuff.cpp(96,38)
+   remark #25401: memcopy(with guard) generated
+   remark #15398: loop was not vectorized: loop was transformed to memset or memcpy
+
+   LOOP BEGIN at NNetInterface.cpp(614,3) inlined into mpi_stuff.cpp(96,38)
+   <Multiversioned v2>
+      remark #15304: loop was not vectorized: non-vectorizable loop instance from multiversioning
+      remark #25439: unrolled with remainder by 2  
+   LOOP END
+
+   LOOP BEGIN at NNetInterface.cpp(614,3) inlined into mpi_stuff.cpp(96,38)
+   <Remainder, Multiversioned v2>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at NNetInterface.cpp(627,5) inlined into mpi_stuff.cpp(96,38)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+
+LOOP BEGIN at NNetInterface.cpp(629,5) inlined into mpi_stuff.cpp(96,38)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+
+LOOP BEGIN at compute.cpp(1354,21) inlined into mpi_stuff.cpp(102,23)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+
+LOOP BEGIN at nrmatrix.h(284,5) inlined into mpi_stuff.cpp(108,14)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed ANTI dependence between v line 284 and v line 284
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at nrmatrix.h(284,5) inlined into mpi_stuff.cpp(108,14)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at nrmatrix.h(286,3) inlined into mpi_stuff.cpp(108,14)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed ANTI dependence between v line 286 and v line 286
+
+   LOOP BEGIN at nrmatrix.h(286,25) inlined into mpi_stuff.cpp(108,14)
+      remark #25408: memset generated
+      remark #15398: loop was not vectorized: loop was transformed to memset or memcpy
+
+      LOOP BEGIN at nrmatrix.h(286,25) inlined into mpi_stuff.cpp(108,14)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+         remark #15346: vector dependence: assumed FLOW dependence between v line 286 and v line 286
+         remark #25439: unrolled with remainder by 2  
+      LOOP END
+
+      LOOP BEGIN at nrmatrix.h(286,25) inlined into mpi_stuff.cpp(108,14)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at mpi_stuff.cpp(116,9)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed ANTI dependence between local_sum_partial_deriv line 117 and local_sum_partial_deriv line 117
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mpi_stuff.cpp(116,9)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at mpi_stuff.cpp(122,9)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between local_partial_deriv line 124 and local_partial_deriv line 124
+
+   LOOP BEGIN at mpi_stuff.cpp(123,11)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+      remark #15346: vector dependence: assumed FLOW dependence between local_partial_deriv line 124 and local_partial_deriv line 124
+      remark #25439: unrolled with remainder by 2  
+   LOOP END
+
+   LOOP BEGIN at mpi_stuff.cpp(123,11)
+   <Remainder>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at mpi_stuff.cpp(130,11)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+
+LOOP BEGIN at mpi_stuff.cpp(133,11)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+
+LOOP BEGIN at mpi_stuff.cpp(136,11)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+
+LOOP BEGIN at mpi_stuff.cpp(139,11)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+
+LOOP BEGIN at mpi_stuff.cpp(146,16)
+   remark #15521: loop was not vectorized: explicitly compute the iteration count before executing the loop or try using canonical loop form
+LOOP END
+
+LOOP BEGIN at mpi_stuff.cpp(158,31)
+   remark #15521: loop was not vectorized: explicitly compute the iteration count before executing the loop or try using canonical loop form
+LOOP END
+
+LOOP BEGIN at mpi_stuff.cpp(185,3)
+<Peeled, Multiversioned v1>
+LOOP END
+
+LOOP BEGIN at mpi_stuff.cpp(185,3)
+<Multiversioned v1>
+   remark #25228: Loop multiversioned for Data Dependence
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at mpi_stuff.cpp(185,3)
+<Remainder, Multiversioned v1>
+LOOP END
+
+LOOP BEGIN at mpi_stuff.cpp(185,3)
+<Multiversioned v2>
+   remark #15304: loop was not vectorized: non-vectorizable loop instance from multiversioning
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mpi_stuff.cpp(185,3)
+<Remainder, Multiversioned v2>
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at NNetInterface.cpp(66,3) inlined into mpi_stuff.cpp(81,5)
+   remark #15536: loop was not vectorized: inner loop throttling prevents vectorization of this outer loop. Refer to inner loop message for more details.
+
+   LOOP BEGIN at NNetInterface.cpp(68,5) inlined into mpi_stuff.cpp(81,5)
+      remark #15341: loop was not vectorized: nonstandard loop is not a vectorization candidate
+   LOOP END
+LOOP END
+
+LOOP BEGIN at NNetInterface.cpp(66,3) inlined into mpi_stuff.cpp(87,5)
+   remark #15536: loop was not vectorized: inner loop throttling prevents vectorization of this outer loop. Refer to inner loop message for more details.
+
+   LOOP BEGIN at NNetInterface.cpp(68,5) inlined into mpi_stuff.cpp(87,5)
+      remark #15341: loop was not vectorized: nonstandard loop is not a vectorization candidate
+   LOOP END
+LOOP END
+
+LOOP BEGIN at mpi_stuff.cpp(88,5)
+   remark #15536: loop was not vectorized: inner loop throttling prevents vectorization of this outer loop. Refer to inner loop message for more details.
+
+   LOOP BEGIN at mpi_stuff.cpp(104,7)
+      remark #15341: loop was not vectorized: nonstandard loop is not a vectorization candidate
+   LOOP END
+
+   LOOP BEGIN at mpi_stuff.cpp(144,4)
+      remark #15341: loop was not vectorized: nonstandard loop is not a vectorization candidate
+   LOOP END
+
+   LOOP BEGIN at mpi_stuff.cpp(154,4)
+      remark #15341: loop was not vectorized: nonstandard loop is not a vectorization candidate
+   LOOP END
+LOOP END
+
+    Report from: Code generation optimizations [cg]
+
+NNetInterface.cpp(495,32):remark #34026: call to memcpy implemented as a call to optimized library version
+nrmatrix.h(286,46):remark #34026: call to memset implemented as a call to optimized library version
+NNetInterface.cpp(614,30):remark #34026: call to memcpy implemented as a call to optimized library version
+nrmatrix.h(286,46):remark #34026: call to memset implemented as a call to optimized library version
+===========================================================================
+
+Begin optimization report for: freemem()
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (freemem()) [25] globals.cpp(212,1)
+  -> INLINE: (220,3) destroy<double>(double **)
+    -> INLINE: mem.h:(85,5) sfree(void *)
+    -> INLINE: mem.h:(86,5) sfree(void *)
+  -> INLINE: (231,7) destroy<double>(double **)
+    -> INLINE: mem.h:(85,5) sfree(void *)
+    -> INLINE: mem.h:(86,5) sfree(void *)
+  -> INLINE: (232,7) destroy<char>(char **)
+    -> INLINE: mem.h:(85,5) sfree(void *)
+    -> INLINE: mem.h:(86,5) sfree(void *)
+  -> INLINE: (233,7) sfree(void *)
+  -> INLINE: (234,7) sfree(void *)
+  -> INLINE: (235,31) sfree(void *)
+  -> INLINE: (237,5) sfree(void *)
+  -> INLINE: (242,7) destroy<double>(double **)
+    -> INLINE: mem.h:(85,5) sfree(void *)
+    -> INLINE: mem.h:(86,5) sfree(void *)
+  -> INLINE: (243,7) destroy<char>(char **)
+    -> INLINE: mem.h:(85,5) sfree(void *)
+    -> INLINE: mem.h:(86,5) sfree(void *)
+  -> INLINE: (244,7) sfree(void *)
+  -> INLINE: (245,7) sfree(void *)
+  -> INLINE: (246,31) sfree(void *)
+  -> INLINE: (248,5) sfree(void *)
+  -> INLINE: (255,7) sfree(void *)
+  -> INLINE: (256,29) sfree(void *)
+  -> INLINE: (258,5) sfree(void *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at globals.cpp(230,5)
+   remark #15527: loop was not vectorized: function call to free(void *) cannot be vectorized   [ mem.cpp(51,3) ]
+LOOP END
+
+LOOP BEGIN at globals.cpp(241,5)
+   remark #15527: loop was not vectorized: function call to free(void *) cannot be vectorized   [ mem.cpp(51,3) ]
+LOOP END
+
+LOOP BEGIN at globals.cpp(254,5)
+   remark #15527: loop was not vectorized: function call to free(void *) cannot be vectorized   [ mem.cpp(51,3) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: PartitionNNetParams(VecDoub &)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (PartitionNNetParams(VecDoub &)) [30] NNetInterface.cpp(61,1)
+  -> INLINE: (70,43) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (75,29) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (79,14) NRvector<double>::size(const NRvector<double> *) const
+  -> INLINE: (81,9) NRvector<double>::size(const NRvector<double> *) const
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at NNetInterface.cpp(69,7)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 2
+LOOP END
+
+LOOP BEGIN at NNetInterface.cpp(74,5)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at NNetInterface.cpp(66,3)
+   remark #15536: loop was not vectorized: inner loop throttling prevents vectorization of this outer loop. Refer to inner loop message for more details.
+
+   LOOP BEGIN at NNetInterface.cpp(68,5)
+      remark #15341: loop was not vectorized: nonstandard loop is not a vectorization candidate
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: mpi_send_dummy()
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (mpi_send_dummy()) [31] mpi_stuff.cpp(10,1)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at mpi_stuff.cpp(12,3)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+LOOP END
+===========================================================================
+
+Begin optimization report for: NNET_Eng(const double *, int)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (NNET_Eng(const double *, int)) [32] NNetInterface.cpp(481,1)
+  -> INLINE: (496,5) NNetOutput(double &, int)
+    -> (452,3) evaluate_nnet()
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at NNetInterface.cpp(493,3)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed ANTI dependence between lsparam line 495 and layer line 495
+
+   LOOP BEGIN at NNetInterface.cpp(495,5)
+      remark #25401: memcopy(with guard) generated
+      remark #15398: loop was not vectorized: loop was transformed to memset or memcpy
+
+      LOOP BEGIN at NNetInterface.cpp(495,5)
+      <Multiversioned v2>
+         remark #15304: loop was not vectorized: non-vectorizable loop instance from multiversioning
+         remark #25439: unrolled with remainder by 2  
+      LOOP END
+
+      LOOP BEGIN at NNetInterface.cpp(495,5)
+      <Remainder, Multiversioned v2>
+      LOOP END
+   LOOP END
+LOOP END
+
+    Report from: Code generation optimizations [cg]
+
+NNetInterface.cpp(495,32):remark #34026: call to memcpy implemented as a call to optimized library version
+===========================================================================
+
+Begin optimization report for: NNetOutput(const int *, const double *, int, double &, int)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (NNetOutput(const int *, const double *, int, double &, int)) [33] NNetInterface.cpp(460,1)
+  -> (461,3) evaluate_nnet()
+  -> (465,18) NRvector<double>::~NRvector(NRvector<double> *)
+  -> INLINE: (465,18) NRvector<double>::NRvector(NRvector<double> *, int)
+  -> INLINE: (469,11) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (472,13) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (475,5) NRvector<double>::~NRvector(NRvector<double> *)
+  -> (475,10) Atomic_Eng(const int *, const double *, int, const VecDoub *)
+  -> (475,42) NRvector<double>::~NRvector(NRvector<double> *)
+  -> INLINE: (475,42) NRvector<double>::NRvector(NRvector<double> *, const NRvector<double> &)
+  -> INLINE: (476,3) NRvector<double>::~NRvector(NRvector<double> *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at NNetInterface.cpp(468,21)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+
+LOOP BEGIN at NNetInterface.cpp(471,7)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+
+LOOP BEGIN at nrvector.h(68,5) inlined into NNetInterface.cpp(475,42)
+   remark #25401: memcopy(with guard) generated
+   remark #15398: loop was not vectorized: loop was transformed to memset or memcpy
+
+   LOOP BEGIN at nrvector.h(68,5) inlined into NNetInterface.cpp(475,42)
+   <Multiversioned v2>
+      remark #15304: loop was not vectorized: non-vectorizable loop instance from multiversioning
+      remark #25439: unrolled with remainder by 2  
+   LOOP END
+
+   LOOP BEGIN at nrvector.h(68,5) inlined into NNetInterface.cpp(475,42)
+   <Remainder, Multiversioned v2>
+   LOOP END
+LOOP END
+
+    Report from: Code generation optimizations [cg]
+
+nrvector.h(68,30):remark #34026: call to memcpy implemented as a call to optimized library version
+===========================================================================
+
+Begin optimization report for: __sti__$E()
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (__sti__$E()) [34] <compiler generated>
+
+===========================================================================
+
+Begin optimization report for: NRvector<double>::resize(NRvector<double> *, int)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (NRvector<double>::resize(NRvector<double> *, int)) nrvector.h(111,1)
+
+===========================================================================
+
+Begin optimization report for: count_words(const char *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (count_words(const char *)) [39] globals.cpp(186,1)
+  -> INLINE: (192,10) grow<char>(char *&, int, const char *)
+    -> INLINE: mem.h:(27,29) create<char>(char *&, int, const char *)
+      -> INLINE: (16,17) smalloc(int, const char *)
+    -> INLINE: mem.h:(30,17) srealloc(void *, int, const char *)
+  -> INLINE: (196,14) strchr(char *, int)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at globals.cpp(205,3)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+===========================================================================
+
+Begin optimization report for: NNetOutput(double &, int)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (NNetOutput(double &, int)) [40] NNetInterface.cpp(451,1)
+  -> (452,3) evaluate_nnet()
+
+===========================================================================
+
+Begin optimization report for: NNET_Eng(const double *, int, int)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (NNET_Eng(const double *, int, int)) [41] NNetInterface.cpp(509,1)
+  -> (516,5) errmsg(const char *, const char *, const char *, int)
+  -> INLINE: (528,7) NNetOutput(const int *, const double *, int, double &, int)
+    -> (461,3) evaluate_nnet()
+    -> INLINE: (465,18) NRvector<double>::NRvector(NRvector<double> *, int)
+    -> (465,18) NRvector<double>::~NRvector(NRvector<double> *)
+    -> INLINE: (469,11) NRvector<double>::operator[](NRvector<double> *, int)
+    -> INLINE: (472,13) NRvector<double>::operator[](NRvector<double> *, int)
+    -> INLINE: (475,5) NRvector<double>::~NRvector(NRvector<double> *)
+    -> (475,10) Atomic_Eng(const int *, const double *, int, const VecDoub *)
+    -> INLINE: (475,42) NRvector<double>::NRvector(NRvector<double> *, const NRvector<double> &)
+    -> (475,42) NRvector<double>::~NRvector(NRvector<double> *)
+    -> INLINE: (476,3) NRvector<double>::~NRvector(NRvector<double> *)
+  -> INLINE: (531,7) NNetOutput(const int *, const double *, int, double &, int)
+    -> (461,3) evaluate_nnet()
+    -> INLINE: (465,18) NRvector<double>::NRvector(NRvector<double> *, int)
+    -> (465,18) NRvector<double>::~NRvector(NRvector<double> *)
+    -> INLINE: (469,11) NRvector<double>::operator[](NRvector<double> *, int)
+    -> INLINE: (472,13) NRvector<double>::operator[](NRvector<double> *, int)
+    -> INLINE: (475,5) NRvector<double>::~NRvector(NRvector<double> *)
+    -> (475,10) Atomic_Eng(const int *, const double *, int, const VecDoub *)
+    -> INLINE: (475,42) NRvector<double>::NRvector(NRvector<double> *, const NRvector<double> &)
+    -> (475,42) NRvector<double>::~NRvector(NRvector<double> *)
+    -> INLINE: (476,3) NRvector<double>::~NRvector(NRvector<double> *)
+  -> (534,7) errmsg(const char *, const char *, const char *, int)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at NNetInterface.cpp(525,5)
+   remark #25401: memcopy(with guard) generated
+   remark #15398: loop was not vectorized: loop was transformed to memset or memcpy
+
+   LOOP BEGIN at NNetInterface.cpp(525,5)
+   <Multiversioned v2>
+      remark #15304: loop was not vectorized: non-vectorizable loop instance from multiversioning
+      remark #25439: unrolled with remainder by 2  
+   LOOP END
+
+   LOOP BEGIN at NNetInterface.cpp(525,5)
+   <Remainder, Multiversioned v2>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at NNetInterface.cpp(468,21) inlined into NNetInterface.cpp(528,7)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+
+LOOP BEGIN at NNetInterface.cpp(471,7) inlined into NNetInterface.cpp(528,7)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+
+LOOP BEGIN at nrvector.h(68,5) inlined into NNetInterface.cpp(528,7)
+   remark #25401: memcopy(with guard) generated
+   remark #15398: loop was not vectorized: loop was transformed to memset or memcpy
+
+   LOOP BEGIN at nrvector.h(68,5) inlined into NNetInterface.cpp(528,7)
+   <Multiversioned v2>
+      remark #15304: loop was not vectorized: non-vectorizable loop instance from multiversioning
+      remark #25439: unrolled with remainder by 2  
+   LOOP END
+
+   LOOP BEGIN at nrvector.h(68,5) inlined into NNetInterface.cpp(528,7)
+   <Remainder, Multiversioned v2>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at NNetInterface.cpp(468,21) inlined into NNetInterface.cpp(531,7)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+
+LOOP BEGIN at NNetInterface.cpp(471,7) inlined into NNetInterface.cpp(531,7)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+
+LOOP BEGIN at nrvector.h(68,5) inlined into NNetInterface.cpp(531,7)
+   remark #25401: memcopy(with guard) generated
+   remark #15398: loop was not vectorized: loop was transformed to memset or memcpy
+
+   LOOP BEGIN at nrvector.h(68,5) inlined into NNetInterface.cpp(531,7)
+   <Multiversioned v2>
+      remark #15304: loop was not vectorized: non-vectorizable loop instance from multiversioning
+      remark #25439: unrolled with remainder by 2  
+   LOOP END
+
+   LOOP BEGIN at nrvector.h(68,5) inlined into NNetInterface.cpp(531,7)
+   <Remainder, Multiversioned v2>
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at NNetInterface.cpp(523,3)
+   remark #15341: loop was not vectorized: nonstandard loop is not a vectorization candidate
+LOOP END
+
+    Report from: Code generation optimizations [cg]
+
+NNetInterface.cpp(525,32):remark #34026: call to memcpy implemented as a call to optimized library version
+nrvector.h(68,30):remark #34026: call to memcpy implemented as a call to optimized library version
+nrvector.h(68,30):remark #34026: call to memcpy implemented as a call to optimized library version
+===========================================================================
+
+Begin optimization report for: iNNET_Eng(const double *, const double *, int)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (iNNET_Eng(const double *, const double *, int)) [42] NNetInterface.cpp(573,1)
+  -> (580,5) errmsg(const char *, const char *, const char *, int)
+  -> (589,3) evaluate_nnet()
+  -> (596,16) NRvector<double>::~NRvector(NRvector<double> *)
+  -> INLINE: (596,16) NRvector<double>::NRvector(NRvector<double> *, int)
+  -> INLINE: (597,31) NRvector<double>::operator[](NRvector<double> *, int)
+  -> (599,19) specific_bop_constraint(VecDoub &)
+  -> INLINE: (600,19) mean_sqr(const VecDoub &, double)
+    -> INLINE: compute.cpp:(1354,21) NRvector<double>::size(const NRvector<double> *) const
+    -> INLINE: compute.cpp:(1354,21) NRvector<double>::size(const NRvector<double> *) const
+    -> INLINE: compute.cpp:(1354,42) NRvector<double>::operator[](const NRvector<double> *, int) const
+    -> INLINE: compute.cpp:(1354,47) NRvector<double>::operator[](const NRvector<double> *, int) const
+    -> INLINE: compute.cpp:(1355,18) NRvector<double>::size(const NRvector<double> *) const
+  -> (602,15) iEnergy(int, const double *, const VecDoub &)
+  -> INLINE: (604,3) NRvector<double>::~NRvector(NRvector<double> *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at NNetInterface.cpp(586,3)
+   remark #25401: memcopy(with guard) generated
+   remark #15398: loop was not vectorized: loop was transformed to memset or memcpy
+
+   LOOP BEGIN at NNetInterface.cpp(586,3)
+   <Multiversioned v2>
+      remark #15304: loop was not vectorized: non-vectorizable loop instance from multiversioning
+      remark #25439: unrolled with remainder by 2  
+   LOOP END
+
+   LOOP BEGIN at NNetInterface.cpp(586,3)
+   <Remainder, Multiversioned v2>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at NNetInterface.cpp(597,3)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+
+LOOP BEGIN at compute.cpp(1354,21) inlined into NNetInterface.cpp(600,19)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+
+    Report from: Code generation optimizations [cg]
+
+NNetInterface.cpp(586,30):remark #34026: call to memcpy implemented as a call to optimized library version
+===========================================================================
+
+Begin optimization report for: iNNET_Eng(const double *, const double *, int, VecDoub &)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (iNNET_Eng(const double *, const double *, int, VecDoub &)) [43] NNetInterface.cpp(610,1)
+  -> (616,3) evaluate_nnet()
+  -> INLINE: (627,33) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (629,33) NRvector<double>::operator[](NRvector<double> *, int)
+  -> (632,15) iEnergy(int, const double *, const VecDoub &)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at NNetInterface.cpp(614,3)
+   remark #25401: memcopy(with guard) generated
+   remark #15398: loop was not vectorized: loop was transformed to memset or memcpy
+
+   LOOP BEGIN at NNetInterface.cpp(614,3)
+   <Multiversioned v2>
+      remark #15304: loop was not vectorized: non-vectorizable loop instance from multiversioning
+      remark #25439: unrolled with remainder by 2  
+   LOOP END
+
+   LOOP BEGIN at NNetInterface.cpp(614,3)
+   <Remainder, Multiversioned v2>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at NNetInterface.cpp(627,5)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+
+LOOP BEGIN at NNetInterface.cpp(629,5)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+
+    Report from: Code generation optimizations [cg]
+
+NNetInterface.cpp(614,30):remark #34026: call to memcpy implemented as a call to optimized library version
+===========================================================================
+
+Begin optimization report for: __sti__$E()
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (__sti__$E()) [44] <compiler generated>
+
+===========================================================================
+
+Begin optimization report for: create<Struc_Data>(Struc_Data *&, int, const char *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (create<Struc_Data>(Struc_Data *&, int, const char *)) mem.h(14,1)
+
+===========================================================================
+
+Begin optimization report for: create<char>(char **&, int, int, const char *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (create<char>(char **&, int, int, const char *)) mem.h(40,1)
+
+===========================================================================
+
+Begin optimization report for: grow<Struc_Data>(Struc_Data *&, int, const char *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (grow<Struc_Data>(Struc_Data *&, int, const char *)) mem.h(26,1)
+
+===========================================================================
+
+Begin optimization report for: read_Modified_Gis(char *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (read_Modified_Gis(char *)) [101] readinput.cpp(635,1)
+  -> INLINE: (636,17) std::basic_ifstream<char, std::char_traits<char>>::basic_ifstream(std::basic_ifstream<char, std::char_traits<char>> *const)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (637,6) std::basic_ifstream<char, std::char_traits<char>>::open(std::basic_ifstream<char, std::char_traits<char>> *, const char *, std::ios_base::openmode)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (638,7) std::basic_ios<char, std::char_traits<char>>::operator!(const std::basic_ios<char, std::char_traits<char>> *) const
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> (641,5) errmsg(const char *, const char *, const char *, int)
+  -> INLINE: (648,16) std::fpos<mbstate_t>::operator std::streamoff(const std::fpos<mbstate_t> *) const
+  -> INLINE: (656,6) std::basic_ifstream<char, std::char_traits<char>>::close(std::basic_ifstream<char, std::char_traits<char>> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (658,15) std::basic_string<char, std::char_traits<char>, std::allocator<char>>::~basic_string(std::basic_string<char, std::char_traits<char>, std::allocator<char>> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (658,15) std::basic_string<char, std::char_traits<char>, std::allocator<char>>::basic_string(std::basic_string<char, std::char_traits<char>, std::allocator<char>> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (659,8) std::basic_string<char, std::char_traits<char>, std::allocator<char>>::assign(std::basic_string<char, std::char_traits<char>, std::allocator<char>> *, const char *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (660,21) std::basic_stringstream<char, std::char_traits<char>, std::allocator<char>>::basic_stringstream(std::basic_stringstream<char, std::char_traits<char>, std::allocator<char>> *const, std::ios_base::openmode)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (661,6) std::basic_stringstream<char, std::char_traits<char>, std::allocator<char>>::str(std::basic_stringstream<char, std::char_traits<char>, std::allocator<char>> *, const std::basic_stringstream<char, std::char_traits<char>, std::allocator<char>>::__string_type &)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (665,15) std::basic_string<char, std::char_traits<char>, std::allocator<char>>::~basic_string(std::basic_string<char, std::char_traits<char>, std::allocator<char>> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (665,15) std::basic_string<char, std::char_traits<char>, std::allocator<char>>::basic_string(std::basic_string<char, std::char_traits<char>, std::allocator<char>> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (666,21) std::basic_stringstream<char, std::char_traits<char>, std::allocator<char>>::basic_stringstream(std::basic_stringstream<char, std::char_traits<char>, std::allocator<char>> *const, std::ios_base::openmode)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (667,15) std::basic_string<char, std::char_traits<char>, std::allocator<char>>::~basic_string(std::basic_string<char, std::char_traits<char>, std::allocator<char>> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (667,15) std::basic_string<char, std::char_traits<char>, std::allocator<char>>::basic_string(std::basic_string<char, std::char_traits<char>, std::allocator<char>> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (670,26) create<double>(double *&, int, const char *)
+    -> INLINE: mem.h:(16,17) smalloc(int, const char *)
+  -> INLINE: (673,7) std::getline<char, std::char_traits<char>, std::allocator<char>>(std::basic_istream<char, std::char_traits<char>> &, std::basic_string<char, std::char_traits<char>, std::allocator<char>> &)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (674,11) std::basic_stringstream<char, std::char_traits<char>, std::allocator<char>>::str(std::basic_stringstream<char, std::char_traits<char>, std::allocator<char>> *, const std::basic_stringstream<char, std::char_traits<char>, std::allocator<char>>::__string_type &)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (680,46) atof(const char *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (680,56) std::basic_string<char, std::char_traits<char>, std::allocator<char>>::c_str(const std::basic_string<char, std::char_traits<char>, std::allocator<char>> *) const
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (684,3) std::basic_ifstream<char, std::char_traits<char>>::~basic_ifstream(std::basic_ifstream<char, std::char_traits<char>> *const)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (684,3) std::basic_string<char, std::char_traits<char>, std::allocator<char>>::~basic_string(std::basic_string<char, std::char_traits<char>, std::allocator<char>> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (684,3) std::basic_string<char, std::char_traits<char>, std::allocator<char>>::~basic_string(std::basic_string<char, std::char_traits<char>, std::allocator<char>> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (684,3) std::basic_string<char, std::char_traits<char>, std::allocator<char>>::~basic_string(std::basic_string<char, std::char_traits<char>, std::allocator<char>> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (684,3) std::basic_stringstream<char, std::char_traits<char>, std::allocator<char>>::~basic_stringstream(std::basic_stringstream<char, std::char_traits<char>, std::allocator<char>> *const)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (684,3) std::basic_stringstream<char, std::char_traits<char>, std::allocator<char>>::~basic_stringstream(std::basic_stringstream<char, std::char_traits<char>, std::allocator<char>> *const)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at readinput.cpp(678,7)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at readinput.cpp(669,3)
+   remark #15536: loop was not vectorized: inner loop throttling prevents vectorization of this outer loop. Refer to inner loop message for more details.
+
+   LOOP BEGIN at readinput.cpp(672,5)
+      remark #15341: loop was not vectorized: nonstandard loop is not a vectorization candidate
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: __sti__$E()
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (__sti__$E()) [102] <compiler generated>
+  -> INLINE: /usr/include/c++/4.8.5/iostream:(74,25) __sti__StepVec()
+    -> INLINE: globals.cpp:(142,9) NRvector<double>::NRvector(NRvector<double> *)
+  -> INLINE: /usr/include/c++/4.8.5/iostream:(74,25) __sti__ParamVec()
+    -> INLINE: globals.cpp:(140,9) NRvector<double>::NRvector(NRvector<double> *)
+  -> INLINE: /usr/include/c++/4.8.5/iostream:(74,25) __sti__MatB()
+    -> INLINE: globals.cpp:(46,9) NRmatrix<Doub>::NRmatrix(NRmatrix<Doub> *)
+  -> INLINE: /usr/include/c++/4.8.5/iostream:(74,25) __sti__MatA()
+    -> INLINE: globals.cpp:(44,9) NRmatrix<Doub>::NRmatrix(NRmatrix<Doub> *)
+
+===========================================================================
+
+Begin optimization report for: NRmatrix<Doub>::NRmatrix(NRmatrix<Doub> *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (NRmatrix<Doub>::NRmatrix(NRmatrix<Doub> *)) nrmatrix.h(141,49)
+
+===========================================================================
+
+Begin optimization report for: NRvector<double>::NRvector(NRvector<double> *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (NRvector<double>::NRvector(NRvector<double> *)) nrvector.h(18,14)
+
+===========================================================================
+
+Begin optimization report for: grow<char>(char *&, int, const char *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (grow<char>(char *&, int, const char *)) mem.h(26,1)
+
+===========================================================================
+
+Begin optimization report for: destroy<char>(char **)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (destroy<char>(char **)) mem.h(83,1)
+
+===========================================================================
+
+Begin optimization report for: create<char>(char *&, int, const char *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (create<char>(char *&, int, const char *)) mem.h(14,1)
+
+===========================================================================
+
+Begin optimization report for: __sti__MatA()
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (__sti__MatA()) <compiler generated>
+
+===========================================================================
+
+Begin optimization report for: __sti__MatB()
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (__sti__MatB()) <compiler generated>
+
+===========================================================================
+
+Begin optimization report for: __sti__ParamVec()
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (__sti__ParamVec()) <compiler generated>
+
+===========================================================================
+
+Begin optimization report for: __sti__StepVec()
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (__sti__StepVec()) <compiler generated>
+
+===========================================================================
+
+Begin optimization report for: __sti__$E()
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (__sti__$E()) [113] <compiler generated>
+
+===========================================================================
+
+Begin optimization report for: NRvector<double>::assign(NRvector<double> *, int, const double *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (NRvector<double>::assign(NRvector<double> *, int, const double *)) nrvector.h(133,1)
+
+===========================================================================
+
+Begin optimization report for: NRmatrix<Doub>::assign(NRmatrix<Doub> *, int, int, const Doub &)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (NRmatrix<Doub>::assign(NRmatrix<Doub> *, int, int, const Doub &)) nrmatrix.h(272,1)
+
+===========================================================================
+
+Begin optimization report for: create<Atom>(Atom *&, int, const char *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (create<Atom>(Atom *&, int, const char *)) mem.h(14,1)
+
+===========================================================================
+
+Begin optimization report for: grow<Atom>(Atom *&, int, const char *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (grow<Atom>(Atom *&, int, const char *)) mem.h(26,1)
+
+===========================================================================
+
+Begin optimization report for: ran1(long *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (ran1(long *)) [118] ran1.cpp(9,1)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at ran1.cpp(22,5)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed OUTPUT dependence between idum line 25 and idum line 24
+LOOP END
+===========================================================================
+
+    Report from: Profile guided optimizations [pgo]
+
+
+
+Profile feedback used a statically estimated profile for the following routines:
+
+  File: <compiler generated>
+        __sti__$E()
+        __sti__$E()
+        __sti__$E()
+        __sti__$E()
+
+  File: /usr/include/c++/4.8.5/ext/atomicity.h
+        __gnu_cxx::__exchange_and_add_dispatch(_Atomic_word *, int)(79)
+
+  File: /usr/include/c++/4.8.5/ext/new_allocator.h
+        __gnu_cxx::new_allocator<char>::new_allocator(__gnu_cxx::new_allocator<char> *const, const __gnu_cxx::new_allocator<char> &)(81)
+
+  File: /usr/include/c++/4.8.5/iosfwd
+        std::basic_stringbuf<char, std::char_traits<char>, std::allocator<char>>::~basic_stringbuf(std::basic_stringbuf<char, std::char_traits<char>, std::allocator<char>> *)(93)
+
+  File: NNetInterface.cpp
+        evaluate_nnet()(14)
+        PartitionNNetParams(VecDoub &)(61)
+        ReadNNetParams(const char *, VecDoub &, VecDoub &, double &)(92)
+        NNetOutput(double &, int)(451)
+        NNetOutput(const int *, const double *, int, double &, int)(460)
+        NNET_Eng(const double *, int)(481)
+        NNET_Eng(const double *, int, int)(509)
+        NNET_Eng(const double *, const int *, const double *, int)(548)
+        iNNET_Eng(const double *, const double *, int)(573)
+        iNNET_Eng(const double *, const double *, int, VecDoub &)(610)
+
+  File: globals.cpp
+        count_words(const char *)(186)
+        freemem()(212)
+
+  File: mpi_stuff.cpp
+        mpi_send_dummy()(10)
+        mpi_exchange_master_nnet(VecDoub &)(20)
+        mpi_exchange_slaves_nnet()(227)
+        mpi_dist_data3()(634)
+
+  File: ran1.cpp
+        ran1(long *)(9)
+
+  File: readinput.cpp
+        CreateNeighborList()(19)
+        ReadDatabase(const char *)(107)
+        readinput(const char *)(205)
+        ReadBOPParam(const char *)(401)
+        ReadData(const char *, Struc_Data *&, int &, int &)(453)
+        CreateNeighborList(Struc_Data *&, int)(549)
+        read_Modified_Gis(char *)(635)
+        read_Modified_Gis_cpus(char *)(688)
+
+
+  0 out of 32 routine(s) used training profile data for PGO feedback
+  0 out of 32 routine(s) were unable to use training profile data for PGO feedback
+  0 out of 32 routine(s) were unable to find training profile data for PGO feedback
+  32 out of 32 routine(s) used a static estimate profile for PGO feedback
+
+
+

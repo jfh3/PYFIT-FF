@@ -1,0 +1,26 @@
+CC = mpicc
+# For compiling without NLopt packages
+CFLAGS = -w3 -w2 -Wcheck -debug extended -g -align -fPIC -std=c++11 -xSSE4.2 \
+	-qopt-report-file=compile.txt -fp-model fast=5 -fast
+LDFLAGS = -mkl #-static-intel -static-libstdc++
+# For compiling with NLopt packages
+#CFLAGS = -I$(HOME)/install_nlopt/include -Wall -g -align -std=c++11 -fPIC -xSSE4.2 -qopt-report-file=compile.txt \
+#	-fp-model fast=5 -fast
+#LDFLAGS = -mkl -lnlopt_cxx -L$(HOME)/install_nlopt/lib64
+SOURCES = $(wildcard *.cpp)
+OBJECTS = $(SOURCES:.cpp=.o)
+EXECUTABLE = fit
+
+all: $(SOURCES) $(EXECUTABLE)
+
+$(EXECUTABLE): $(OBJECTS)
+	$(CC) $(OBJECTS) -o $@ $(LDFLAGS)
+
+-include $(OBJECTS:.o=.d)
+
+.cpp.o:
+	$(CC) $(CFLAGS) -c $<
+	$(CC) -MM $(CFLAGS) $< > $*.d
+
+clean:
+	rm -fv $(OBJECTS) $(EXECUTABLE) *.d

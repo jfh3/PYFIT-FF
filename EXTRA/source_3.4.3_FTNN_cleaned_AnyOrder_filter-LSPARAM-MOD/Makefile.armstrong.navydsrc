@@ -1,0 +1,22 @@
+# use cc for C and C++
+CC = cc
+CFLAGS = -Wall -g -O3 -fPIC -ax -ipo -static -axCORE-AVX2 -axSSE4.2 -opt-report 3 -vec-report6 \
+       -opt-report-file=compile.txt -Ofast -fp-model fast=2
+LDFLAGS = -mkl
+SOURCES = $(wildcard *.cpp)
+OBJECTS = $(SOURCES:.cpp=.o)
+EXECUTABLE = fit
+
+all: $(SOURCES) $(EXECUTABLE)
+
+$(EXECUTABLE): $(OBJECTS)
+	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
+
+-include $(OBJECTS:.o=.d)
+
+.cpp.o:
+	$(CC) $(CFLAGS) -c $<
+	$(CC) -MM $(CFLAGS) $< > $*.d
+
+clean:
+	rm -fv $(OBJECTS) $(EXECUTABLE) *.d

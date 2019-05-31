@@ -4,12 +4,10 @@
 #------------------------------------------------------------------------
 
 ##INPUT FILES 
-path1='input/Rc5.0-Tc0.5-NEW-Gi-SET-1-NN';   pot_type='NN'    #small    #ERR=3.712303 
-#path1='input/Rc5.0-Tc0.5-NEW-Gi-EOS-NN';  pot_type='NN'    #medium   #ERR=3.746911
-#path1='input/Rc5.0-Tc0.5-NEW-Gi-SET-AB-NN'; pot_type='NN'    #large    #ERR=4.423966
+path1='input/Rc4.5-Tc1.0-Gi2-EOS-NN';   pot_type='NN'    #4.146813
 
 NN_file=str(path1)+'/nn1.dat'
-LSPARAM_file=str(path1)+'/LSParam-mod.dat' 
+LSPARAM_file=str(path1)+'/LSParam.dat' 
 
 #OUTPUT PATHS
 outdir='output'  #name of output directory

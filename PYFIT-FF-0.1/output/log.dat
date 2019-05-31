@@ -1,0 +1,24 @@
+# CUDA AVAILABLE
+# NUM THREADS=10
+# READING NN FILE FROM FILE: input/Rc4.5-Tc1.0-Gi2-EOS-NN/nn1.dat
+# INPUT VARIABLES
+# 	pot_type=NN
+# 	wb_bnd=0.1
+# 	e_shift=0.0
+# 	NNlayers=[40, 16, 16, 1]
+# 	Activation function type=1 (0=sigmoid)(1=sigmoid-0.5)
+# 	Number of fitting param (weights+bias)=945
+# 	Gi ro locations=[1.5, 1.86, 2.21, 2.57, 2.93, 3.29, 3.64, 4.0]
+# 	Gi sigma=1.0
+# 	Gi_type=1
+# 	Gi_shift=0.5
+# 	Rc (cutoff distance)=4.5
+# 	Tc (cutoff truncation range)=0.9541
+# 	SUBMATRIX-SIZES: torch.Size([16, 40]) torch.Size([16, 1]) torch.Size([16, 16]) torch.Size([16, 1]) torch.Size([1, 16]) torch.Size([1, 1])
+# READING NB LIST FROM FILE: input/Rc4.5-Tc1.0-Gi2-EOS-NN/LSParam.dat
+# 	TIME TO READ LSPARAM FILE(sec): 0.4618213176727295
+# 	FILE CONTAINS: N_STRUCTURES=1831    N_ATOMS=13794
+# 	BREAKING TOTAL SET INTO 100.0% TRAINING AND 0.0% VALIDATION
+# 		N_TRAIN_STRCT=1831 N_TEST_STRCT=0
+#iteration  RMSE(eV/atom)  time(s)
+ALG=LBFGS LR=0.01

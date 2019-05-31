@@ -83,7 +83,7 @@ RMSE=1000; t=0;  batch_i=Nbatch-1; #send(batch_i)  #SEND ARRAYS TO GPU
 max_iter=100
 
 #OPTIMIZATION CHOICE
-alpha=0.1 #LEARNING RATE
+alpha=0.01 #LEARNING RATE
 opt_alg='LBFGS' #FITTING ALG
 #opt_alg='MISC'
 

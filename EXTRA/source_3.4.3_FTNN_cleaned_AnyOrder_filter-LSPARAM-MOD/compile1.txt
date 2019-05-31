@@ -1,0 +1,3466 @@
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINING OPTION VALUES:
+  -inline-factor: 100
+  -inline-min-size: 30
+  -inline-max-size: 230
+  -inline-max-total-size: 2000
+  -inline-max-per-routine: disabled
+  -inline-max-per-compile: disabled
+
+
+Begin optimization report for: set_struc(const char *, double, int &)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (set_struc(const char *, double, int &)) [1] crystal_struc.cpp(14,1)
+  -> (19,5) dimer(double, int &)
+  -> (24,5) fcc(double, int &)
+  -> (29,5) bcc(double, int &)
+  -> (34,5) A15(double, int &)
+  -> (39,5) diam(double, int &)
+  -> (44,5) betatin(double, int &)
+  -> (49,5) sc(double, int &)
+  -> (54,5) wurtzite(double, int &)
+  -> (59,5) hex(double, int &)
+  -> (64,5) hcp(double, int &)
+  -> (69,5) trimerD3h(double, int &)
+  -> (74,5) trimerD3h(double, int &)
+  -> (79,5) trimerC2v(double, int &)
+  -> (84,5) tetramerDih(double, int &)
+  -> (89,5) tetramerD4h(double, int &)
+  -> (94,5) tetramerTd(double, int &)
+  -> (99,5) pentamerD5h(double, int &)
+  -> (104,5) BC8(double, int &)
+  -> (109,5) ST12(double, int &)
+  -> (114,5) cP46(double, int &)
+  -> (119,5) graphitic(double, int &)
+  -> (125,5) errmsg(const char *, const char *, const char *, int)
+
+===========================================================================
+
+Begin optimization report for: trimerD3h(double, int &)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (trimerD3h(double, int &)) [2] crystal_struc.cpp(411,1)
+  -> INLINE: (419,32) create<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(42,27) smalloc(int, const char *)
+    -> INLINE: mem.h:(44,23) smalloc(int, const char *)
+  -> INLINE: (420,17) grow<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(62,31) create<double>(double **&, int, int, const char *)
+      -> INLINE: (42,27) smalloc(int, const char *)
+      -> INLINE: (44,23) smalloc(int, const char *)
+    -> INLINE: mem.h:(65,27) srealloc(void *, int, const char *)
+    -> INLINE: mem.h:(67,23) srealloc(void *, int, const char *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(419,32)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25436: completely unrolled by 3  
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(420,17)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 71 and basis0 line 71
+   remark #25436: completely unrolled by 3  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(420,17)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25436: completely unrolled by 3  
+LOOP END
+===========================================================================
+
+Begin optimization report for: dimer(double, int &)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (dimer(double, int &)) [3] crystal_struc.cpp(760,1)
+  -> INLINE: (768,25) create<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(42,27) smalloc(int, const char *)
+    -> INLINE: mem.h:(44,23) smalloc(int, const char *)
+  -> INLINE: (769,17) grow<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(62,31) create<double>(double **&, int, int, const char *)
+      -> INLINE: (42,27) smalloc(int, const char *)
+      -> INLINE: (44,23) smalloc(int, const char *)
+    -> INLINE: mem.h:(65,27) srealloc(void *, int, const char *)
+    -> INLINE: mem.h:(67,23) srealloc(void *, int, const char *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(768,25)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25436: completely unrolled by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(769,17)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 71 and basis0 line 71
+   remark #25436: completely unrolled by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(769,17)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25436: completely unrolled by 2  
+LOOP END
+===========================================================================
+
+Begin optimization report for: fcc(double, int &)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (fcc(double, int &)) [4] crystal_struc.cpp(572,1)
+  -> INLINE: (578,25) create<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(42,27) smalloc(int, const char *)
+    -> INLINE: mem.h:(44,23) smalloc(int, const char *)
+  -> INLINE: (579,17) grow<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(62,31) create<double>(double **&, int, int, const char *)
+      -> INLINE: (42,27) smalloc(int, const char *)
+      -> INLINE: (44,23) smalloc(int, const char *)
+    -> INLINE: mem.h:(65,27) srealloc(void *, int, const char *)
+    -> INLINE: mem.h:(67,23) srealloc(void *, int, const char *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(578,25)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25436: completely unrolled by 4  
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(579,17)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 71 and basis0 line 71
+   remark #25436: completely unrolled by 4  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(579,17)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25436: completely unrolled by 4  
+LOOP END
+===========================================================================
+
+Begin optimization report for: bcc(double, int &)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (bcc(double, int &)) [5] crystal_struc.cpp(706,1)
+  -> INLINE: (710,25) create<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(42,27) smalloc(int, const char *)
+    -> INLINE: mem.h:(44,23) smalloc(int, const char *)
+  -> INLINE: (711,17) grow<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(62,31) create<double>(double **&, int, int, const char *)
+      -> INLINE: (42,27) smalloc(int, const char *)
+      -> INLINE: (44,23) smalloc(int, const char *)
+    -> INLINE: mem.h:(65,27) srealloc(void *, int, const char *)
+    -> INLINE: mem.h:(67,23) srealloc(void *, int, const char *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(710,25)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25436: completely unrolled by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(711,17)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 71 and basis0 line 71
+   remark #25436: completely unrolled by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(711,17)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25436: completely unrolled by 2  
+LOOP END
+===========================================================================
+
+Begin optimization report for: A15(double, int &)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (A15(double, int &)) [6] crystal_struc.cpp(514,1)
+  -> INLINE: (523,30) create<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(42,27) smalloc(int, const char *)
+    -> INLINE: mem.h:(44,23) smalloc(int, const char *)
+  -> INLINE: (524,17) grow<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(62,31) create<double>(double **&, int, int, const char *)
+      -> INLINE: (42,27) smalloc(int, const char *)
+      -> INLINE: (44,23) smalloc(int, const char *)
+    -> INLINE: mem.h:(65,27) srealloc(void *, int, const char *)
+    -> INLINE: mem.h:(67,23) srealloc(void *, int, const char *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(523,30)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25436: completely unrolled by 8  
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(524,17)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 71 and basis0 line 71
+   remark #25436: completely unrolled by 8  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(524,17)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25436: completely unrolled by 8  
+LOOP END
+===========================================================================
+
+Begin optimization report for: diam(double, int &)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (diam(double, int &)) [7] crystal_struc.cpp(611,1)
+  -> INLINE: (617,25) create<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(42,27) smalloc(int, const char *)
+    -> INLINE: mem.h:(44,23) smalloc(int, const char *)
+  -> INLINE: (618,17) grow<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(62,31) create<double>(double **&, int, int, const char *)
+      -> INLINE: (42,27) smalloc(int, const char *)
+      -> INLINE: (44,23) smalloc(int, const char *)
+    -> INLINE: mem.h:(65,27) srealloc(void *, int, const char *)
+    -> INLINE: mem.h:(67,23) srealloc(void *, int, const char *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(617,25)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25436: completely unrolled by 8  
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(618,17)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 71 and basis0 line 71
+   remark #25436: completely unrolled by 8  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(618,17)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25436: completely unrolled by 8  
+LOOP END
+===========================================================================
+
+Begin optimization report for: betatin(double, int &)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (betatin(double, int &)) [8] crystal_struc.cpp(793,1)
+  -> INLINE: (800,25) create<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(42,27) smalloc(int, const char *)
+    -> INLINE: mem.h:(44,23) smalloc(int, const char *)
+  -> INLINE: (801,17) grow<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(62,31) create<double>(double **&, int, int, const char *)
+      -> INLINE: (42,27) smalloc(int, const char *)
+      -> INLINE: (44,23) smalloc(int, const char *)
+    -> INLINE: mem.h:(65,27) srealloc(void *, int, const char *)
+    -> INLINE: mem.h:(67,23) srealloc(void *, int, const char *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(800,25)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25436: completely unrolled by 4  
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(801,17)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 71 and basis0 line 71
+   remark #25436: completely unrolled by 4  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(801,17)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25436: completely unrolled by 4  
+LOOP END
+===========================================================================
+
+Begin optimization report for: sc(double, int &)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (sc(double, int &)) [9] crystal_struc.cpp(735,1)
+  -> INLINE: (739,25) create<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(42,27) smalloc(int, const char *)
+    -> INLINE: mem.h:(44,23) smalloc(int, const char *)
+  -> INLINE: (740,17) grow<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(62,31) create<double>(double **&, int, int, const char *)
+      -> INLINE: (42,27) smalloc(int, const char *)
+      -> INLINE: (44,23) smalloc(int, const char *)
+    -> INLINE: mem.h:(65,27) srealloc(void *, int, const char *)
+    -> INLINE: mem.h:(67,23) srealloc(void *, int, const char *)
+
+===========================================================================
+
+Begin optimization report for: wurtzite(double, int &)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (wurtzite(double, int &)) [10] crystal_struc.cpp(666,1)
+  -> INLINE: (673,25) create<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(42,27) smalloc(int, const char *)
+    -> INLINE: mem.h:(44,23) smalloc(int, const char *)
+  -> INLINE: (674,17) grow<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(62,31) create<double>(double **&, int, int, const char *)
+      -> INLINE: (42,27) smalloc(int, const char *)
+      -> INLINE: (44,23) smalloc(int, const char *)
+    -> INLINE: mem.h:(65,27) srealloc(void *, int, const char *)
+    -> INLINE: mem.h:(67,23) srealloc(void *, int, const char *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(673,25)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25436: completely unrolled by 4  
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(674,17)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 71 and basis0 line 71
+   remark #25436: completely unrolled by 4  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(674,17)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25436: completely unrolled by 4  
+LOOP END
+===========================================================================
+
+Begin optimization report for: hex(double, int &)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (hex(double, int &)) [11] crystal_struc.cpp(485,1)
+  -> INLINE: (493,30) create<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(42,27) smalloc(int, const char *)
+    -> INLINE: mem.h:(44,23) smalloc(int, const char *)
+  -> INLINE: (494,17) grow<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(62,31) create<double>(double **&, int, int, const char *)
+      -> INLINE: (42,27) smalloc(int, const char *)
+      -> INLINE: (44,23) smalloc(int, const char *)
+    -> INLINE: mem.h:(65,27) srealloc(void *, int, const char *)
+    -> INLINE: mem.h:(67,23) srealloc(void *, int, const char *)
+
+===========================================================================
+
+Begin optimization report for: hcp(double, int &)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (hcp(double, int &)) [12] crystal_struc.cpp(163,1)
+  -> INLINE: (173,32) create<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(42,27) smalloc(int, const char *)
+    -> INLINE: mem.h:(44,23) smalloc(int, const char *)
+  -> INLINE: (174,17) grow<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(62,31) create<double>(double **&, int, int, const char *)
+      -> INLINE: (42,27) smalloc(int, const char *)
+      -> INLINE: (44,23) smalloc(int, const char *)
+    -> INLINE: mem.h:(65,27) srealloc(void *, int, const char *)
+    -> INLINE: mem.h:(67,23) srealloc(void *, int, const char *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(173,32)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25436: completely unrolled by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(174,17)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 71 and basis0 line 71
+   remark #25436: completely unrolled by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(174,17)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25436: completely unrolled by 2  
+LOOP END
+===========================================================================
+
+Begin optimization report for: trimerC2v(double, int &)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (trimerC2v(double, int &)) [13] crystal_struc.cpp(372,1)
+  -> INLINE: (382,32) create<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(42,27) smalloc(int, const char *)
+    -> INLINE: mem.h:(44,23) smalloc(int, const char *)
+  -> INLINE: (383,17) grow<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(62,31) create<double>(double **&, int, int, const char *)
+      -> INLINE: (42,27) smalloc(int, const char *)
+      -> INLINE: (44,23) smalloc(int, const char *)
+    -> INLINE: mem.h:(65,27) srealloc(void *, int, const char *)
+    -> INLINE: mem.h:(67,23) srealloc(void *, int, const char *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(382,32)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25436: completely unrolled by 3  
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(383,17)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 71 and basis0 line 71
+   remark #25436: completely unrolled by 3  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(383,17)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25436: completely unrolled by 3  
+LOOP END
+===========================================================================
+
+Begin optimization report for: tetramerDih(double, int &)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (tetramerDih(double, int &)) [14] crystal_struc.cpp(288,1)
+  -> INLINE: (296,32) create<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(42,27) smalloc(int, const char *)
+    -> INLINE: mem.h:(44,23) smalloc(int, const char *)
+  -> INLINE: (297,17) grow<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(62,31) create<double>(double **&, int, int, const char *)
+      -> INLINE: (42,27) smalloc(int, const char *)
+      -> INLINE: (44,23) smalloc(int, const char *)
+    -> INLINE: mem.h:(65,27) srealloc(void *, int, const char *)
+    -> INLINE: mem.h:(67,23) srealloc(void *, int, const char *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(296,32)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25436: completely unrolled by 4  
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(297,17)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 71 and basis0 line 71
+   remark #25436: completely unrolled by 4  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(297,17)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25436: completely unrolled by 4  
+LOOP END
+===========================================================================
+
+Begin optimization report for: tetramerD4h(double, int &)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (tetramerD4h(double, int &)) [15] crystal_struc.cpp(329,1)
+  -> INLINE: (339,32) create<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(42,27) smalloc(int, const char *)
+    -> INLINE: mem.h:(44,23) smalloc(int, const char *)
+  -> INLINE: (340,17) grow<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(62,31) create<double>(double **&, int, int, const char *)
+      -> INLINE: (42,27) smalloc(int, const char *)
+      -> INLINE: (44,23) smalloc(int, const char *)
+    -> INLINE: mem.h:(65,27) srealloc(void *, int, const char *)
+    -> INLINE: mem.h:(67,23) srealloc(void *, int, const char *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(339,32)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25436: completely unrolled by 4  
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(340,17)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 71 and basis0 line 71
+   remark #25436: completely unrolled by 4  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(340,17)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25436: completely unrolled by 4  
+LOOP END
+===========================================================================
+
+Begin optimization report for: tetramerTd(double, int &)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (tetramerTd(double, int &)) [16] crystal_struc.cpp(245,1)
+  -> INLINE: (255,32) create<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(42,27) smalloc(int, const char *)
+    -> INLINE: mem.h:(44,23) smalloc(int, const char *)
+  -> INLINE: (256,17) grow<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(62,31) create<double>(double **&, int, int, const char *)
+      -> INLINE: (42,27) smalloc(int, const char *)
+      -> INLINE: (44,23) smalloc(int, const char *)
+    -> INLINE: mem.h:(65,27) srealloc(void *, int, const char *)
+    -> INLINE: mem.h:(67,23) srealloc(void *, int, const char *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(255,32)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25436: completely unrolled by 4  
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(256,17)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 71 and basis0 line 71
+   remark #25436: completely unrolled by 4  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(256,17)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25436: completely unrolled by 4  
+LOOP END
+===========================================================================
+
+Begin optimization report for: pentamerD5h(double, int &)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (pentamerD5h(double, int &)) [17] crystal_struc.cpp(198,1)
+  -> INLINE: (208,32) create<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(42,27) smalloc(int, const char *)
+    -> INLINE: mem.h:(44,23) smalloc(int, const char *)
+  -> INLINE: (209,17) grow<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(62,31) create<double>(double **&, int, int, const char *)
+      -> INLINE: (42,27) smalloc(int, const char *)
+      -> INLINE: (44,23) smalloc(int, const char *)
+    -> INLINE: mem.h:(65,27) srealloc(void *, int, const char *)
+    -> INLINE: mem.h:(67,23) srealloc(void *, int, const char *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(208,32)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25436: completely unrolled by 5  
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(209,17)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 71 and basis0 line 71
+   remark #25436: completely unrolled by 5  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(209,17)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25436: completely unrolled by 5  
+LOOP END
+===========================================================================
+
+Begin optimization report for: BC8(double, int &)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (BC8(double, int &)) [18] crystal_struc.cpp(994,1)
+  -> INLINE: (999,25) create<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(42,27) smalloc(int, const char *)
+    -> INLINE: mem.h:(44,23) smalloc(int, const char *)
+  -> INLINE: (1000,17) grow<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(62,31) create<double>(double **&, int, int, const char *)
+      -> INLINE: (42,27) smalloc(int, const char *)
+      -> INLINE: (44,23) smalloc(int, const char *)
+    -> INLINE: mem.h:(65,27) srealloc(void *, int, const char *)
+    -> INLINE: mem.h:(67,23) srealloc(void *, int, const char *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(999,25)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25436: completely unrolled by 16  
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(1000,17)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 71 and basis0 line 71
+   remark #25436: completely unrolled by 16  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(1000,17)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25436: completely unrolled by 16  
+LOOP END
+===========================================================================
+
+Begin optimization report for: ST12(double, int &)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (ST12(double, int &)) [19] crystal_struc.cpp(1080,1)
+  -> INLINE: (1087,25) create<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(42,27) smalloc(int, const char *)
+    -> INLINE: mem.h:(44,23) smalloc(int, const char *)
+  -> INLINE: (1088,17) grow<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(62,31) create<double>(double **&, int, int, const char *)
+      -> INLINE: (42,27) smalloc(int, const char *)
+      -> INLINE: (44,23) smalloc(int, const char *)
+    -> INLINE: mem.h:(65,27) srealloc(void *, int, const char *)
+    -> INLINE: mem.h:(67,23) srealloc(void *, int, const char *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(1087,25)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25436: completely unrolled by 12  
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(1088,17)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 71 and basis0 line 71
+   remark #25436: completely unrolled by 12  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(1088,17)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25436: completely unrolled by 12  
+LOOP END
+===========================================================================
+
+Begin optimization report for: cP46(double, int &)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (cP46(double, int &)) [20] crystal_struc.cpp(833,1)
+  -> INLINE: (838,25) create<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(42,27) smalloc(int, const char *)
+    -> INLINE: mem.h:(44,23) smalloc(int, const char *)
+  -> INLINE: (839,17) grow<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(62,31) create<double>(double **&, int, int, const char *)
+      -> INLINE: (42,27) smalloc(int, const char *)
+      -> INLINE: (44,23) smalloc(int, const char *)
+    -> INLINE: mem.h:(65,27) srealloc(void *, int, const char *)
+    -> INLINE: mem.h:(67,23) srealloc(void *, int, const char *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(838,25)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25438: unrolled without remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(839,17)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 71 and basis0 line 71
+   remark #25438: unrolled without remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(839,17)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25438: unrolled without remainder by 2  
+LOOP END
+===========================================================================
+
+Begin optimization report for: graphitic(double, int &)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (graphitic(double, int &)) [21] crystal_struc.cpp(132,1)
+  -> INLINE: (138,32) create<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(42,27) smalloc(int, const char *)
+    -> INLINE: mem.h:(44,23) smalloc(int, const char *)
+  -> INLINE: (139,17) grow<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(62,31) create<double>(double **&, int, int, const char *)
+      -> INLINE: (42,27) smalloc(int, const char *)
+      -> INLINE: (44,23) smalloc(int, const char *)
+    -> INLINE: mem.h:(65,27) srealloc(void *, int, const char *)
+    -> INLINE: mem.h:(67,23) srealloc(void *, int, const char *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(138,32)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25436: completely unrolled by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(139,17)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 71 and basis0 line 71
+   remark #25436: completely unrolled by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(139,17)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25436: completely unrolled by 2  
+LOOP END
+===========================================================================
+
+Begin optimization report for: set_dumbbell_int(const char *, const char *, double, int &)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (set_dumbbell_int(const char *, const char *, double, int &)) [22] crystal_struc.cpp(2835,1)
+  -> INLINE: (2913,34) create<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(42,27) smalloc(int, const char *)
+    -> INLINE: mem.h:(44,23) smalloc(int, const char *)
+  -> INLINE: (2914,19) grow<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(62,31) create<double>(double **&, int, int, const char *)
+      -> INLINE: (42,27) smalloc(int, const char *)
+      -> INLINE: (44,23) smalloc(int, const char *)
+    -> INLINE: mem.h:(65,27) srealloc(void *, int, const char *)
+    -> INLINE: mem.h:(67,23) srealloc(void *, int, const char *)
+  -> INLINE: (3071,34) create<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(42,27) smalloc(int, const char *)
+    -> INLINE: mem.h:(44,23) smalloc(int, const char *)
+  -> INLINE: (3072,19) grow<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(62,31) create<double>(double **&, int, int, const char *)
+      -> INLINE: (42,27) smalloc(int, const char *)
+      -> INLINE: (44,23) smalloc(int, const char *)
+    -> INLINE: mem.h:(65,27) srealloc(void *, int, const char *)
+    -> INLINE: mem.h:(67,23) srealloc(void *, int, const char *)
+  -> INLINE: (3141,7) WriteConfigs(const char *, const char *, double (*)[3], double **, int)
+  -> INLINE: (3148,7) WriteConfigs(const char *, const char *, double (*)[3], double **, int)
+  -> INLINE: (3155,7) WriteConfigs(const char *, const char *, double (*)[3], double **, int)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at crystal_struc.cpp(2899,5)
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at crystal_struc.cpp(2899,5)
+<Remainder>
+   remark #25436: completely unrolled by 1  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(2913,34)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(2913,34)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(2914,19)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 71 and basis0 line 71
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(2914,19)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(2914,19)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(2914,19)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at crystal_struc.cpp(2917,5)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed ANTI dependence between trans0 line 2921 and basis0 line 2927
+
+   LOOP BEGIN at crystal_struc.cpp(2918,7)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+      remark #15346: vector dependence: assumed ANTI dependence between trans0 line 2921 and basis0 line 2927
+
+      LOOP BEGIN at crystal_struc.cpp(2919,2)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+         remark #15346: vector dependence: assumed ANTI dependence between trans0 line 2921 and basis0 line 2927
+
+         LOOP BEGIN at crystal_struc.cpp(2920,4)
+            remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+            remark #15346: vector dependence: assumed ANTI dependence between trans0 line 2921 and basis0 line 2927
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at crystal_struc.cpp(2957,5)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+
+LOOP BEGIN at crystal_struc.cpp(3057,5)
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at crystal_struc.cpp(3057,5)
+<Remainder>
+   remark #25436: completely unrolled by 1  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(3071,34)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(3071,34)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(3072,19)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 71 and basis0 line 71
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(3072,19)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(3072,19)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(3072,19)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at crystal_struc.cpp(3075,5)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed ANTI dependence between trans0 line 3079 and basis0 line 3085
+
+   LOOP BEGIN at crystal_struc.cpp(3076,7)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+      remark #15346: vector dependence: assumed ANTI dependence between trans0 line 3079 and basis0 line 3085
+
+      LOOP BEGIN at crystal_struc.cpp(3077,2)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+         remark #15346: vector dependence: assumed ANTI dependence between trans0 line 3079 and basis0 line 3085
+
+         LOOP BEGIN at crystal_struc.cpp(3078,4)
+            remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+            remark #15346: vector dependence: assumed ANTI dependence between trans0 line 3079 and basis0 line 3085
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at crystal_struc.cpp(3115,5)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+
+LOOP BEGIN at write.cpp(775,3) inlined into crystal_struc.cpp(3141,7)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between element line 776 and basis0 line 776
+LOOP END
+
+LOOP BEGIN at write.cpp(775,3) inlined into crystal_struc.cpp(3148,7)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between element line 776 and basis0 line 776
+LOOP END
+
+LOOP BEGIN at write.cpp(775,3) inlined into crystal_struc.cpp(3155,7)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between element line 776 and basis0 line 776
+LOOP END
+===========================================================================
+
+Begin optimization report for: WriteLSP_mpi()
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (WriteLSP_mpi()) [23] write.cpp(998,1)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at write.cpp(1031,5)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+
+   LOOP BEGIN at write.cpp(1039,7)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+      remark #15346: vector dependence: assumed FLOW dependence between __GiList line 1040 and __GiList line 1040
+      remark #25439: unrolled with remainder by 2  
+   LOOP END
+
+   LOOP BEGIN at write.cpp(1039,7)
+   <Remainder>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at write.cpp(1048,5)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+
+   LOOP BEGIN at write.cpp(1051,7)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+      remark #15346: vector dependence: assumed ANTI dependence between atoms line 1052 and __GiList line 1052
+      remark #25439: unrolled with remainder by 2  
+   LOOP END
+
+   LOOP BEGIN at write.cpp(1051,7)
+   <Remainder>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at write.cpp(1062,3)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+
+LOOP BEGIN at write.cpp(1069,3)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+
+LOOP BEGIN at write.cpp(1073,3)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+
+LOOP BEGIN at write.cpp(1077,3)
+   remark #15527: loop was not vectorized: function call to fprintf(FILE *, const char *, ...) cannot be vectorized   [ write.cpp(1077,38) ]
+   remark #25436: completely unrolled by 8  
+LOOP END
+
+LOOP BEGIN at write.cpp(1081,3)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+
+LOOP BEGIN at write.cpp(1093,5)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+
+   LOOP BEGIN at write.cpp(1107,7)
+   <Predicate Optimized v1>
+      remark #25423: Condition at line 1110 hoisted out of this loop
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+      remark #15346: vector dependence: assumed ANTI dependence between sum2 line 1116 and sum2 line 1116
+   LOOP END
+
+   LOOP BEGIN at write.cpp(1107,7)
+   <Predicate Optimized v2>
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+      remark #15346: vector dependence: assumed ANTI dependence between sum2 line 1116 and sum2 line 1116
+   LOOP END
+LOOP END
+
+LOOP BEGIN at write.cpp(1128,5)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+
+   LOOP BEGIN at write.cpp(1131,7)
+      remark #25401: memcopy(with guard) generated
+      remark #15398: loop was not vectorized: loop was transformed to memset or memcpy
+
+      LOOP BEGIN at write.cpp(1131,7)
+      <Multiversioned v2>
+         remark #15304: loop was not vectorized: non-vectorizable loop instance from multiversioning
+         remark #25439: unrolled with remainder by 2  
+      LOOP END
+
+      LOOP BEGIN at write.cpp(1131,7)
+      <Remainder, Multiversioned v2>
+      LOOP END
+   LOOP END
+LOOP END
+
+    Report from: Code generation optimizations [cg]
+
+write.cpp(1132,2):remark #34026: call to memcpy implemented as a call to optimized library version
+===========================================================================
+
+Begin optimization report for: WriteMatrixFormat(FILE *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (WriteMatrixFormat(FILE *)) [24] write.cpp(538,1)
+  -> INLINE: (539,3) PartitionNNetParams(VecDoub &)
+    -> INLINE: NNetInterface.cpp:(70,43) NRvector<double>::operator[](NRvector<double> *, int)
+    -> INLINE: NNetInterface.cpp:(75,29) NRvector<double>::operator[](NRvector<double> *, int)
+    -> INLINE: NNetInterface.cpp:(79,14) NRvector<double>::size(const NRvector<double> *) const
+    -> INLINE: NNetInterface.cpp:(81,9) NRvector<double>::size(const NRvector<double> *) const
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at NNetInterface.cpp(69,7) inlined into write.cpp(539,3)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 2
+LOOP END
+
+LOOP BEGIN at NNetInterface.cpp(74,5) inlined into write.cpp(539,3)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+
+LOOP BEGIN at write.cpp(541,3)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at write.cpp(544,7)
+      remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+      remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+   LOOP END
+
+   LOOP BEGIN at write.cpp(549,7)
+      remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+
+      LOOP BEGIN at write.cpp(550,2)
+         remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+         remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+      LOOP END
+   LOOP END
+
+   LOOP BEGIN at write.cpp(554,7)
+      remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+      remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at NNetInterface.cpp(66,3) inlined into write.cpp(539,3)
+   remark #15536: loop was not vectorized: inner loop throttling prevents vectorization of this outer loop. Refer to inner loop message for more details.
+
+   LOOP BEGIN at NNetInterface.cpp(68,5) inlined into write.cpp(539,3)
+      remark #15341: loop was not vectorized: nonstandard loop is not a vectorization candidate
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: WriteHiddenLayerParam(FILE *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (WriteHiddenLayerParam(FILE *)) [25] write.cpp(617,1)
+  -> INLINE: (664,40) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (664,51) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (672,45) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (672,56) NRvector<double>::operator[](NRvector<double> *, int)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at write.cpp(624,3)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+
+LOOP BEGIN at write.cpp(632,3)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+
+LOOP BEGIN at write.cpp(637,3)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+
+LOOP BEGIN at write.cpp(642,3)
+   remark #15527: loop was not vectorized: function call to fprintf(FILE *, const char *, ...) cannot be vectorized   [ write.cpp(642,38) ]
+   remark #25436: completely unrolled by 8  
+LOOP END
+
+LOOP BEGIN at write.cpp(647,3)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+
+LOOP BEGIN at write.cpp(662,7)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+LOOP END
+
+LOOP BEGIN at write.cpp(670,5)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at write.cpp(659,3)
+   remark #15536: loop was not vectorized: inner loop throttling prevents vectorization of this outer loop. Refer to inner loop message for more details.
+
+   LOOP BEGIN at write.cpp(661,5)
+      remark #15341: loop was not vectorized: nonstandard loop is not a vectorization candidate
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: WriteBOPParam(FILE *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (WriteBOPParam(FILE *)) [26] write.cpp(681,1)
+  -> INLINE: (682,50) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (682,65) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (683,54) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (683,69) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (684,50) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (684,65) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (685,53) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (685,67) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (686,50) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (686,67) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (687,50) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (687,67) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (688,55) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (688,71) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (689,54) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (689,69) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (691,51) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (691,63) NRvector<double>::operator[](NRvector<double> *, int)
+
+===========================================================================
+
+Begin optimization report for: WriteNNetParam(FILE *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (WriteNNetParam(FILE *)) [27] write.cpp(570,1)
+  -> INLINE: (610,43) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (610,54) NRvector<double>::operator[](NRvector<double> *, int)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at write.cpp(579,3)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+
+LOOP BEGIN at write.cpp(588,3)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+
+LOOP BEGIN at write.cpp(593,3)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+
+LOOP BEGIN at write.cpp(598,3)
+   remark #15527: loop was not vectorized: function call to fprintf(FILE *, const char *, ...) cannot be vectorized   [ write.cpp(598,38) ]
+   remark #25436: completely unrolled by 8  
+LOOP END
+
+LOOP BEGIN at write.cpp(603,3)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+
+LOOP BEGIN at write.cpp(609,3)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+LOOP END
+===========================================================================
+
+Begin optimization report for: NRmatrix<Doub>::operator*(NRmatrix<Doub> *, NRmatrix<Doub> *, const NRmatrix<Doub> &)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (NRmatrix<Doub>::operator*(NRmatrix<Doub> *, NRmatrix<Doub> *, const NRmatrix<Doub> &)) [28] nrmatrix.h(427,1)
+  -> (428,22) NRmatrix<Doub>::~NRmatrix(NRmatrix<Doub> *)
+  -> INLINE: (428,22) NRmatrix<Doub>::NRmatrix(NRmatrix<Doub> *, int, int)
+  -> INLINE: (434,47) NRmatrix<Doub>::operator[](const NRmatrix<Doub> *, int) const
+  -> INLINE: (435,5) NRmatrix<Doub>::operator[](NRmatrix<Doub> *, int)
+  -> INLINE: (438,5) NRmatrix<Doub>::~NRmatrix(NRmatrix<Doub> *)
+  -> INLINE: (438,12) NRmatrix<Doub>::NRmatrix(NRmatrix<Doub> *, const NRmatrix<Doub> &)
+    -> INLINE: (175,59) NRmatrix<Doub>::operator[](const NRmatrix<Doub> *, int) const
+  -> INLINE: (442,3) NRmatrix<Doub>::~NRmatrix(NRmatrix<Doub> *)
+  -> INLINE: (442,11) NRmatrix<Doub>::NRmatrix(NRmatrix<Doub> *, const NRmatrix<Doub> &)
+    -> INLINE: (175,59) NRmatrix<Doub>::operator[](const NRmatrix<Doub> *, int) const
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at nrmatrix.h(148,3) inlined into nrmatrix.h(429,22)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between v line 148 and v line 148
+   remark #25439: unrolled with remainder by 2  
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 2
+LOOP END
+
+LOOP BEGIN at nrmatrix.h(148,3) inlined into nrmatrix.h(429,22)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at nrmatrix.h(431,5)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at nrmatrix.h(432,7)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at nrmatrix.h(434,2)
+      <Peeled>
+      LOOP END
+
+      LOOP BEGIN at nrmatrix.h(434,2)
+         remark #15300: LOOP WAS VECTORIZED
+      LOOP END
+
+      LOOP BEGIN at nrmatrix.h(434,2)
+      <Remainder>
+         remark #15301: REMAINDER LOOP WAS VECTORIZED
+      LOOP END
+
+      LOOP BEGIN at nrmatrix.h(434,2)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at nrmatrix.h(174,3) inlined into nrmatrix.h(439,12)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed ANTI dependence between __p1_29607 line 174 and this line 174
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at nrmatrix.h(174,3) inlined into nrmatrix.h(439,12)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at nrmatrix.h(175,3) inlined into nrmatrix.h(439,12)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed ANTI dependence between this line 175 and this line 175
+
+   LOOP BEGIN at nrmatrix.h(175,25) inlined into nrmatrix.h(439,12)
+      remark #25401: memcopy(with guard) generated
+      remark #15398: loop was not vectorized: loop was transformed to memset or memcpy
+
+      LOOP BEGIN at nrmatrix.h(175,25) inlined into nrmatrix.h(439,12)
+      <Multiversioned v2>
+         remark #15304: loop was not vectorized: non-vectorizable loop instance from multiversioning
+         remark #25439: unrolled with remainder by 2  
+      LOOP END
+
+      LOOP BEGIN at nrmatrix.h(175,25) inlined into nrmatrix.h(439,12)
+      <Remainder, Multiversioned v2>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at nrmatrix.h(174,3) inlined into nrmatrix.h(443,11)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed ANTI dependence between __p1_29607 line 174 and this line 174
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at nrmatrix.h(174,3) inlined into nrmatrix.h(443,11)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at nrmatrix.h(175,3) inlined into nrmatrix.h(443,11)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed ANTI dependence between this line 175 and this line 175
+
+   LOOP BEGIN at nrmatrix.h(175,25) inlined into nrmatrix.h(443,11)
+      remark #25401: memcopy(with guard) generated
+      remark #15398: loop was not vectorized: loop was transformed to memset or memcpy
+
+      LOOP BEGIN at nrmatrix.h(175,25) inlined into nrmatrix.h(443,11)
+      <Multiversioned v2>
+         remark #15304: loop was not vectorized: non-vectorizable loop instance from multiversioning
+         remark #25439: unrolled with remainder by 2  
+      LOOP END
+
+      LOOP BEGIN at nrmatrix.h(175,25) inlined into nrmatrix.h(443,11)
+      <Remainder, Multiversioned v2>
+      LOOP END
+   LOOP END
+LOOP END
+
+    Report from: Code generation optimizations [cg]
+
+nrmatrix.h(175,46):remark #34026: call to memcpy implemented as a call to optimized library version
+nrmatrix.h(175,46):remark #34026: call to memcpy implemented as a call to optimized library version
+===========================================================================
+
+Begin optimization report for: NewSort(double *, double **, int, int, int)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (NewSort(double *, double **, int, int, int)) [29] sorting_algo.cpp(13,1)
+  -> (14,20) std::vector<int, std::allocator<int>>::~vector(std::vector<int, std::allocator<int>> *)
+  -> (14,20) std::vector<int, std::allocator<int>>::vector(std::vector<int, std::allocator<int>> *)
+  -> INLINE: (15,30) __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>>::__normal_iterator(__gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>> *)
+  -> INLINE: (18,10) create<double>(double *&, int, const char *)
+    -> INLINE: mem.h:(16,17) smalloc(int, const char *)
+  -> INLINE: (19,10) create<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(42,27) smalloc(int, const char *)
+    -> INLINE: mem.h:(44,23) smalloc(int, const char *)
+  -> INLINE: (21,12) std::vector<int, std::allocator<int>>::push_back(std::vector<int, std::allocator<int>> *, std::vector<int, std::allocator<int>>::value_type &&)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (24,27) std::vector<int, std::allocator<int>>::begin(std::vector<int, std::allocator<int>> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (24,44) std::vector<int, std::allocator<int>>::end(std::vector<int, std::allocator<int>> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (24,59) locate(double, const double *, std::vector<int, std::allocator<int>>::iterator, std::vector<int, std::allocator<int>>::iterator, int)
+    -> INLINE: (61,30) __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>>::__normal_iterator(__gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>> *)
+    -> INLINE: (63,10) __gnu_cxx::operator-<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>>(const __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>> &, const __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>> &)
+       {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+    -> INLINE: (66,26) __gnu_cxx::operator-<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>>(const __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>> &, const __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>> &)
+       {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+    -> INLINE: (69,18) __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>>::operator+(const __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>> *, const __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>>::difference_type &) const
+       {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+    -> INLINE: (70,15) __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>>::operator*(const __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>> *) const
+    -> INLINE: (77,17) __gnu_cxx::operator-<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>>(const __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>> &, const __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>> &)
+       {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (26,18) __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>>::operator*(const __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>> *) const
+  -> INLINE: (26,45) __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>>::operator+(const __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>> *, const __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>>::difference_type &) const
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> (26,47) std::vector<int, std::allocator<int>>::insert(std::vector<int, std::allocator<int>> *, std::vector<int, std::allocator<int>>::iterator, const std::vector<int, std::allocator<int>>::value_type &)
+  -> (27,32) std::vector<int, std::allocator<int>>::insert(std::vector<int, std::allocator<int>> *, std::vector<int, std::allocator<int>>::iterator, const std::vector<int, std::allocator<int>>::value_type &)
+  -> INLINE: (30,18) __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>>::operator*(const __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>> *) const
+  -> INLINE: (30,45) __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>>::operator+(const __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>> *, const __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>>::difference_type &) const
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> (30,47) std::vector<int, std::allocator<int>>::insert(std::vector<int, std::allocator<int>> *, std::vector<int, std::allocator<int>>::iterator, const std::vector<int, std::allocator<int>>::value_type &)
+  -> (31,32) std::vector<int, std::allocator<int>>::insert(std::vector<int, std::allocator<int>> *, std::vector<int, std::allocator<int>>::iterator, const std::vector<int, std::allocator<int>>::value_type &)
+  -> INLINE: (37,7) std::vector<int, std::allocator<int>>::begin(std::vector<int, std::allocator<int>> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (38,27) __gnu_cxx::operator<<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>>(const __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>> &, const __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>> &)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (38,28) std::vector<int, std::allocator<int>>::end(std::vector<int, std::allocator<int>> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (39,17) __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>>::operator*(const __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>> *) const
+  -> INLINE: (40,44) __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>>::operator*(const __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>> *) const
+  -> INLINE: (41,8) __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>>::operator++(__gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>> *, int)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (50,3) sfree(void *)
+  -> INLINE: (51,3) std::vector<int, std::allocator<int>>::~vector(std::vector<int, std::allocator<int>> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (51,3) destroy<double>(double **)
+    -> INLINE: mem.h:(85,5) sfree(void *)
+    -> INLINE: mem.h:(86,5) sfree(void *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at mem.h(47,5) inlined into sorting_algo.cpp(19,10)
+<Peeled>
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into sorting_algo.cpp(19,10)
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into sorting_algo.cpp(19,10)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at sorting_algo.cpp(23,3)
+   remark #15521: loop was not vectorized: explicitly compute the iteration count before executing the loop or try using canonical loop form
+
+   LOOP BEGIN at sorting_algo.cpp(63,3) inlined into sorting_algo.cpp(24,59)
+      remark #15521: loop was not vectorized: explicitly compute the iteration count before executing the loop or try using canonical loop form
+   LOOP END
+LOOP END
+
+LOOP BEGIN at sorting_algo.cpp(38,19)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+
+   LOOP BEGIN at sorting_algo.cpp(40,5)
+      remark #25401: memcopy(with guard) generated
+      remark #15398: loop was not vectorized: loop was transformed to memset or memcpy
+
+      LOOP BEGIN at sorting_algo.cpp(40,5)
+      <Multiversioned v2>
+         remark #15304: loop was not vectorized: non-vectorizable loop instance from multiversioning
+         remark #25439: unrolled with remainder by 2  
+      LOOP END
+
+      LOOP BEGIN at sorting_algo.cpp(40,5)
+      <Remainder, Multiversioned v2>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at sorting_algo.cpp(45,3)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed OUTPUT dependence between x line 46 and y line 47
+
+   LOOP BEGIN at sorting_algo.cpp(47,5)
+      remark #25401: memcopy(with guard) generated
+      remark #15398: loop was not vectorized: loop was transformed to memset or memcpy
+
+      LOOP BEGIN at sorting_algo.cpp(47,5)
+      <Multiversioned v2>
+         remark #15304: loop was not vectorized: non-vectorizable loop instance from multiversioning
+         remark #25439: unrolled with remainder by 2  
+      LOOP END
+
+      LOOP BEGIN at sorting_algo.cpp(47,5)
+      <Remainder, Multiversioned v2>
+      LOOP END
+   LOOP END
+LOOP END
+
+    Report from: Code generation optimizations [cg]
+
+sorting_algo.cpp(40,29):remark #34026: call to memcpy implemented as a call to optimized library version
+sorting_algo.cpp(47,29):remark #34026: call to memcpy implemented as a call to optimized library version
+===========================================================================
+
+Begin optimization report for: std::vector<int, std::allocator<int>>::insert(std::vector<int, std::allocator<int>> *, std::vector<int, std::allocator<int>>::iterator, const std::vector<int, std::allocator<int>>::value_type &)
+
+    Report from: Code generation optimizations [cg]
+
+/usr/include/c++/4.8.5/bits/stl_algobase.h(567,6):remark #34026: call to memmove implemented as a call to optimized library version
+/usr/include/c++/4.8.5/bits/stl_algobase.h(372,6):remark #34026: call to memmove implemented as a call to optimized library version
+/usr/include/c++/4.8.5/bits/stl_algobase.h(372,6):remark #34026: call to memmove implemented as a call to optimized library version
+===========================================================================
+
+Begin optimization report for: std::vector<int, std::allocator<int>>::emplace_back<std::remove_reference<std::vector<int, std::allocator<int>>::value_type &>::type>(std::vector<int, std::allocator<int>> *, std::remove_reference<std::vector<int, std::allocator<int>>::value_type &>::type &&)
+
+    Report from: Code generation optimizations [cg]
+
+/usr/include/c++/4.8.5/bits/stl_algobase.h(372,6):remark #34026: call to memmove implemented as a call to optimized library version
+===========================================================================
+
+Begin optimization report for: WriteProperty()
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (WriteProperty()) [43] write.cpp(452,1)
+  -> (458,5) errmsg(const char *, const char *, const char *, int)
+  -> (514,5) errmsg(const char *, const char *, const char *, int)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at write.cpp(465,3)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+
+LOOP BEGIN at write.cpp(475,3)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at write.cpp(482,2)
+      remark #15300: LOOP WAS VECTORIZED
+   LOOP END
+
+   LOOP BEGIN at write.cpp(482,2)
+   <Remainder>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at write.cpp(500,3)
+<Peeled, Distributed chunk1>
+LOOP END
+
+LOOP BEGIN at write.cpp(500,3)
+<Distributed chunk1>
+   remark #25426: Loop Distributed (2 way) 
+   remark #15301: PARTIAL LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at write.cpp(500,3)
+<Remainder, Distributed chunk1>
+LOOP END
+
+LOOP BEGIN at write.cpp(500,3)
+<Peeled, Distributed chunk2>
+LOOP END
+
+LOOP BEGIN at write.cpp(500,3)
+<Distributed chunk2>
+   remark #15301: PARTIAL LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at write.cpp(500,3)
+<Remainder, Distributed chunk2>
+   remark #15301: REMAINDER LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at write.cpp(500,3)
+<Remainder, Distributed chunk2>
+LOOP END
+
+LOOP BEGIN at write.cpp(505,3)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between ncon line 506 and ncon line 506
+LOOP END
+
+LOOP BEGIN at write.cpp(522,3)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed ANTI dependence between t_c line 524 and t_c line 524
+LOOP END
+===========================================================================
+
+Begin optimization report for: set_vac_supercell(const char *, double, int &)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (set_vac_supercell(const char *, double, int &)) [44] crystal_struc.cpp(1141,1)
+  -> INLINE: (1219,34) create<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(42,27) smalloc(int, const char *)
+    -> INLINE: mem.h:(44,23) smalloc(int, const char *)
+  -> INLINE: (1220,19) grow<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(62,31) create<double>(double **&, int, int, const char *)
+      -> INLINE: (42,27) smalloc(int, const char *)
+      -> INLINE: (44,23) smalloc(int, const char *)
+    -> INLINE: mem.h:(65,27) srealloc(void *, int, const char *)
+    -> INLINE: mem.h:(67,23) srealloc(void *, int, const char *)
+  -> INLINE: (1274,5) WriteConfigs(const char *, const char *, double (*)[3], double **, int)
+  -> INLINE: (1347,34) create<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(42,27) smalloc(int, const char *)
+    -> INLINE: mem.h:(44,23) smalloc(int, const char *)
+  -> INLINE: (1348,19) grow<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(62,31) create<double>(double **&, int, int, const char *)
+      -> INLINE: (42,27) smalloc(int, const char *)
+      -> INLINE: (44,23) smalloc(int, const char *)
+    -> INLINE: mem.h:(65,27) srealloc(void *, int, const char *)
+    -> INLINE: mem.h:(67,23) srealloc(void *, int, const char *)
+  -> INLINE: (1433,34) create<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(42,27) smalloc(int, const char *)
+    -> INLINE: mem.h:(44,23) smalloc(int, const char *)
+  -> INLINE: (1434,19) grow<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(62,31) create<double>(double **&, int, int, const char *)
+      -> INLINE: (42,27) smalloc(int, const char *)
+      -> INLINE: (44,23) smalloc(int, const char *)
+    -> INLINE: mem.h:(65,27) srealloc(void *, int, const char *)
+    -> INLINE: mem.h:(67,23) srealloc(void *, int, const char *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at crystal_struc.cpp(1205,5)
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at crystal_struc.cpp(1205,5)
+<Remainder>
+   remark #25436: completely unrolled by 1  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(1219,34)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(1219,34)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(1220,19)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 71 and basis0 line 71
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(1220,19)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(1220,19)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(1220,19)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at crystal_struc.cpp(1223,5)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed ANTI dependence between trans0 line 1227 and basis0 line 1233
+
+   LOOP BEGIN at crystal_struc.cpp(1224,7)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+      remark #15346: vector dependence: assumed ANTI dependence between trans0 line 1227 and basis0 line 1233
+
+      LOOP BEGIN at crystal_struc.cpp(1225,2)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+         remark #15346: vector dependence: assumed ANTI dependence between trans0 line 1227 and basis0 line 1233
+
+         LOOP BEGIN at crystal_struc.cpp(1226,4)
+            remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+            remark #15346: vector dependence: assumed ANTI dependence between trans0 line 1227 and basis0 line 1233
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at write.cpp(775,3) inlined into crystal_struc.cpp(1274,5)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between element line 776 and basis line 776
+LOOP END
+
+LOOP BEGIN at crystal_struc.cpp(1332,5)
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at crystal_struc.cpp(1332,5)
+<Remainder>
+   remark #25436: completely unrolled by 1  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(1347,34)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(1347,34)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(1348,19)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 71 and basis0 line 71
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(1348,19)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(1348,19)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(1348,19)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at crystal_struc.cpp(1352,7)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed ANTI dependence between trans0 line 1355 and basis0 line 1361
+
+   LOOP BEGIN at crystal_struc.cpp(1353,2)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+      remark #15346: vector dependence: assumed ANTI dependence between trans0 line 1355 and basis0 line 1361
+
+      LOOP BEGIN at crystal_struc.cpp(1354,4)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+         remark #15346: vector dependence: assumed ANTI dependence between trans0 line 1355 and basis0 line 1361
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at crystal_struc.cpp(1419,5)
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at crystal_struc.cpp(1419,5)
+<Remainder>
+   remark #25436: completely unrolled by 1  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(1433,34)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(1433,34)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(1434,19)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 71 and basis0 line 71
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(1434,19)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(1434,19)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(1434,19)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at crystal_struc.cpp(1437,5)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed ANTI dependence between trans0 line 1441 and basis0 line 1447
+
+   LOOP BEGIN at crystal_struc.cpp(1438,7)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+      remark #15346: vector dependence: assumed ANTI dependence between trans0 line 1441 and basis0 line 1447
+
+      LOOP BEGIN at crystal_struc.cpp(1439,2)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+         remark #15346: vector dependence: assumed ANTI dependence between trans0 line 1441 and basis0 line 1447
+
+         LOOP BEGIN at crystal_struc.cpp(1440,4)
+            remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+            remark #15346: vector dependence: assumed ANTI dependence between trans0 line 1441 and basis0 line 1447
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: set_Td_int(const char *, double, int &)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (set_Td_int(const char *, double, int &)) [45] crystal_struc.cpp(1488,1)
+  -> INLINE: (1566,34) create<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(42,27) smalloc(int, const char *)
+    -> INLINE: mem.h:(44,23) smalloc(int, const char *)
+  -> INLINE: (1567,19) grow<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(62,31) create<double>(double **&, int, int, const char *)
+      -> INLINE: (42,27) smalloc(int, const char *)
+      -> INLINE: (44,23) smalloc(int, const char *)
+    -> INLINE: mem.h:(65,27) srealloc(void *, int, const char *)
+    -> INLINE: mem.h:(67,23) srealloc(void *, int, const char *)
+  -> INLINE: (1678,34) create<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(42,27) smalloc(int, const char *)
+    -> INLINE: mem.h:(44,23) smalloc(int, const char *)
+  -> INLINE: (1679,19) grow<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(62,31) create<double>(double **&, int, int, const char *)
+      -> INLINE: (42,27) smalloc(int, const char *)
+      -> INLINE: (44,23) smalloc(int, const char *)
+    -> INLINE: mem.h:(65,27) srealloc(void *, int, const char *)
+    -> INLINE: mem.h:(67,23) srealloc(void *, int, const char *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at crystal_struc.cpp(1552,5)
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at crystal_struc.cpp(1552,5)
+<Remainder>
+   remark #25436: completely unrolled by 1  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(1566,34)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(1566,34)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(1567,19)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 71 and basis0 line 71
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(1567,19)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(1567,19)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(1567,19)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at crystal_struc.cpp(1570,5)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed ANTI dependence between trans0 line 1574 and basis0 line 1580
+
+   LOOP BEGIN at crystal_struc.cpp(1571,7)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+      remark #15346: vector dependence: assumed ANTI dependence between trans0 line 1574 and basis0 line 1580
+
+      LOOP BEGIN at crystal_struc.cpp(1572,2)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+         remark #15346: vector dependence: assumed ANTI dependence between trans0 line 1574 and basis0 line 1580
+
+         LOOP BEGIN at crystal_struc.cpp(1573,4)
+            remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+            remark #15346: vector dependence: assumed ANTI dependence between trans0 line 1574 and basis0 line 1580
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at crystal_struc.cpp(1667,5)
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at crystal_struc.cpp(1667,5)
+<Remainder>
+   remark #25436: completely unrolled by 1  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(1678,34)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(1678,34)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(1679,19)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 71 and basis0 line 71
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(1679,19)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(1679,19)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(1679,19)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at crystal_struc.cpp(1682,5)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed ANTI dependence between trans0 line 1686 and basis0 line 1692
+
+   LOOP BEGIN at crystal_struc.cpp(1683,7)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+      remark #15346: vector dependence: assumed ANTI dependence between trans0 line 1686 and basis0 line 1692
+
+      LOOP BEGIN at crystal_struc.cpp(1684,2)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+         remark #15346: vector dependence: assumed ANTI dependence between trans0 line 1686 and basis0 line 1692
+
+         LOOP BEGIN at crystal_struc.cpp(1685,4)
+            remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+            remark #15346: vector dependence: assumed ANTI dependence between trans0 line 1686 and basis0 line 1692
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: set_Octa_int(const char *, double, int &)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (set_Octa_int(const char *, double, int &)) [46] crystal_struc.cpp(1752,1)
+  -> INLINE: (1810,34) create<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(42,27) smalloc(int, const char *)
+    -> INLINE: mem.h:(44,23) smalloc(int, const char *)
+  -> INLINE: (1811,19) grow<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(62,31) create<double>(double **&, int, int, const char *)
+      -> INLINE: (42,27) smalloc(int, const char *)
+      -> INLINE: (44,23) smalloc(int, const char *)
+    -> INLINE: mem.h:(65,27) srealloc(void *, int, const char *)
+    -> INLINE: mem.h:(67,23) srealloc(void *, int, const char *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at crystal_struc.cpp(1799,5)
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at crystal_struc.cpp(1799,5)
+<Remainder>
+   remark #25436: completely unrolled by 1  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(1810,34)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(1810,34)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(1811,19)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 71 and basis0 line 71
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(1811,19)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(1811,19)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(1811,19)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at crystal_struc.cpp(1814,5)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed ANTI dependence between trans0 line 1818 and basis0 line 1824
+
+   LOOP BEGIN at crystal_struc.cpp(1815,7)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+      remark #15346: vector dependence: assumed ANTI dependence between trans0 line 1818 and basis0 line 1824
+
+      LOOP BEGIN at crystal_struc.cpp(1816,2)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+         remark #15346: vector dependence: assumed ANTI dependence between trans0 line 1818 and basis0 line 1824
+
+         LOOP BEGIN at crystal_struc.cpp(1817,4)
+            remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+            remark #15346: vector dependence: assumed ANTI dependence between trans0 line 1818 and basis0 line 1824
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: set_HEX_int(const char *, double, int &)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (set_HEX_int(const char *, double, int &)) [47] crystal_struc.cpp(1884,1)
+  -> INLINE: (1962,34) create<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(42,27) smalloc(int, const char *)
+    -> INLINE: mem.h:(44,23) smalloc(int, const char *)
+  -> INLINE: (1963,19) grow<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(62,31) create<double>(double **&, int, int, const char *)
+      -> INLINE: (42,27) smalloc(int, const char *)
+      -> INLINE: (44,23) smalloc(int, const char *)
+    -> INLINE: mem.h:(65,27) srealloc(void *, int, const char *)
+    -> INLINE: mem.h:(67,23) srealloc(void *, int, const char *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at crystal_struc.cpp(1948,5)
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at crystal_struc.cpp(1948,5)
+<Remainder>
+   remark #25436: completely unrolled by 1  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(1962,34)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(1962,34)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(1963,19)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 71 and basis0 line 71
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(1963,19)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(1963,19)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(1963,19)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at crystal_struc.cpp(1966,5)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed ANTI dependence between trans0 line 1970 and basis0 line 1976
+
+   LOOP BEGIN at crystal_struc.cpp(1967,7)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+      remark #15346: vector dependence: assumed ANTI dependence between trans0 line 1970 and basis0 line 1976
+
+      LOOP BEGIN at crystal_struc.cpp(1968,2)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+         remark #15346: vector dependence: assumed ANTI dependence between trans0 line 1970 and basis0 line 1976
+
+         LOOP BEGIN at crystal_struc.cpp(1969,4)
+            remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+            remark #15346: vector dependence: assumed ANTI dependence between trans0 line 1970 and basis0 line 1976
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: set_B_int(const char *, double, int &)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (set_B_int(const char *, double, int &)) [48] crystal_struc.cpp(2036,1)
+  -> INLINE: (2114,34) create<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(42,27) smalloc(int, const char *)
+    -> INLINE: mem.h:(44,23) smalloc(int, const char *)
+  -> INLINE: (2115,19) grow<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(62,31) create<double>(double **&, int, int, const char *)
+      -> INLINE: (42,27) smalloc(int, const char *)
+      -> INLINE: (44,23) smalloc(int, const char *)
+    -> INLINE: mem.h:(65,27) srealloc(void *, int, const char *)
+    -> INLINE: mem.h:(67,23) srealloc(void *, int, const char *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at crystal_struc.cpp(2100,5)
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at crystal_struc.cpp(2100,5)
+<Remainder>
+   remark #25436: completely unrolled by 1  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(2114,34)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(2114,34)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(2115,19)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 71 and basis0 line 71
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(2115,19)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(2115,19)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(2115,19)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at crystal_struc.cpp(2118,5)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed ANTI dependence between trans0 line 2122 and basis0 line 2128
+
+   LOOP BEGIN at crystal_struc.cpp(2119,7)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+      remark #15346: vector dependence: assumed ANTI dependence between trans0 line 2122 and basis0 line 2128
+
+      LOOP BEGIN at crystal_struc.cpp(2120,2)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+         remark #15346: vector dependence: assumed ANTI dependence between trans0 line 2122 and basis0 line 2128
+
+         LOOP BEGIN at crystal_struc.cpp(2121,4)
+            remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+            remark #15346: vector dependence: assumed ANTI dependence between trans0 line 2122 and basis0 line 2128
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: fmin(double, double, double (*)(double), double)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (fmin(double, double, double (*)(double), double)) [49] search.cpp(7,1)
+  -> INDIRECT-: (34,12) 
+  -> INDIRECT-: (66,10) 
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at search.cpp(24,3)
+   remark #15521: loop was not vectorized: explicitly compute the iteration count before executing the loop or try using canonical loop form
+LOOP END
+
+LOOP BEGIN at search.cpp(34,3)
+   remark #15521: loop was not vectorized: explicitly compute the iteration count before executing the loop or try using canonical loop form
+LOOP END
+===========================================================================
+
+Begin optimization report for: __sti__$E()
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (__sti__$E()) [50] <compiler generated>
+
+===========================================================================
+
+Begin optimization report for: NRmatrix<Doub>::NRmatrix(NRmatrix<Doub> *, int, int)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (NRmatrix<Doub>::NRmatrix(NRmatrix<Doub> *, int, int)) nrmatrix.h(145,1)
+
+===========================================================================
+
+Begin optimization report for: NRmatrix<Doub>::NRmatrix(NRmatrix<Doub> *, const NRmatrix<Doub> &)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (NRmatrix<Doub>::NRmatrix(NRmatrix<Doub> *, const NRmatrix<Doub> &)) nrmatrix.h(171,1)
+
+===========================================================================
+
+Begin optimization report for: NRmatrix<Doub>::nrows(const NRmatrix<Doub> *) const
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (NRmatrix<Doub>::nrows(const NRmatrix<Doub> *) const) nrmatrix.h(227,1)
+
+===========================================================================
+
+Begin optimization report for: NRmatrix<Doub>::ncols(const NRmatrix<Doub> *) const
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (NRmatrix<Doub>::ncols(const NRmatrix<Doub> *) const) nrmatrix.h(233,1)
+
+===========================================================================
+
+Begin optimization report for: NRmatrix<Doub>::det(const NRmatrix<Doub> *) const
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (NRmatrix<Doub>::det(const NRmatrix<Doub> *) const) nrmatrix.h(484,1)
+
+===========================================================================
+
+Begin optimization report for: NRmatrix<Doub>::operator[](NRmatrix<Doub> *, int)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (NRmatrix<Doub>::operator[](NRmatrix<Doub> *, int)) nrmatrix.h(205,1)
+
+===========================================================================
+
+Begin optimization report for: NRmatrix<Doub>::operator[](const NRmatrix<Doub> *, int) const
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (NRmatrix<Doub>::operator[](const NRmatrix<Doub> *, int) const) nrmatrix.h(216,1)
+
+===========================================================================
+
+Begin optimization report for: NRvector<double>::operator[](NRvector<double> *, int)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (NRvector<double>::operator[](NRvector<double> *, int)) nrvector.h(97,1)
+
+===========================================================================
+
+Begin optimization report for: NRvector<double>::operator[](const NRvector<double> *, int) const
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (NRvector<double>::operator[](const NRvector<double> *, int) const) nrvector.h(104,1)
+
+===========================================================================
+
+Begin optimization report for: NRvector<double>::size(const NRvector<double> *) const
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (NRvector<double>::size(const NRvector<double> *) const) nrvector.h(28,27)
+
+===========================================================================
+
+Begin optimization report for: WriteMaxMinDist(const char *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (WriteMaxMinDist(const char *)) [63] write.cpp(15,1)
+  -> (22,5) errmsg(const char *, const char *, const char *, int)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at write.cpp(29,3)
+   remark #25260: Invariant Condition eliminated(Proven False) at line 34
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at write.cpp(35,7)
+      remark #25261: Invariant Condition eliminated(Proven True) at line 36
+      remark #15300: LOOP WAS VECTORIZED
+   LOOP END
+
+   LOOP BEGIN at write.cpp(35,7)
+   <Remainder>
+      remark #15301: REMAINDER LOOP WAS VECTORIZED
+   LOOP END
+
+   LOOP BEGIN at write.cpp(35,7)
+   <Remainder>
+   LOOP END
+
+   LOOP BEGIN at write.cpp(33,5)
+      remark #25261: Invariant Condition eliminated(Proven True) at line 34
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+      remark #15346: vector dependence: assumed ANTI dependence between min_r line 39 and min_r line 39
+
+      LOOP BEGIN at write.cpp(35,7)
+         remark #25258: Invariant Condition eliminated(Loop at level 2 peeled) at line 36 
+         remark #25260: Invariant Condition eliminated(Proven False) at line 36
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+         remark #15346: vector dependence: assumed ANTI dependence between min_r line 39 and min_r line 39
+         remark #25439: unrolled with remainder by 2  
+      LOOP END
+
+      LOOP BEGIN at write.cpp(35,7)
+      <Remainder>
+      LOOP END
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: compute_hMat(const double (*)[3], double (*)[3])
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (compute_hMat(const double (*)[3], double (*)[3])) [64] write.cpp(48,1)
+
+===========================================================================
+
+Begin optimization report for: compute_hinvMat(const double (*)[3], double (*)[3])
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (compute_hinvMat(const double (*)[3], double (*)[3])) [65] write.cpp(79,1)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at write.cpp(90,3)
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #25436: completely unrolled by 3  
+
+   LOOP BEGIN at write.cpp(91,5)
+      remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+      remark #25436: completely unrolled by 3  
+   LOOP END
+
+   LOOP BEGIN at write.cpp(91,5)
+   LOOP END
+
+   LOOP BEGIN at write.cpp(91,5)
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: CartesianToDirect(const MatDoub &, const VecDoub &, VecDoub &, int)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (CartesianToDirect(const MatDoub &, const VecDoub &, VecDoub &, int)) [66] write.cpp(115,1)
+  -> INLINE: (121,9) NRmatrix<Doub>::ncols(const NRmatrix<Doub> *) const
+  -> INLINE: (121,28) NRmatrix<Doub>::nrows(const NRmatrix<Doub> *) const
+  -> INLINE: (125,9) NRvector<double>::size(const NRvector<double> *) const
+  -> INLINE: (125,27) NRvector<double>::size(const NRvector<double> *) const
+  -> INLINE: (130,17) NRvector<double>::size(const NRvector<double> *) const
+  -> (130,26) NRmatrix<Doub>::~NRmatrix(NRmatrix<Doub> *)
+  -> INLINE: (130,26) NRmatrix<Doub>::NRmatrix(NRmatrix<Doub> *, int, int)
+  -> INLINE: (133,24) NRvector<double>::size(const NRvector<double> *) const
+  -> INLINE: (133,24) NRvector<double>::size(const NRvector<double> *) const
+  -> INLINE: (133,41) NRmatrix<Doub>::operator[](NRmatrix<Doub> *, int)
+  -> INLINE: (133,51) NRvector<double>::operator[](const NRvector<double> *, int) const
+  -> INLINE: (136,3) NRmatrix<Doub>::~NRmatrix(NRmatrix<Doub> *)
+  -> (138,20) NRmatrix<Doub>::~NRmatrix(NRmatrix<Doub> *)
+  -> (138,20) NRmatrix<Doub>::inv(NRmatrix<Doub> *, const NRmatrix<Doub> *) const
+  -> (140,21) NRmatrix<Doub>::~NRmatrix(NRmatrix<Doub> *)
+  -> (140,21) NRmatrix<Doub>::operator*(NRmatrix<Doub> *, NRmatrix<Doub> *, const NRmatrix<Doub> &)
+  -> INLINE: (142,26) NRvector<double>::size(const NRvector<double> *) const
+  -> INLINE: (142,26) NRvector<double>::size(const NRvector<double> *) const
+  -> INLINE: (142,41) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (142,49) NRmatrix<Doub>::operator[](NRmatrix<Doub> *, int)
+  -> INLINE: (142,66) NRmatrix<Doub>::operator[](NRmatrix<Doub> *, int)
+  -> INLINE: (143,3) NRmatrix<Doub>::~NRmatrix(NRmatrix<Doub> *)
+  -> INLINE: (143,3) NRmatrix<Doub>::~NRmatrix(NRmatrix<Doub> *)
+  -> (145,16) NRmatrix<Doub>::~NRmatrix(NRmatrix<Doub> *)
+  -> INLINE: (145,16) NRmatrix<Doub>::NRmatrix(NRmatrix<Doub> *, const NRmatrix<Doub> &)
+    -> INLINE: nrmatrix.h:(175,59) NRmatrix<Doub>::operator[](const NRmatrix<Doub> *, int) const
+  -> (147,19) NRmatrix<Doub>::~NRmatrix(NRmatrix<Doub> *)
+  -> (147,19) NRmatrix<Doub>::operator*(NRmatrix<Doub> *, NRmatrix<Doub> *, const NRmatrix<Doub> &)
+  -> INLINE: (149,26) NRvector<double>::size(const NRvector<double> *) const
+  -> INLINE: (149,26) NRvector<double>::size(const NRvector<double> *) const
+  -> INLINE: (149,41) NRvector<double>::operator[](NRvector<double> *, int)
+  -> INLINE: (149,49) NRmatrix<Doub>::operator[](NRmatrix<Doub> *, int)
+  -> INLINE: (150,3) NRmatrix<Doub>::~NRmatrix(NRmatrix<Doub> *)
+  -> INLINE: (150,3) NRmatrix<Doub>::~NRmatrix(NRmatrix<Doub> *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at nrmatrix.h(148,3) inlined into write.cpp(130,26)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between v line 148 and v line 148
+   remark #25439: unrolled with remainder by 2  
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 2
+LOOP END
+
+LOOP BEGIN at nrmatrix.h(148,3) inlined into write.cpp(130,26)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at write.cpp(133,24)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+
+LOOP BEGIN at write.cpp(142,26)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+
+LOOP BEGIN at nrmatrix.h(174,3) inlined into write.cpp(145,16)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between v line 174 and v line 174
+   remark #25439: unrolled with remainder by 2  
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 2
+LOOP END
+
+LOOP BEGIN at nrmatrix.h(174,3) inlined into write.cpp(145,16)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at nrmatrix.h(175,3) inlined into write.cpp(145,16)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed ANTI dependence between this line 175 and v line 175
+
+   LOOP BEGIN at nrmatrix.h(175,25) inlined into write.cpp(145,16)
+      remark #25401: memcopy(with guard) generated
+      remark #15398: loop was not vectorized: loop was transformed to memset or memcpy
+
+      LOOP BEGIN at nrmatrix.h(175,25) inlined into write.cpp(145,16)
+      <Multiversioned v2>
+         remark #15304: loop was not vectorized: non-vectorizable loop instance from multiversioning
+         remark #25439: unrolled with remainder by 2  
+      LOOP END
+
+      LOOP BEGIN at nrmatrix.h(175,25) inlined into write.cpp(145,16)
+      <Remainder, Multiversioned v2>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at write.cpp(149,26)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+
+    Report from: Code generation optimizations [cg]
+
+nrmatrix.h(175,46):remark #34026: call to memcpy implemented as a call to optimized library version
+===========================================================================
+
+Begin optimization report for: NRmatrix<Doub>::~NRmatrix(NRmatrix<Doub> *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (NRmatrix<Doub>::~NRmatrix(NRmatrix<Doub> *)) [67] nrmatrix.h(585,1)
+
+===========================================================================
+
+Begin optimization report for: NRmatrix<Doub>::inv(NRmatrix<Doub> *, const NRmatrix<Doub> *) const
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (NRmatrix<Doub>::inv(NRmatrix<Doub> *, const NRmatrix<Doub> *) const) [68] nrmatrix.h(519,1)
+  -> INLINE: (520,21) NRmatrix<Doub>::det(const NRmatrix<Doub> *) const
+  -> (521,23) NRmatrix<Doub>::~NRmatrix(NRmatrix<Doub> *)
+  -> INLINE: (521,23) NRmatrix<Doub>::NRmatrix(NRmatrix<Doub> *, int, int)
+  -> INLINE: (529,10) NRmatrix<Doub>::operator[](NRmatrix<Doub> *, int)
+  -> INLINE: (530,10) NRmatrix<Doub>::operator[](NRmatrix<Doub> *, int)
+  -> INLINE: (531,10) NRmatrix<Doub>::operator[](NRmatrix<Doub> *, int)
+  -> INLINE: (532,10) NRmatrix<Doub>::operator[](NRmatrix<Doub> *, int)
+  -> INLINE: (539,10) NRmatrix<Doub>::operator[](NRmatrix<Doub> *, int)
+  -> INLINE: (540,10) NRmatrix<Doub>::operator[](NRmatrix<Doub> *, int)
+  -> INLINE: (541,10) NRmatrix<Doub>::operator[](NRmatrix<Doub> *, int)
+  -> INLINE: (545,10) NRmatrix<Doub>::operator[](NRmatrix<Doub> *, int)
+  -> INLINE: (546,10) NRmatrix<Doub>::operator[](NRmatrix<Doub> *, int)
+  -> INLINE: (547,10) NRmatrix<Doub>::operator[](NRmatrix<Doub> *, int)
+  -> INLINE: (551,10) NRmatrix<Doub>::operator[](NRmatrix<Doub> *, int)
+  -> INLINE: (552,10) NRmatrix<Doub>::operator[](NRmatrix<Doub> *, int)
+  -> INLINE: (553,10) NRmatrix<Doub>::operator[](NRmatrix<Doub> *, int)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at nrmatrix.h(148,3) inlined into nrmatrix.h(522,23)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed ANTI dependence between __p1_29623 line 148 and this line 148
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at nrmatrix.h(148,3) inlined into nrmatrix.h(522,23)
+<Remainder>
+LOOP END
+===========================================================================
+
+Begin optimization report for: put_atom_inside_box(double (*)[3], double (*)[3], double &, double &, double &)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (put_atom_inside_box(double (*)[3], double (*)[3], double &, double &, double &)) [69] write.cpp(154,1)
+
+===========================================================================
+
+Begin optimization report for: WriteDFTEnergy(const char *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (WriteDFTEnergy(const char *)) [70] write.cpp(425,1)
+  -> (433,5) errmsg(const char *, const char *, const char *, int)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at write.cpp(440,3)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+===========================================================================
+
+Begin optimization report for: WriteMatrix(FILE *, const double *, int, int)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (WriteMatrix(FILE *, const double *, int, int)) [71] write.cpp(561,1)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at write.cpp(563,3)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed OUTPUT dependence between  line 564 and  line 565
+
+   LOOP BEGIN at write.cpp(564,5)
+      remark #15527: loop was not vectorized: function call to fprintf(FILE *, const char *, ...) cannot be vectorized   [ write.cpp(564,29) ]
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: WriteConfigs(const char *, char *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (WriteConfigs(const char *, char *)) [72] write.cpp(696,1)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at write.cpp(701,3)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+
+   LOOP BEGIN at write.cpp(716,7)
+      remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+      remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: WriteConfigs(const char *, const char *, double (*)[3], double **, int)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (WriteConfigs(const char *, const char *, double (*)[3], double **, int)) [73] write.cpp(761,1)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at write.cpp(775,3)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between element line 776 and basis line 776
+LOOP END
+===========================================================================
+
+Begin optimization report for: WriteLastLayerOutputs(FILE *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (WriteLastLayerOutputs(FILE *)) [74] write.cpp(828,1)
+  -> (838,5) evaluate_nnet()
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at write.cpp(833,3)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+
+   LOOP BEGIN at write.cpp(836,5)
+      remark #25401: memcopy(with guard) generated
+      remark #15398: loop was not vectorized: loop was transformed to memset or memcpy
+
+      LOOP BEGIN at write.cpp(836,5)
+      <Multiversioned v2>
+         remark #15304: loop was not vectorized: non-vectorizable loop instance from multiversioning
+         remark #25439: unrolled with remainder by 2  
+      LOOP END
+
+      LOOP BEGIN at write.cpp(836,5)
+      <Remainder, Multiversioned v2>
+      LOOP END
+   LOOP END
+
+   LOOP BEGIN at write.cpp(839,5)
+      remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+      remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+   LOOP END
+LOOP END
+
+    Report from: Code generation optimizations [cg]
+
+write.cpp(836,32):remark #34026: call to memcpy implemented as a call to optimized library version
+===========================================================================
+
+Begin optimization report for: WriteHBparam()
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (WriteHBparam()) [75] write.cpp(846,1)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at write.cpp(851,5)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+
+   LOOP BEGIN at write.cpp(852,7)
+      remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+      remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+
+      LOOP BEGIN at write.cpp(853,2)
+         remark #15527: loop was not vectorized: function call to fprintf(FILE *, const char *, ...) cannot be vectorized   [ write.cpp(854,4) ]
+         remark #25436: completely unrolled by 8  
+      LOOP END
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: WriteLSP()
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (WriteLSP()) [76] write.cpp(863,1)
+  -> (869,5) errmsg(const char *, const char *, const char *, int)
+  -> (877,5) errmsg(const char *, const char *, const char *, int)
+  -> (884,5) errmsg(const char *, const char *, const char *, int)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at write.cpp(891,3)
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at write.cpp(891,3)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at write.cpp(900,3)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+
+LOOP BEGIN at write.cpp(908,3)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+
+LOOP BEGIN at write.cpp(930,3)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+
+LOOP BEGIN at write.cpp(938,3)
+   remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+
+LOOP BEGIN at write.cpp(950,3)
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at write.cpp(953,5)
+      remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+      LOOP BEGIN at write.cpp(963,7)
+      <Predicate Optimized v1>
+         remark #25423: Condition at line 965 hoisted out of this loop
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+         remark #15346: vector dependence: assumed OUTPUT dependence between  line 970 and  line 971
+      LOOP END
+
+      LOOP BEGIN at write.cpp(963,7)
+      <Predicate Optimized v2>
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+         remark #15346: vector dependence: assumed OUTPUT dependence between  line 970 and  line 971
+      LOOP END
+
+      LOOP BEGIN at write.cpp(978,7)
+         remark #15523: loop was not vectorized: cannot compute loop iteration count before executing the loop.
+         remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+      LOOP END
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: __sti__$E()
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (__sti__$E()) [77] <compiler generated>
+
+===========================================================================
+
+Begin optimization report for: HeavisideStepFunc(double)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (HeavisideStepFunc(double)) [78] analytical.cpp(13,1)
+
+===========================================================================
+
+Begin optimization report for: CutoffFunc(double, double, double, double &, double &, double &, int)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (CutoffFunc(double, double, double, double &, double &, double &, int)) [79] analytical.cpp(22,1)
+
+===========================================================================
+
+Begin optimization report for: CutoffFunc(double, double, double)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (CutoffFunc(double, double, double)) [80] analytical.cpp(42,1)
+
+===========================================================================
+
+Begin optimization report for: __sti__$E()
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (__sti__$E()) [81] <compiler generated>
+
+===========================================================================
+
+Begin optimization report for: create<double>(double **&, int, int, const char *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (create<double>(double **&, int, int, const char *)) mem.h(40,1)
+
+===========================================================================
+
+Begin optimization report for: grow<double>(double **&, int, int, const char *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (grow<double>(double **&, int, int, const char *)) mem.h(61,1)
+
+===========================================================================
+
+Begin optimization report for: trimerDih(double, int &)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (trimerDih(double, int &)) [84] crystal_struc.cpp(448,1)
+  -> INLINE: (456,32) create<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(42,27) smalloc(int, const char *)
+    -> INLINE: mem.h:(44,23) smalloc(int, const char *)
+  -> INLINE: (457,17) grow<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(62,31) create<double>(double **&, int, int, const char *)
+      -> INLINE: (42,27) smalloc(int, const char *)
+      -> INLINE: (44,23) smalloc(int, const char *)
+    -> INLINE: mem.h:(65,27) srealloc(void *, int, const char *)
+    -> INLINE: mem.h:(67,23) srealloc(void *, int, const char *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(456,32)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25436: completely unrolled by 3  
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(457,17)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 71 and basis0 line 71
+   remark #25436: completely unrolled by 3  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(457,17)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25436: completely unrolled by 3  
+LOOP END
+===========================================================================
+
+Begin optimization report for: set_dumbbell110_int(const char *, double, int &)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (set_dumbbell110_int(const char *, double, int &)) [85] crystal_struc.cpp(2188,1)
+  -> INLINE: (2266,34) create<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(42,27) smalloc(int, const char *)
+    -> INLINE: mem.h:(44,23) smalloc(int, const char *)
+  -> INLINE: (2267,19) grow<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(62,31) create<double>(double **&, int, int, const char *)
+      -> INLINE: (42,27) smalloc(int, const char *)
+      -> INLINE: (44,23) smalloc(int, const char *)
+    -> INLINE: mem.h:(65,27) srealloc(void *, int, const char *)
+    -> INLINE: mem.h:(67,23) srealloc(void *, int, const char *)
+  -> INLINE: (2339,5) WriteConfigs(const char *, const char *, double (*)[3], double **, int)
+  -> INLINE: (2410,34) create<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(42,27) smalloc(int, const char *)
+    -> INLINE: mem.h:(44,23) smalloc(int, const char *)
+  -> INLINE: (2411,19) grow<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(62,31) create<double>(double **&, int, int, const char *)
+      -> INLINE: (42,27) smalloc(int, const char *)
+      -> INLINE: (44,23) smalloc(int, const char *)
+    -> INLINE: mem.h:(65,27) srealloc(void *, int, const char *)
+    -> INLINE: mem.h:(67,23) srealloc(void *, int, const char *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at crystal_struc.cpp(2252,5)
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at crystal_struc.cpp(2252,5)
+<Remainder>
+   remark #25436: completely unrolled by 1  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(2266,34)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(2266,34)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(2267,19)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 71 and basis0 line 71
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(2267,19)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(2267,19)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(2267,19)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at crystal_struc.cpp(2270,5)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed ANTI dependence between trans0 line 2274 and basis0 line 2280
+
+   LOOP BEGIN at crystal_struc.cpp(2271,7)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+      remark #15346: vector dependence: assumed ANTI dependence between trans0 line 2274 and basis0 line 2280
+
+      LOOP BEGIN at crystal_struc.cpp(2272,2)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+         remark #15346: vector dependence: assumed ANTI dependence between trans0 line 2274 and basis0 line 2280
+
+         LOOP BEGIN at crystal_struc.cpp(2273,4)
+            remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+            remark #15346: vector dependence: assumed ANTI dependence between trans0 line 2274 and basis0 line 2280
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at crystal_struc.cpp(2310,5)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+
+LOOP BEGIN at write.cpp(775,3) inlined into crystal_struc.cpp(2339,5)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between element line 776 and basis line 776
+LOOP END
+
+LOOP BEGIN at crystal_struc.cpp(2396,5)
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at crystal_struc.cpp(2396,5)
+<Remainder>
+   remark #25436: completely unrolled by 1  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(2410,34)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(2410,34)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(2411,19)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 71 and basis0 line 71
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(2411,19)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(2411,19)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(2411,19)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at crystal_struc.cpp(2414,5)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed ANTI dependence between trans0 line 2418 and basis0 line 2424
+
+   LOOP BEGIN at crystal_struc.cpp(2415,7)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+      remark #15346: vector dependence: assumed ANTI dependence between trans0 line 2418 and basis0 line 2424
+
+      LOOP BEGIN at crystal_struc.cpp(2416,2)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+         remark #15346: vector dependence: assumed ANTI dependence between trans0 line 2418 and basis0 line 2424
+
+         LOOP BEGIN at crystal_struc.cpp(2417,4)
+            remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+            remark #15346: vector dependence: assumed ANTI dependence between trans0 line 2418 and basis0 line 2424
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at crystal_struc.cpp(2455,5)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+===========================================================================
+
+Begin optimization report for: set_dumbbell100_int(const char *, double, int &)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (set_dumbbell100_int(const char *, double, int &)) [86] crystal_struc.cpp(2512,1)
+  -> INLINE: (2590,34) create<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(42,27) smalloc(int, const char *)
+    -> INLINE: mem.h:(44,23) smalloc(int, const char *)
+  -> INLINE: (2591,19) grow<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(62,31) create<double>(double **&, int, int, const char *)
+      -> INLINE: (42,27) smalloc(int, const char *)
+      -> INLINE: (44,23) smalloc(int, const char *)
+    -> INLINE: mem.h:(65,27) srealloc(void *, int, const char *)
+    -> INLINE: mem.h:(67,23) srealloc(void *, int, const char *)
+  -> INLINE: (2734,34) create<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(42,27) smalloc(int, const char *)
+    -> INLINE: mem.h:(44,23) smalloc(int, const char *)
+  -> INLINE: (2735,19) grow<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(62,31) create<double>(double **&, int, int, const char *)
+      -> INLINE: (42,27) smalloc(int, const char *)
+      -> INLINE: (44,23) smalloc(int, const char *)
+    -> INLINE: mem.h:(65,27) srealloc(void *, int, const char *)
+    -> INLINE: mem.h:(67,23) srealloc(void *, int, const char *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at crystal_struc.cpp(2576,5)
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at crystal_struc.cpp(2576,5)
+<Remainder>
+   remark #25436: completely unrolled by 1  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(2590,34)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(2590,34)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(2591,19)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 71 and basis0 line 71
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(2591,19)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(2591,19)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(2591,19)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at crystal_struc.cpp(2594,5)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed ANTI dependence between trans0 line 2598 and basis0 line 2604
+
+   LOOP BEGIN at crystal_struc.cpp(2595,7)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+      remark #15346: vector dependence: assumed ANTI dependence between trans0 line 2598 and basis0 line 2604
+
+      LOOP BEGIN at crystal_struc.cpp(2596,2)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+         remark #15346: vector dependence: assumed ANTI dependence between trans0 line 2598 and basis0 line 2604
+
+         LOOP BEGIN at crystal_struc.cpp(2597,4)
+            remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+            remark #15346: vector dependence: assumed ANTI dependence between trans0 line 2598 and basis0 line 2604
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at crystal_struc.cpp(2634,5)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+
+LOOP BEGIN at crystal_struc.cpp(2720,5)
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at crystal_struc.cpp(2720,5)
+<Remainder>
+   remark #25436: completely unrolled by 1  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(2734,34)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(2734,34)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(2735,19)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 71 and basis0 line 71
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(70,5) inlined into crystal_struc.cpp(2735,19)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(2735,19)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between basis0 line 48 and basis0 line 48
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into crystal_struc.cpp(2735,19)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at crystal_struc.cpp(2738,5)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed ANTI dependence between trans0 line 2742 and basis0 line 2748
+
+   LOOP BEGIN at crystal_struc.cpp(2739,7)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+      remark #15346: vector dependence: assumed ANTI dependence between trans0 line 2742 and basis0 line 2748
+
+      LOOP BEGIN at crystal_struc.cpp(2740,2)
+         remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+         remark #15346: vector dependence: assumed ANTI dependence between trans0 line 2742 and basis0 line 2748
+
+         LOOP BEGIN at crystal_struc.cpp(2741,4)
+            remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+            remark #15346: vector dependence: assumed ANTI dependence between trans0 line 2742 and basis0 line 2748
+         LOOP END
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at crystal_struc.cpp(2778,5)
+   remark #15520: loop was not vectorized: loop with early exits cannot be vectorized unless it meets search loop idiom criteria
+LOOP END
+===========================================================================
+
+Begin optimization report for: __sti__$E()
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (__sti__$E()) [87] <compiler generated>
+
+===========================================================================
+
+Begin optimization report for: create<double>(double *&, int, const char *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (create<double>(double *&, int, const char *)) mem.h(14,1)
+
+===========================================================================
+
+Begin optimization report for: destroy<double>(double **)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (destroy<double>(double **)) mem.h(83,1)
+
+===========================================================================
+
+Begin optimization report for: locate(double, const double *, std::vector<int, std::allocator<int>>::iterator, std::vector<int, std::allocator<int>>::iterator, int)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (locate(double, const double *, std::vector<int, std::allocator<int>>::iterator, std::vector<int, std::allocator<int>>::iterator, int)) [149] sorting_algo.cpp(58,1)
+  -> INLINE: (61,30) __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>>::__normal_iterator(__gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>> *)
+  -> INLINE: (63,10) __gnu_cxx::operator-<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>>(const __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>> &, const __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>> &)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (66,26) __gnu_cxx::operator-<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>>(const __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>> &, const __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>> &)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (69,18) __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>>::operator+(const __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>> *, const __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>>::difference_type &) const
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (70,15) __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>>::operator*(const __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>> *) const
+  -> INLINE: (77,17) __gnu_cxx::operator-<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>>(const __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>> &, const __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>> &)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at sorting_algo.cpp(63,3)
+   remark #15521: loop was not vectorized: explicitly compute the iteration count before executing the loop or try using canonical loop form
+LOOP END
+===========================================================================
+
+Begin optimization report for: insert(double *, double **, int, int, double, const double *, int, int)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (insert(double *, double **, int, int, double, const double *, int, int)) [150] sorting_algo.cpp(93,1)
+  -> (97,20) std::vector<int, std::allocator<int>>::~vector(std::vector<int, std::allocator<int>> *)
+  -> (97,20) std::vector<int, std::allocator<int>>::vector(std::vector<int, std::allocator<int>> *)
+  -> INLINE: (98,30) __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>>::__normal_iterator(__gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>> *)
+  -> INLINE: (103,10) create<double>(double *&, int, const char *)
+    -> INLINE: mem.h:(16,17) smalloc(int, const char *)
+  -> INLINE: (104,10) create<double>(double **&, int, int, const char *)
+    -> INLINE: mem.h:(42,27) smalloc(int, const char *)
+    -> INLINE: mem.h:(44,23) smalloc(int, const char *)
+  -> INLINE: (122,7) std::vector<int, std::allocator<int>>::~vector(std::vector<int, std::allocator<int>> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> (125,37) std::vector<int, std::allocator<int>>::push_back(std::vector<int, std::allocator<int>> *, const std::vector<int, std::allocator<int>>::value_type &)
+  -> INLINE: (127,21) std::vector<int, std::allocator<int>>::begin(std::vector<int, std::allocator<int>> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (127,38) std::vector<int, std::allocator<int>>::end(std::vector<int, std::allocator<int>> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (127,53) locate(double, const double *, std::vector<int, std::allocator<int>>::iterator, std::vector<int, std::allocator<int>>::iterator, int)
+    -> INLINE: (61,30) __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>>::__normal_iterator(__gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>> *)
+    -> INLINE: (63,10) __gnu_cxx::operator-<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>>(const __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>> &, const __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>> &)
+       {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+    -> INLINE: (66,26) __gnu_cxx::operator-<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>>(const __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>> &, const __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>> &)
+       {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+    -> INLINE: (69,18) __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>>::operator+(const __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>> *, const __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>>::difference_type &) const
+       {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+    -> INLINE: (70,15) __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>>::operator*(const __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>> *) const
+    -> INLINE: (77,17) __gnu_cxx::operator-<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>>(const __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>> &, const __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>> &)
+       {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (128,12) __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>>::operator*(const __gnu_cxx::__normal_iterator<std::vector<int, std::allocator<int>>::pointer, std::vector<int, std::allocator<int>>> *) const
+  -> INLINE: (152,3) sfree(void *)
+  -> INLINE: (153,3) std::vector<int, std::allocator<int>>::~vector(std::vector<int, std::allocator<int>> *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (153,3) destroy<double>(double **)
+    -> INLINE: mem.h:(85,5) sfree(void *)
+    -> INLINE: mem.h:(86,5) sfree(void *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at mem.h(47,5) inlined into sorting_algo.cpp(104,10)
+<Peeled>
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into sorting_algo.cpp(104,10)
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at mem.h(47,5) inlined into sorting_algo.cpp(104,10)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at sorting_algo.cpp(125,3)
+   remark #15521: loop was not vectorized: explicitly compute the iteration count before executing the loop or try using canonical loop form
+LOOP END
+
+LOOP BEGIN at sorting_algo.cpp(63,3) inlined into sorting_algo.cpp(127,53)
+   remark #15521: loop was not vectorized: explicitly compute the iteration count before executing the loop or try using canonical loop form
+LOOP END
+
+LOOP BEGIN at sorting_algo.cpp(133,3)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed ANTI dependence between tmpY line 136 and tmpY line 140
+
+   LOOP BEGIN at sorting_algo.cpp(136,11)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+      remark #15346: vector dependence: assumed FLOW dependence between tmpY line 136 and tmpY line 136
+      remark #25439: unrolled with remainder by 2  
+   LOOP END
+
+   LOOP BEGIN at sorting_algo.cpp(136,11)
+   <Remainder>
+   LOOP END
+
+   LOOP BEGIN at sorting_algo.cpp(140,11)
+      remark #25401: memcopy(with guard) generated
+      remark #15398: loop was not vectorized: loop was transformed to memset or memcpy
+
+      LOOP BEGIN at sorting_algo.cpp(140,11)
+      <Multiversioned v2>
+         remark #15304: loop was not vectorized: non-vectorizable loop instance from multiversioning
+         remark #25439: unrolled with remainder by 2  
+      LOOP END
+
+      LOOP BEGIN at sorting_algo.cpp(140,11)
+      <Remainder, Multiversioned v2>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at sorting_algo.cpp(147,3)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed OUTPUT dependence between x line 148 and y line 149
+
+   LOOP BEGIN at sorting_algo.cpp(149,5)
+      remark #25401: memcopy(with guard) generated
+      remark #15398: loop was not vectorized: loop was transformed to memset or memcpy
+
+      LOOP BEGIN at sorting_algo.cpp(149,5)
+      <Multiversioned v2>
+         remark #15304: loop was not vectorized: non-vectorizable loop instance from multiversioning
+         remark #25439: unrolled with remainder by 2  
+      LOOP END
+
+      LOOP BEGIN at sorting_algo.cpp(149,5)
+      <Remainder, Multiversioned v2>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at sorting_algo.cpp(107,7)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed ANTI dependence between tmpY line 110 and tmpY line 114
+
+   LOOP BEGIN at sorting_algo.cpp(110,15)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+      remark #15346: vector dependence: assumed FLOW dependence between tmpY line 110 and tmpY line 110
+      remark #25439: unrolled with remainder by 2  
+   LOOP END
+
+   LOOP BEGIN at sorting_algo.cpp(110,15)
+   <Remainder>
+   LOOP END
+
+   LOOP BEGIN at sorting_algo.cpp(114,15)
+      remark #25401: memcopy(with guard) generated
+      remark #15398: loop was not vectorized: loop was transformed to memset or memcpy
+
+      LOOP BEGIN at sorting_algo.cpp(114,15)
+      <Multiversioned v2>
+         remark #15304: loop was not vectorized: non-vectorizable loop instance from multiversioning
+         remark #25439: unrolled with remainder by 2  
+      LOOP END
+
+      LOOP BEGIN at sorting_algo.cpp(114,15)
+      <Remainder, Multiversioned v2>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at sorting_algo.cpp(118,7)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed OUTPUT dependence between x line 119 and y line 120
+
+   LOOP BEGIN at sorting_algo.cpp(120,9)
+      remark #25401: memcopy(with guard) generated
+      remark #15398: loop was not vectorized: loop was transformed to memset or memcpy
+
+      LOOP BEGIN at sorting_algo.cpp(120,9)
+      <Multiversioned v2>
+         remark #15304: loop was not vectorized: non-vectorizable loop instance from multiversioning
+         remark #25439: unrolled with remainder by 2  
+      LOOP END
+
+      LOOP BEGIN at sorting_algo.cpp(120,9)
+      <Remainder, Multiversioned v2>
+      LOOP END
+   LOOP END
+LOOP END
+
+    Report from: Code generation optimizations [cg]
+
+sorting_algo.cpp(114,39):remark #34026: call to memcpy implemented as a call to optimized library version
+sorting_algo.cpp(140,35):remark #34026: call to memcpy implemented as a call to optimized library version
+sorting_algo.cpp(149,29):remark #34026: call to memcpy implemented as a call to optimized library version
+sorting_algo.cpp(120,33):remark #34026: call to memcpy implemented as a call to optimized library version
+===========================================================================
+
+Begin optimization report for: std::vector<int, std::allocator<int>>::push_back(std::vector<int, std::allocator<int>> *, const std::vector<int, std::allocator<int>>::value_type &)
+
+    Report from: Code generation optimizations [cg]
+
+/usr/include/c++/4.8.5/bits/stl_algobase.h(372,6):remark #34026: call to memmove implemented as a call to optimized library version
+===========================================================================
+
+    Report from: Profile guided optimizations [pgo]
+
+
+
+Profile feedback used a statically estimated profile for the following routines:
+
+  File: <compiler generated>
+        __sti__$E()
+        __sti__$E()
+        __sti__$E()
+        __sti__$E()
+
+  File: /usr/include/c++/4.8.5/bits/alloc_traits.h
+        std::allocator_traits<std::allocator<int>>::destroy<int>(std::allocator<int> &, int *)(405)
+
+  File: /usr/include/c++/4.8.5/bits/stl_construct.h
+        std::_Destroy<std::_Vector_base<int, std::allocator<int>>::pointer, int>(std::_Vector_base<int, std::allocator<int>>::pointer, std::_Vector_base<int, std::allocator<int>>::pointer, std::allocator<int> &)(150)
+
+  File: /usr/include/c++/4.8.5/bits/stl_vector.h
+        std::_Vector_base<int, std::allocator<int>>::_M_get_Tp_allocator(std::_Vector_base<int, std::allocator<int>> *)(114)
+        std::_Vector_base<int, std::allocator<int>>::~_Vector_base(std::_Vector_base<int, std::allocator<int>> *const)(159)
+        std::_Vector_base<int, std::allocator<int>>::_M_deallocate(std::_Vector_base<int, std::allocator<int>> *, std::_Vector_base<int, std::allocator<int>>::pointer, std::size_t)(172)
+        std::vector<int, std::allocator<int>>::vector(std::vector<int, std::allocator<int>> *)(249)
+        std::vector<int, std::allocator<int>>::~vector(std::vector<int, std::allocator<int>> *)(415)
+        std::vector<int, std::allocator<int>>::size(const std::vector<int, std::allocator<int>> *) const(646)
+        std::vector<int, std::allocator<int>>::push_back(std::vector<int, std::allocator<int>> *, const std::vector<int, std::allocator<int>>::value_type &)(902)
+
+  File: /usr/include/c++/4.8.5/bits/vector.tcc
+        std::vector<int, std::allocator<int>>::emplace_back<std::remove_reference<std::vector<int, std::allocator<int>>::value_type &>::type>(std::vector<int, std::allocator<int>> *, std::remove_reference<std::vector<int, std::allocator<int>>::value_type &>::type &&)(93)
+        std::vector<int, std::allocator<int>>::insert(std::vector<int, std::allocator<int>> *, std::vector<int, std::allocator<int>>::iterator, const std::vector<int, std::allocator<int>>::value_type &)(109)
+
+  File: /usr/include/c++/4.8.5/ext/new_allocator.h
+        __gnu_cxx::new_allocator<int>::new_allocator(__gnu_cxx::new_allocator<int> *const)(79)
+
+  File: analytical.cpp
+        HeavisideStepFunc(double)(13)
+        CutoffFunc(double, double, double, double &, double &, double &, int)(22)
+        CutoffFunc(double, double, double)(42)
+
+  File: crystal_struc.cpp
+        set_struc(const char *, double, int &)(14)
+        graphitic(double, int &)(132)
+        hcp(double, int &)(163)
+        pentamerD5h(double, int &)(198)
+        tetramerTd(double, int &)(245)
+        tetramerDih(double, int &)(288)
+        tetramerD4h(double, int &)(329)
+        trimerC2v(double, int &)(372)
+        trimerD3h(double, int &)(411)
+        trimerDih(double, int &)(448)
+        hex(double, int &)(485)
+        A15(double, int &)(514)
+        fcc(double, int &)(572)
+        diam(double, int &)(611)
+        wurtzite(double, int &)(666)
+        bcc(double, int &)(706)
+        sc(double, int &)(735)
+        dimer(double, int &)(760)
+        betatin(double, int &)(793)
+        cP46(double, int &)(833)
+        BC8(double, int &)(994)
+        ST12(double, int &)(1080)
+        set_vac_supercell(const char *, double, int &)(1141)
+        set_Td_int(const char *, double, int &)(1488)
+        set_Octa_int(const char *, double, int &)(1752)
+        set_HEX_int(const char *, double, int &)(1884)
+        set_B_int(const char *, double, int &)(2036)
+        set_dumbbell110_int(const char *, double, int &)(2188)
+        set_dumbbell100_int(const char *, double, int &)(2512)
+        set_dumbbell_int(const char *, const char *, double, int &)(2835)
+
+  File: nrmatrix.h
+        NRmatrix<Doub>::operator*(NRmatrix<Doub> *, NRmatrix<Doub> *, const NRmatrix<Doub> &)(427)
+        NRmatrix<Doub>::inv(NRmatrix<Doub> *, const NRmatrix<Doub> *) const(519)
+        NRmatrix<Doub>::~NRmatrix(NRmatrix<Doub> *)(585)
+
+  File: search.cpp
+        fmin(double, double, double (*)(double), double)(7)
+
+  File: sorting_algo.cpp
+        NewSort(double *, double **, int, int, int)(13)
+        locate(double, const double *, std::vector<int, std::allocator<int>>::iterator, std::vector<int, std::allocator<int>>::iterator, int)(58)
+        insert(double *, double **, int, int, double, const double *, int, int)(93)
+
+  File: write.cpp
+        WriteMaxMinDist(const char *)(15)
+        compute_hMat(const double (*)[3], double (*)[3])(48)
+        compute_hinvMat(const double (*)[3], double (*)[3])(79)
+        CartesianToDirect(const MatDoub &, const VecDoub &, VecDoub &, int)(115)
+        put_atom_inside_box(double (*)[3], double (*)[3], double &, double &, double &)(154)
+        WriteDFTEnergy(const char *)(425)
+        WriteProperty()(452)
+        WriteMatrixFormat(FILE *)(538)
+        WriteMatrix(FILE *, const double *, int, int)(561)
+        WriteNNetParam(FILE *)(570)
+        WriteHiddenLayerParam(FILE *)(617)
+        WriteBOPParam(FILE *)(681)
+        WriteConfigs(const char *, char *)(696)
+        WriteConfigs(const char *, const char *, double (*)[3], double **, int)(761)
+        WriteLastLayerOutputs(FILE *)(828)
+        WriteHBparam()(846)
+        WriteLSP()(863)
+        WriteLSP_mpi()(998)
+
+
+  0 out of 74 routine(s) used training profile data for PGO feedback
+  0 out of 74 routine(s) were unable to use training profile data for PGO feedback
+  0 out of 74 routine(s) were unable to find training profile data for PGO feedback
+  74 out of 74 routine(s) used a static estimate profile for PGO feedback
+
+
+
