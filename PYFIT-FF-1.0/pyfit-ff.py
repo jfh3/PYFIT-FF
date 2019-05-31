@@ -60,41 +60,26 @@ if __name__ == '__main__':
 	n_pick             = int(TRAIN_TO_TOTAL_RATIO * training_set.n_structures)
 	training_indices   = list(np.random.choice(training_set.n_structures, n_pick, replace=False))
 	training_indices   = list(range(training_set.n_structures))
-	validation_indices = [i for i in range(training_set.n_structures) if i not in training_indices]
-
 	n_training_indices = len(training_indices)
 
 	# We need to know how many atoms are part of the training set and 
 	# how many are part of the validation set.
-	n_train_atoms = 0
-	n_val_atoms   = 0
-
-	for atom in training_set.training_inputs:
-		if atom.structure_id in training_indices:
-			n_train_atoms += 1
-		else:
-			n_val_atoms += 1
+	n_train_atoms = sum([len(s) for s in training_set.training_structures.values()])
 
 	# The following code assumes that the values in the LSParam file are
 	# ordered sequentially, first by structure, then by atom.
 
 	# This reduction matrix will be multiplied by the output column vector
 	# to reduce the energy of each atom to the energy of each structure.
-	reduction_matrix = np.zeros((len(training_indices), n_train_atoms))
+	reduction_matrix = np.zeros((n_training_indices, n_train_atoms))
 	energies         = []
 	volumes          = []
 	inverse_n_atoms  = []
 	group_weights    = []
 	structure_params = []
 
-	val_reduction_matrix = np.zeros((len(validation_indices), n_val_atoms))
-	val_energies         = []
-	val_volumes          = []
-	val_inverse_n_atoms  = []
-	val_group_weights    = []
-	val_structure_params = []
-
 	idx               = 0
+	struct_idx        = 0
 	current_struct_id = -1
 	is_training       = True
 
@@ -102,70 +87,37 @@ if __name__ == '__main__':
 	# column in the reduction matrix that we need to be setting to 1.
 	train_reduction_row    = -1
 	train_reduction_column = 0
-	val_reduction_row      = -1
-	val_reduction_column   = 0
 
-	while idx < training_set.n_atoms:
-		# We take the first instance of each structure
-		# ID and add the corresponding information into
-		# the per-structure-id arrays and we add each 
-		# set of struture parameters (per atom) into the 
-		# structure_params array.
-		current_input = training_set.training_inputs[idx]
+	for struct_id in training_indices:
+		train_reduction_row += 1
 
-		# Make sure that this is part of the training set.
-		is_training = current_input.structure_id in training_indices
+		current_structure = training_set.training_structures[struct_id]
 
-		if current_input.structure_id != current_struct_id:
-			# We haven't processed this struct ID yet, do it now.
-			# Also set this so we don't reprocess it.
-			current_struct_id = current_input.structure_id
+		energies.append(current_structure[0].structure_energy)
+		volumes.append(current_structure[0].structure_volume)
+		inverse_n_atoms.append(1.0 / current_structure[0].structure_n_atoms)
 
-			# Since we just switched to a new structure, increment
-			# the row in the corresponding reduction matrix that we
-			# are setting.
-			if is_training:
-				train_reduction_row += 1
-			else:
-				val_reduction_row += 1
+		# Select the appropriate weight based on the group,
+		# if specified.
+		if current_structure[0].group_name in WEIGHTS.keys():
+			group_weights.append(WEIGHTS[current_structure[0].group_name])
+		else:
+			group_weights.append(1.0)
 
-			(energies if is_training else val_energies).append(current_input.structure_energy)
-			(volumes if is_training else val_volumes).append(current_input.structure_volume)
-			(inverse_n_atoms if is_training else val_inverse_n_atoms).append(1.0 / current_input.structure_n_atoms)
-
-			# Select the appropriate weight based on the group,
-			# if specified.
-			if current_input.group_name in WEIGHTS.keys():
-				(group_weights if is_training else val_group_weights).append(WEIGHTS[current_input.group_name])
-			else:
-				(group_weights if is_training else val_group_weights).append(1.0)
-
-		# We add the structure params regardless of whether or not
-		# we have already processed a member of this structure.
-		
-		(structure_params if is_training else val_structure_params).append(current_input.structure_params)
-
-		if is_training:
+		for atom in current_structure:
+			structure_params.append(atom.structure_params)
 			reduction_matrix[train_reduction_row][train_reduction_column] = 1.0
 			train_reduction_column += 1
-		else:
-			val_reduction_matrix[val_reduction_row][val_reduction_column] = 1.0
-			val_reduction_column += 1
-
-
-		idx += 1
-
-
 
 	# Now we should have all of the training data ready, just not in PyTorch tensor format
 	# quite yet.
 	# TODO: Go further with the code that handles validation data set.
 
-	energies         = torch.tensor(np.transpose([energies]), requires_grad=True).type(torch.FloatTensor)
-	inverse_n_atoms  = torch.tensor(np.transpose([inverse_n_atoms]), requires_grad=True).type(torch.FloatTensor)
-	group_weights    = torch.tensor(np.transpose([group_weights]), requires_grad=True).type(torch.FloatTensor)
-	structure_params = torch.tensor(structure_params, requires_grad=True).type(torch.FloatTensor)
-	reduction_matrix = torch.tensor(reduction_matrix, requires_grad=True).type(torch.FloatTensor)
+	energies         = torch.tensor(np.transpose([energies])).type(torch.FloatTensor)
+	inverse_n_atoms  = torch.tensor(np.transpose([inverse_n_atoms])).type(torch.FloatTensor)
+	group_weights    = torch.tensor(np.transpose([group_weights])).type(torch.FloatTensor)
+	structure_params = torch.tensor(structure_params).type(torch.FloatTensor)
+	reduction_matrix = torch.tensor(reduction_matrix).type(torch.FloatTensor)
 
 	# The dataset is now ready, minus the validation part (TODO).
 
@@ -184,31 +136,36 @@ if __name__ == '__main__':
 
 	optimizer = None
 	if OPTIMIZATION_ALGORITHM == 'LBFGS':
-		optimizer = optim.LBFGS(torch_net.get_parameters(), lr=LEARNING_RATE, max_iter=10)
+		optimizer = optim.LBFGS(torch_net.get_parameters(), lr=LEARNING_RATE, max_iter=MAX_LBFGS_ITERATIONS)
 	else:
 		# TODO: Figure out if this should also be a configuration value.
 		optimizer = optim.SGD(torch_net.get_parameters(), lr=0.001, momentum=0.9)
 
-	# This is called by the optimizer in order to actually evaluate the
-	# neural net and to calculate the error.
-	def closure():
 
-		if OPTIMIZATION_ALGORITHM == 'LBFGS':
-			optimizer.zero_grad()
+	# Used to track the loss as a function of the iteration,
+	# which will be dumped to a log at the end.
+	loss_values = [0.0]*MAXIMUM_TRAINING_ITERATIONS
 
-		
+	def get_loss():
 		calculated_values = torch_net(structure_params)
+
+		print(calculated_values.tolist())
+		exit()
 
 		# Here we are multiplying each structure energy error (as calculated by the neural network),
 		# by the reciprocal of the number of atoms in the structure. This is so that we are effectively
 		# calculating the error per atom, not the error per structure.
 		difference = torch.mul(calculated_values - energies, inverse_n_atoms)
 		RMSE       = torch.sqrt(torch.mul(group_weights, (difference**2)).sum() / n_training_indices)
-		
-		print("%i %E"%(current_iteration, RMSE.item()))
-		if OPTIMIZATION_ALGORITHM == 'LBFGS':
-			RMSE.backward()
-		
+		loss_values[current_iteration - 1] = RMSE.item()
+		return RMSE
+
+	# This is called by the optimizer in order to actually evaluate the
+	# neural net and to calculate the error.
+	def closure():
+		optimizer.zero_grad()
+		RMSE = get_loss()
+		RMSE.backward()
 
 		return RMSE
 
@@ -231,23 +188,20 @@ if __name__ == '__main__':
 	global current_iteration
 	current_iteration = 1
 	start_time        = time()
+
+	
 	while current_iteration <= MAXIMUM_TRAINING_ITERATIONS:
 		if OPTIMIZATION_ALGORITHM == 'LBFGS':
 			optimizer.step(closure)
 		else:
 			optimizer.zero_grad()
-			loss = closure()
+			loss = get_loss()
 			loss.backward()
 			optimizer.step()
 
-		# if current_iteration % PROGRESS_INTERVAL == 0:
-		# 	print("Iteration = %6i, RMSE = %E"%(current_iteration, current_error))
+		if current_iteration % PROGRESS_INTERVAL == 0:
+			print('Training Iteration = %5i | Error = %E'%(current_iteration, loss_values[current_iteration - 1]))
 
-		# TODO: Implement automatic saving of the network at some
-		#       interval in case there is a crash.
-		#      
-		#       Implement periodic storage of training progress so
-		#       it can be graphed an analyzed.
 		current_iteration += 1
 
 	end_time = time()
@@ -262,6 +216,17 @@ if __name__ == '__main__':
 	# Here we write the output neural network file and 
 	# any log or assorted information files that the 
 	# program generates.
+
+	neural_network_data.layers = torch_net.get_network_values()
+	neural_network_data.writeNetwork(NEURAL_NETWORK_SAVE_FILE)
+
+	# Write the loss for every iteration into a file, 
+	# separated by newline characters.
+
+	loss_file = open(LOSS_LOG_PATH, 'w')
+	for loss in loss_values:
+		loss_file.write('%10.10E\n'%(loss))
+	loss_file.close()
 
 	log_unindent()
 

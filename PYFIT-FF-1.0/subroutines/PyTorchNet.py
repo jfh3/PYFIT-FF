@@ -42,8 +42,23 @@ class TorchNet(nn.Module):
 
 		
 
+	# This is just used to provide a list of parameters to the
+	# optimizer when it is initialized.
 	def get_parameters(self):
 		return self.params
+
+	# This returns the weights and biases for the neural network 
+	# in the same format that they were passed in as when initializing
+	# the object. 
+	def get_network_values(self):
+		output_layers = []
+		for layer in self.layers:
+			nodes = []
+			for node_idx in range(len(layer.weight.data)):
+				nodes.append([layer.weight.data[node_idx].tolist(), layer.bias.data[node_idx].item()])
+			output_layers.append(nodes)
+
+		return output_layers
 
 	# This function actually defines the operation of the Neural Network
 	# during feed forward.

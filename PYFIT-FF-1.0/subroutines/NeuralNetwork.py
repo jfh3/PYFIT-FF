@@ -39,6 +39,7 @@ class NeuralNetwork:
 		# Now that we have some values, load them into 
 		# and appropriate structure.
 		self.loadNetwork()
+		self.writeNetwork(self.path)
 
 
 	# This function loads the actual weights and biases of
@@ -160,6 +161,8 @@ class NeuralNetwork:
 				# starts from the appropriate offset.
 				weight_start_offset = weight_start_offset + bias_offset + layer_size
 
+	# Loads global configuration information from the network and
+	# calls the functions that load the network weights and biases.
 	def load(self):
 		# TODO: Document this format on Github.
 		# This function actually parses all of the values in the header
@@ -233,11 +236,7 @@ class NeuralNetwork:
 		except ValueError as ex:
 			raise ValueError("Unable to parse value on line 6 of %s"%(self.path)) from ex
 
-		if POTENTIAL_TYPE == 2 and self.layer_sizes[-1] != 8:
-			raise ValueError("The specified potential type was BOP but the output layer of the neural network did not have 8 nodes.")
-		elif POTENTIAL_TYPE == 1 and self.layer_sizes[-1] != 1:
-			raise ValueError("The specified potential type was straight neural network but the output layer of the neural network ddi not have 1 node.")
-
+		
 		if self.layer_sizes[0] != self.n_r0 * 5:
 			raise ValueError("The input layer dimensions of the neural network do not match the structural parameter dimensions.")
 
@@ -250,6 +249,35 @@ class NeuralNetwork:
 			self.generateNetwork()
 		else:
 			self.loadNetwork()
+
+
+	# Writes the network to a file, copying the first six lines
+	# verbatim, as this program does not change them.
+	# The weights and biases may change though.
+	def writeNetwork(self, path):
+		file = open(path, 'w')
+
+		# Write the global configuration values
+		# from the first six lines.
+		for line in self.lines[:6]:
+			file.write(line + '\n')
+
+		# Now we write the weights by column, rather than
+		# by row for each layer. The biases go at the end
+		# for each layer.
+		# len(layer[0][0]) is the width of the weight matrix  (N)
+		# len(layer)    is the height of the weight matrix (M)
+		for layer in self.layers:
+			# Write the weights.
+			for weight in range(len(layer[0][0])):
+				for node in range(len(layer)):
+					file.write(' %-+17.8E 0.0000\n'%(layer[node][0][weight]))
+
+			# Write the biases.
+			for node in range(len(layer)):
+				file.write(' %-+17.8E 0.0000\n'%(layer[node][1]))
+
+		file.close()
 
 	def initialize(self):
 		# This function just performs basic file loading tasks.
@@ -266,25 +294,10 @@ class NeuralNetwork:
 		except Exception as ex:
 			raise Exception("The training set file was opened but an error occured while reading it. File path (%s)."%self.path) from ex
 
-		# Make sure line endings are correct.
-		if '\r\n' in raw_text:
-			if NORMALIZE_LINE_ENDINGS:
-				print("This file contains non-unix line endings. They are being normalized automatically.")
-				print("Set NORMALIZE_LINE_ENDINGS = False in %s "%CONFIG_FNAME)
-				print("to disable this warning and fail when non-unix line endings are found.")
-				raw_text = Util.NormalizeLineEndings(raw_text)
-			else:
-				raise Exception("This file contains non-unix line endings. Please convert this files line endings before use.")
+		
 
 		raw_text = raw_text.rstrip()
 		lines = raw_text.split('\n')
-
-		if WARN_ON_WHITESPACE_IN_TRAINING_SET:
-			for i in lines:
-				if i.isspace() or i == '':
-					print("WARNING: This neural network file appears to contain unecessary whitespace.")
-					print("Set WARN_ON_WHITESPACE_IN_TRAINING_SET = False in %s "%CONFIG_FNAME)
-					print("to disable this warning.")
 
 		self.lines = lines
 

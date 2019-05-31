@@ -16,12 +16,6 @@ class TrainingSetFile:
 		self.structures = []
 		self.initialize()
 
-		log("First Entry in File:")
-		log_indent()
-		log(str(self.training_inputs[0]))
-		log_unindent()
-		log('')
-
 		log_unindent()
 
 
@@ -41,25 +35,8 @@ class TrainingSetFile:
 		except Exception as ex:
 			raise Exception("The training set file was opened but an error occured while reading it. File path (%s)."%self.path) from ex
 
-		# Make sure line endings are correct.
-		if '\r\n' in raw_text:
-			if NORMALIZE_LINE_ENDINGS:
-				print("This file contains non-unix line endings. They are being normalized automatically.")
-				print("Set NORMALIZE_LINE_ENDINGS = False in %s "%CONFIG_FNAME)
-				print("to disable this warning and fail when non-unix line endings are found.")
-				raw_text = Util.NormalizeLineEndings(raw_text)
-			else:
-				raise Exception("This file contains non-unix line endings. Please convert this files line endings before use.")
-
 		raw_text = raw_text.rstrip()
 		self.lines = raw_text.split('\n')
-
-		if WARN_ON_WHITESPACE_IN_TRAINING_SET:
-			for i in self.lines:
-				if i.isspace() or i == '':
-					print("WARNING: This training set file appears to contain unecessary whitespace.")
-					print("Set WARN_ON_WHITESPACE_IN_TRAINING_SET = False in %s "%CONFIG_FNAME)
-					print("to disable this warning.")
 
 		# The first six lines of the LSParam file are either redundant with the
 		# neural network file or not relevant to this program.
@@ -70,14 +47,24 @@ class TrainingSetFile:
 		#       those specified in the neural network file.
 		self.n_structures    = int(Util.GetLineCells(self.lines[6])[1])
 		self.n_atoms         = int(Util.GetLineCells(self.lines[7])[1])
-		self.training_inputs = []
+		self.training_structures = {}
 
 		# Every line from 10 onwards should correspond to a single atom.
 		# Line 9 doesn't contain useful information.
-		idx = 9
+		idx            = 9
+		current_struct = []
+		current_id     = 0
 		while idx < len(self.lines):
-			self.training_inputs.append(TrainingInput(self.lines[idx], self.lines[idx + 1]))
+			atom = TrainingInput(self.lines[idx], self.lines[idx + 1])
+			if atom.structure_id != current_id:
+				self.training_structures[current_id] = current_struct
+				current_struct = []
+				current_id     = atom.structure_id
+
+			current_struct.append(atom)
 			idx += 2
+
+		self.training_structures[current_id] = current_struct
 			
 
 		# Make sure that the number of atoms and the number of

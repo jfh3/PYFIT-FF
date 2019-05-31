@@ -70,6 +70,7 @@ def log(string, endl = '\n'):
 			log_file.write(('\t' * indent) + line + endl)
 	else:
 		log_file.write(('\t' * indent) + string + endl)
+	#print(string)
 
 def log_indent():
 	global indent
