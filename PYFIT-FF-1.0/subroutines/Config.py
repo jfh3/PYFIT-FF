@@ -9,10 +9,10 @@ LOSS_LOG_PATH                      = 'output/loss_log.txt'
 
 # The structure file that contains POSCAR structures
 # and DFT energies.
-TRAINING_SET_FILE                  = 'input/large/LSParam-mod.dat'
+TRAINING_SET_FILE                  = 'input/new_format/LSParam.dat'
 
 # The neural network file to load.
-NEURAL_NETWORK_FILE                = 'input/large/nn1.dat'
+NEURAL_NETWORK_FILE                = 'input/new_format/nn1.dat'
 
 # Where to save the neural network when done training it.
 NEURAL_NETWORK_SAVE_FILE           = 'output/nn1.dat'

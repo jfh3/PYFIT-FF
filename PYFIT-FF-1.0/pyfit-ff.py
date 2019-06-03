@@ -171,11 +171,6 @@ if __name__ == '__main__':
 		
 		calculated_values = torch_net(structure_params)
 
-		f = open('temp_out.txt', 'w')
-		f.write(' '.join([str(i.item()) for i in calculated_values]))
-		f.close()
-		exit()
-
 		# Here we are multiplying each structure energy error (as calculated by the neural network),
 		# by the reciprocal of the number of atoms in the structure. This is so that we are effectively
 		# calculating the error per atom, not the error per structure.
