@@ -170,7 +170,7 @@ class NeuralNetwork:
 		# This function actually parses all of the values in the header
 		# of the neural network file. 
 
-		self.config = TrainingFileConfig(self.lines[:8])
+		self.config = TrainingFileConfig(self.lines[:8], self.path)
 
 		# Here we actually either read or generate the neural network, based
 		# on previsouly parsed values.

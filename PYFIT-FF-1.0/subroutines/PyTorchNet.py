@@ -74,7 +74,6 @@ class TorchNet(nn.Module):
 			for layer in self.layers[1:-1]:
 				x0 = torch.sigmoid(layer(x0)) - 0.5
 
-
 		x0 = self.reduction_matrix.mm(self.layers[-1](x0))
 		return x0
 

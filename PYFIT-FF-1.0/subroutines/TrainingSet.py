@@ -44,7 +44,7 @@ class TrainingSetFile:
 		# checked against the neural network to make sure that the
 		# training configuration is sane.
 
-		self.config = TrainingFileConfig(self.lines[:8])
+		self.config = TrainingFileConfig(self.lines[:8], self.path)
 
 		# Lines 7 and 8 contain the only two global configuration
 		# values that we need.

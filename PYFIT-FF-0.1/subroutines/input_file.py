@@ -4,10 +4,11 @@
 #------------------------------------------------------------------------
 
 ##INPUT FILES 
-path1='input/Rc4.5-Tc1.0-Gi2-EOS-NN';   pot_type='NN'    #4.146813
+#path1='input/Rc4.5-Tc1.0-Gi2-EOS-NN';   pot_type='NN'    #4.146813
+path1='input/large';   pot_type='NN'
 
 NN_file=str(path1)+'/nn1.dat'
-LSPARAM_file=str(path1)+'/LSParam.dat' 
+LSPARAM_file=str(path1)+'/LSParam-mod.dat' 
 
 #OUTPUT PATHS
 outdir='output'  #name of output directory

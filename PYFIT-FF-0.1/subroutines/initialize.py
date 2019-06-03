@@ -107,8 +107,6 @@ except:
 	#EXTRACT TRAINING SET
 	train_indices=np.random.choice(len(structs),int(percent_train*len(structs)), replace=False) #  set
 
-	# TEMP DEBUG LINE
-	train_indices = list(range(len(structs)))
 	
 	#VALIDATION SET  (structures not included in training)
 	val_indices=[];

@@ -78,10 +78,6 @@ if __name__ == '__main__':
 	n_pick             = int(TRAIN_TO_TOTAL_RATIO * training_set.n_structures)
 	training_indices   = list(np.random.choice(training_set.n_structures, n_pick, replace=False))
 
-	# TEMP DEBUG LINE
-	training_indices   = list(range(training_set.n_structures))
-
-
 	n_training_indices = len(training_indices)
 
 	# We need to know how many atoms are part of the training set and 
@@ -172,10 +168,13 @@ if __name__ == '__main__':
 
 	def get_loss():
 		global last_loss
+		
 		calculated_values = torch_net(structure_params)
 
-		# print(calculated_values.tolist())
-		# exit()
+		f = open('temp_out.txt', 'w')
+		f.write(' '.join([str(i.item()) for i in calculated_values]))
+		f.close()
+		exit()
 
 		# Here we are multiplying each structure energy error (as calculated by the neural network),
 		# by the reciprocal of the number of atoms in the structure. This is so that we are effectively

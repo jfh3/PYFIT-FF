@@ -35,6 +35,10 @@ def model():
 			# l1a = 
 			ypred=R.mm((torch.sigmoid((torch.sigmoid(x.mm(torch.t(w1))+torch.t(b1.mm(M1)))-0.5).mm(torch.t(w2)) 
 			+torch.t(b2.mm(M1)))-0.5).mm(torch.t(w3))+torch.t(b3.mm(M1)))
+			f = open('temp_out.txt', 'w')
+			f.write(' '.join([str(i.item()) for i in ypred]))
+			f.close()
+			exit()
 		elif(tfunc==0 and len(NNlayers)==4):
 			ypred=R.mm((torch.sigmoid((torch.sigmoid(x.mm(torch.t(w1))+torch.t(b1.mm(M1)))).mm(torch.t(w2)) 
 			+torch.t(b2.mm(M1)))).mm(torch.t(w3))+torch.t(b3.mm(M1)))

@@ -4,7 +4,8 @@ import Util
 # and LSParam files. 
 class TrainingFileConfig:
 
-	def __init__(self, lines):
+	def __init__(self, lines, path):
+		self.path = path
 		# First, convert the lines into arrays
 		# of space separated values and remove any
 		# preceeding '#' characters
