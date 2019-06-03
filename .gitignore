@@ -2,6 +2,6 @@
 /PYFIT-FF-1.0/output/*
 /PYFIT-FF-0.0/input/*
 /PYFIT-FF-0.0/output/*
-
+*__pycache__*
 
 

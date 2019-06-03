@@ -5,6 +5,7 @@ from   Config                 import *
 from   TrainingSet            import TrainingSetFile
 from   NeuralNetwork          import NeuralNetwork
 from   PyTorchNet             import TorchNet
+from   ConfigurationParser    import TrainingFileConfig
 import torch
 import torch.nn            as nn
 import torch.nn.functional as F
@@ -21,7 +22,7 @@ if __name__ == '__main__':
 
 	# This will take the contents of the configuration file and
 	# print them in a nice format in the log file. This process
-	# does not keep comments that are in the configuration file.
+	# does not keep comme.confignts that are in the configuration file.
 	Util.LogConfiguration()
 
 	log("Loading Data")
@@ -34,6 +35,23 @@ if __name__ == '__main__':
 
 	neural_network_data = NeuralNetwork(NEURAL_NETWORK_FILE) 
 	training_set        = TrainingSetFile(TRAINING_SET_FILE)
+
+	# Make sure that the configurations actually match.
+	if neural_network_data.config != training_set.config:
+		# Log both configurations so the user can more easily discern the problem.
+		log("ERROR, CONFIGURATION MISMATCH")
+		log("Comparison")
+		log_indent()
+		log("Neural Network File:")
+		log_indent()
+		log(str(neural_network_data.config))
+		log_unindent()
+		log("Training Data File:")
+		log_indent()
+		log(str(training_set.config))
+		log_unindent()
+		Util.cleanup()
+		raise ValueError("The training data and neural network files have different configurations. See %s"%LOG_PATH)
 
 	log_unindent()
 
@@ -59,7 +77,11 @@ if __name__ == '__main__':
 	# and use the rest as a validation set.
 	n_pick             = int(TRAIN_TO_TOTAL_RATIO * training_set.n_structures)
 	training_indices   = list(np.random.choice(training_set.n_structures, n_pick, replace=False))
+
+	# TEMP DEBUG LINE
 	training_indices   = list(range(training_set.n_structures))
+
+
 	n_training_indices = len(training_indices)
 
 	# We need to know how many atoms are part of the training set and 
@@ -111,7 +133,8 @@ if __name__ == '__main__':
 
 	# Now we should have all of the training data ready, just not in PyTorch tensor format
 	# quite yet.
-	# TODO: Go further with the code that handles validation data set.
+	# TODO: Write code that generates the accompanying validation data and actually checks
+	#       against it.
 
 	energies         = torch.tensor(np.transpose([energies])).type(torch.FloatTensor)
 	inverse_n_atoms  = torch.tensor(np.transpose([inverse_n_atoms])).type(torch.FloatTensor)
@@ -119,7 +142,6 @@ if __name__ == '__main__':
 	structure_params = torch.tensor(structure_params).type(torch.FloatTensor)
 	reduction_matrix = torch.tensor(reduction_matrix).type(torch.FloatTensor)
 
-	# The dataset is now ready, minus the validation part (TODO).
 
 
 	log_unindent()
@@ -145,19 +167,22 @@ if __name__ == '__main__':
 	# Used to track the loss as a function of the iteration,
 	# which will be dumped to a log at the end.
 	loss_values = [0.0]*MAXIMUM_TRAINING_ITERATIONS
+	global last_loss
+	last_loss   = 0.0
 
 	def get_loss():
+		global last_loss
 		calculated_values = torch_net(structure_params)
 
-		print(calculated_values.tolist())
-		exit()
+		# print(calculated_values.tolist())
+		# exit()
 
 		# Here we are multiplying each structure energy error (as calculated by the neural network),
 		# by the reciprocal of the number of atoms in the structure. This is so that we are effectively
 		# calculating the error per atom, not the error per structure.
 		difference = torch.mul(calculated_values - energies, inverse_n_atoms)
 		RMSE       = torch.sqrt(torch.mul(group_weights, (difference**2)).sum() / n_training_indices)
-		loss_values[current_iteration - 1] = RMSE.item()
+		last_loss  = RMSE.item()
 		return RMSE
 
 	# This is called by the optimizer in order to actually evaluate the
@@ -185,12 +210,20 @@ if __name__ == '__main__':
 	#       displays progress.
 
 
-	global current_iteration
-	current_iteration = 1
+	current_iteration = 0
 	start_time        = time()
 
+	with torch.no_grad():
+		# This will populate the list of loss values
+		# with the initial value before training.
+		get_loss()
 	
-	while current_iteration <= MAXIMUM_TRAINING_ITERATIONS:
+	while current_iteration < MAXIMUM_TRAINING_ITERATIONS:
+		loss_values[current_iteration] = last_loss
+
+		if current_iteration % PROGRESS_INTERVAL == 0:
+			print('Training Iteration = %5i | Error = %E'%(current_iteration, last_loss))
+
 		if OPTIMIZATION_ALGORITHM == 'LBFGS':
 			optimizer.step(closure)
 		else:
@@ -199,8 +232,7 @@ if __name__ == '__main__':
 			loss.backward()
 			optimizer.step()
 
-		if current_iteration % PROGRESS_INTERVAL == 0:
-			print('Training Iteration = %5i | Error = %E'%(current_iteration, loss_values[current_iteration - 1]))
+		
 
 		current_iteration += 1
 

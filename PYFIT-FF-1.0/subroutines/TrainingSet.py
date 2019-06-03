@@ -1,6 +1,7 @@
 from Config import *
 import Util
 from   Util import log, log_indent, log_unindent
+from   ConfigurationParser    import TrainingFileConfig
 
 # Contains all of the data for a training set file.
 # Can be sued to load data from a file and to dump
@@ -38,20 +39,24 @@ class TrainingSetFile:
 		raw_text = raw_text.rstrip()
 		self.lines = raw_text.split('\n')
 
-		# The first six lines of the LSParam file are either redundant with the
-		# neural network file or not relevant to this program.
+		# Load all of the configuration information from the file.
+		# Most of it isn't actually use for training, but should be
+		# checked against the neural network to make sure that the
+		# training configuration is sane.
+
+		self.config = TrainingFileConfig(self.lines[:8])
 
 		# Lines 7 and 8 contain the only two global configuration
 		# values that we need.
 		# TODO: Write code that checks all of these properties against
 		#       those specified in the neural network file.
-		self.n_structures    = int(Util.GetLineCells(self.lines[6])[1])
-		self.n_atoms         = int(Util.GetLineCells(self.lines[7])[1])
+		self.n_structures    = int(Util.GetLineCells(self.lines[9])[1])
+		self.n_atoms         = int(Util.GetLineCells(self.lines[10])[1])
 		self.training_structures = {}
 
-		# Every line from 10 onwards should correspond to a single atom.
-		# Line 9 doesn't contain useful information.
-		idx            = 9
+		# Every line from 13 onwards should correspond to a single atom.
+		# Line 12 doesn't contain useful information.
+		idx            = 12
 		current_struct = []
 		current_id     = 0
 		while idx < len(self.lines):

@@ -22,14 +22,14 @@ class TorchNet(nn.Module):
 		# subsequent calls to TorchNet.parameters() will not work.
 		self.layers           = []
 		self.params           = nn.ParameterList()
-		self.activation_mode  = network_data.activation_function
+		self.activation_mode  = network_data.config.activation_function
 		self.reduction_matrix = reduction_matrix
 
 		# Create a set of linear transforms.
-		for idx in range(len(network_data.layer_sizes)):
+		for idx in range(len(network_data.config.layer_sizes)):
 			if idx != 0:
-				prev_layer_size = network_data.layer_sizes[idx - 1]
-				curr_layer_size = network_data.layer_sizes[idx]
+				prev_layer_size = network_data.config.layer_sizes[idx - 1]
+				curr_layer_size = network_data.config.layer_sizes[idx]
 				layer           = nn.Linear(prev_layer_size, curr_layer_size)
 				current_layer     = network_data.layers[idx - 1]
 				with torch.no_grad():

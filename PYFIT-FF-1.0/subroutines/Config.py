@@ -9,13 +9,18 @@ LOSS_LOG_PATH                      = 'output/loss_log.txt'
 
 # The structure file that contains POSCAR structures
 # and DFT energies.
-TRAINING_SET_FILE                  = 'input/large/LSParam-mod.dat'
+TRAINING_SET_FILE                  = 'input/new_format/LSParam.dat'
 
 # The neural network file to load.
-NEURAL_NETWORK_FILE                = 'input/large/nn1.dat'
+NEURAL_NETWORK_FILE                = 'input/new_format/nn1.dat'
 
 # Where to save the neural network when done training it.
 NEURAL_NETWORK_SAVE_FILE           = 'output/nn1.dat'
+
+# The file to store the E_VS_V data in.
+# Each line will be all volumes in order followed
+# immediately by all energies in order.
+E_VS_V_FILE                        = 'output/E_VS_V.txt'
 
 # Energy shift per atom for DFT (for pre-processing use 0)
 E_SHIFT = 0.0 
@@ -42,3 +47,6 @@ MAXIMUM_TRAINING_ITERATIONS = 100
 
 # Print training error every PROGRESS_INTERVAL epochs.
 PROGRESS_INTERVAL = 5
+
+# Interval at which energy vs. volume data is exported.
+E_VS_V_INTERVAL = 5

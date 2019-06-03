@@ -2,6 +2,7 @@ from Config import *
 import numpy as np
 import Util
 from   Util import log, log_indent, log_unindent
+from   ConfigurationParser    import TrainingFileConfig
 
 class NeuralNetwork:
 	def __init__(self, path):
@@ -14,31 +15,28 @@ class NeuralNetwork:
 
 		self.load()
 
-
-		log("Network Properties:")
-		log_indent()
-		log(str(self))
-		log_unindent()
-		log('')
-
 		log_unindent()
 
 	def generateNetwork(self):
+		log("Generating Network")
 		# TODO: Verify that this code is correct.
-		n_values = self.layer_sizes[0]
+		n_values = 0
 
-		previous = self.layer_sizes[0]
-		for n in self.layer_sizes[1:]:
+		previous = self.config.layer_sizes[0]
+		for n in self.config.layer_sizes[1:]:
 			n_values += n * previous + n
 			previous = n
 
 		# This will automatically generate a list of values of length
 		# n_values.
-		self.network_values = np.random.uniform(-self.max_random, self.max_random, (n_values, 1))
+		self.network_values = np.random.uniform(-self.config.max_random, self.config.max_random, (n_values, 1))
+		self.network_values = [v[0] for v in self.network_values]
+		
 
 		# Now that we have some values, load them into 
 		# and appropriate structure.
 		self.loadNetwork()
+		self.config.randomize = False
 		self.writeNetwork(self.path)
 
 
@@ -58,24 +56,28 @@ class NeuralNetwork:
 	def loadNetwork(self):
 		# This array stores the raw network values
 		# in a flat array.
-		self.network_values = []
-		try:
-			for idx, line in enumerate(self.lines[6:]):
-				self.network_values.append(float(Util.GetLineCells(line)[0]))
-		except ValueError as ex:
-			raise ValueError("Unparseable value found on line %i of neural network file %s"%(7 + idx, self.path)) from ex
+		if not self.config.randomize:
+			# We weren't supposed to randomize the network,
+			# so load it from the file.
+			self.network_values = []
+
+			try:
+				for idx, line in enumerate(self.lines[8:]):
+					self.network_values.append(float(Util.GetLineCells(line)[0]))
+			except ValueError as ex:
+				raise ValueError("Unparseable value found on line %i of neural network file %s"%(7 + idx, self.path)) from ex
 
 		# We need to ensure that an appropriate number of values exist in the
 		# flat array we just loaded. 
 		appropriate_value_count = 0
-		for idx in range(len(self.layer_sizes)):
+		for idx in range(len(self.config.layer_sizes)):
 			if idx != 0:
-				previous_layer_size = self.layer_sizes[idx - 1]
-				current_layer_size  = self.layer_sizes[idx]
+				previous_layer_size = self.config.layer_sizes[idx - 1]
+				current_layer_size  = self.config.layer_sizes[idx]
 				appropriate_value_count += (previous_layer_size * current_layer_size) + current_layer_size
 
 		if appropriate_value_count != len(self.network_values):
-			e_str  = "The number of neural network values specified in the file does not match the network structure.\n"
+			e_str  = "The number of neural network values specified in the file does not match the network structure. "
 			e_str += "%i values were present, but %i were expected."%(len(self.network_values), appropriate_value_count)
 			raise ValueError(e_str)
 
@@ -88,7 +90,7 @@ class NeuralNetwork:
 		# PyTorch neural network. This line just makes it 
 		# into an array containing one empty array per layer,
 		# to be populated soon.
-		self.layers = [[] for i in range(1, self.n_layers)]
+		self.layers = [[] for i in range(1, self.config.n_layers)]
 
 		# The weights are stored in the network file with the following order:
 		#     All of the weights coming from input one are stored first,
@@ -100,12 +102,12 @@ class NeuralNetwork:
 
 		# We need to iterate over each layer and load the corresponding
 		# weights for each node in the layer (as well as the biases).
-		for layer_size, idx in zip(self.layer_sizes, range(self.n_layers)):
+		for layer_size, idx in zip(self.config.layer_sizes, range(self.config.n_layers)):
 			# The first "layer" is actually just the inputs, which don't have
 			# biases, because this isn't really a layer.
 
 			if idx != 0:
-				previous_layer_size = self.layer_sizes[idx - 1]
+				previous_layer_size = self.config.layer_sizes[idx - 1]
 				# We don't carry out this process on the first layer
 				# for the above mentioned reason.
 
@@ -168,84 +170,11 @@ class NeuralNetwork:
 		# This function actually parses all of the values in the header
 		# of the neural network file. 
 
-		# Read the configuration values in line 1.
-
-		line1 = Util.GetLineCells(self.lines[0])
-
-		self.gi_mode = int(line1[0])
-
-		if self.gi_mode not in [0, 1]:
-			raise ValueError("Invalid value specified for Gi mode on line 1 of %s"%(self.path))
-
-		self.gi_shift = float(line1[1])
-		if self.gi_shift not in [0.0, 0.5]:
-			raise ValueError("Invalid value specified for reference Gi (shift) on line 1 of %s"%(self.path))
-
-		self.activation_function = int(line1[2])
-		if self.activation_function not in [0, 1]:
-			raise ValueError("Invalid value specified for activation function on line 1 of %s"%(self.path))
-
-
-		# Lines 2 and 3 just get copied into an output file, they
-		# do not need to be parsed.
-
-		self.line2 = self.lines[1]
-		self.line3 = self.lines[2]
-
-		# Read the configuration values in line 4
-
-		line4 = Util.GetLineCells(self.lines[3])
-
-		self.randomize = int(line4[0])
-		if self.randomize not in [0, 1]:
-			raise ValueError("Invalid value specified for randomization on line 4 of %s"%(self.path))
-
-		self.randomize = self.randomize == 1
-
-		try:
-			self.max_random          = float(line4[1])
-			self.cutoff_distance     = float(line4[2])
-			self.truncation_distance = float(line4[3])
-			self.gi_sigma            = float(line4[4])
-		except ValueError as ex:
-			raise ValueError("Unable to parse value on line 4 of %s"%(self.path)) from ex
-
-		line5 = Util.GetLineCells(self.lines[4])
-
-		try:
-			self.n_r0 = int(line5[0])
-
-			self.r0   = []
-			for i in line5[1:]:
-				self.r0.append(float(i))
-		except ValueError as ex:
-			raise ValueError("Unable to parse value on line 5 of %s"%(self.path)) from ex
-
-		if len(self.r0) != self.n_r0:
-			raise ValueError("The number of r0 values declared does not match the actual number present in the file. (Line 5 of %s)"%self.path)
-
-
-		line6 = Util.GetLineCells(self.lines[5])
-
-		try:
-			self.n_layers = int(line6[0])
-
-			self.layer_sizes = []
-			for i in line6[1:]:
-				self.layer_sizes.append(int(i))
-		except ValueError as ex:
-			raise ValueError("Unable to parse value on line 6 of %s"%(self.path)) from ex
-
-		
-		if self.layer_sizes[0] != self.n_r0 * 5:
-			raise ValueError("The input layer dimensions of the neural network do not match the structural parameter dimensions.")
-
-		if len(self.r0) != self.n_r0:
-			raise ValueError("The number of layers declared does not match the actual number present in the file. (Line 6 of %s)"%self.path)
+		self.config = TrainingFileConfig(self.lines[:8])
 
 		# Here we actually either read or generate the neural network, based
 		# on previsouly parsed values.
-		if self.randomize:
+		if self.config.randomize:
 			self.generateNetwork()
 		else:
 			self.loadNetwork()
@@ -257,9 +186,12 @@ class NeuralNetwork:
 	def writeNetwork(self, path):
 		file = open(path, 'w')
 
+		if not self.config.randomize:
+			self.lines[3] = self.lines[3].replace(' 1 ', ' 0 ')
+
 		# Write the global configuration values
 		# from the first six lines.
-		for line in self.lines[:6]:
+		for line in self.lines[:8]:
 			file.write(line + '\n')
 
 		# Now we write the weights by column, rather than
@@ -300,21 +232,3 @@ class NeuralNetwork:
 		lines = raw_text.split('\n')
 
 		self.lines = lines
-
-	def __str__(self):
-		# This is a built-in function that should be defined for all classes. Python automatically
-		# calls this to convert an object to a string whenever an object is passed to a function
-		# that normally takes a string as an argument. An example would be print(object)
-		result  = "Gi Mode             = %s\n"%('Normal' if self.gi_mode == 0 else 'Shifted')
-		result += "Gi Shift            = %f\n"%self.gi_shift
-		result += "Activation Function = %s\n"%('Sigmoid' if self.activation_function == 0 else 'Shifted Sigmoid')
-		result += "Network Randomized  = %s\n"%('Yes' if self.randomize else 'No (Read from file)')
-		result += "Max Random Init.    = %f\n"%self.max_random
-		result += "Cutoff Radius       = %f\n"%self.cutoff_distance
-		result += "Truncation Distance = %f\n"%self.truncation_distance
-		result += "Gi Sigma            = %f\n"%self.gi_sigma
-		result += "R0 Values           = %s\n"%(' '.join([str(i) for i in self.r0]))
-		result += "Layer Dimensions    = %s\n"%(' '.join([str(i) for i in self.layer_sizes]))
-		return result
-
-
