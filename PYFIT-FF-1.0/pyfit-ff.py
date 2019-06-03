@@ -18,6 +18,7 @@ from   time import time
 
 
 if __name__ == '__main__':
+	device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 	log("---------- Program Started ----------\n")
 
 	# This will take the contents of the configuration file and
@@ -133,11 +134,11 @@ if __name__ == '__main__':
 	# TODO: Write code that generates the accompanying validation data and actually checks
 	#       against it.
 
-	energies         = torch.tensor(np.transpose([energies])).type(torch.FloatTensor)
-	inverse_n_atoms  = torch.tensor(np.transpose([inverse_n_atoms])).type(torch.FloatTensor)
-	group_weights    = torch.tensor(np.transpose([group_weights])).type(torch.FloatTensor)
-	structure_params = torch.tensor(structure_params).type(torch.FloatTensor)
-	reduction_matrix = torch.tensor(reduction_matrix).type(torch.FloatTensor)
+	energies         = torch.tensor(np.transpose([energies])).type(torch.FloatTensor).to(device)
+	inverse_n_atoms  = torch.tensor(np.transpose([inverse_n_atoms])).type(torch.FloatTensor).to(device)
+	group_weights    = torch.tensor(np.transpose([group_weights])).type(torch.FloatTensor).to(device)
+	structure_params = torch.tensor(structure_params).type(torch.FloatTensor).to(device)
+	reduction_matrix = torch.tensor(reduction_matrix).type(torch.FloatTensor).to(device)
 
 
 
@@ -151,7 +152,7 @@ if __name__ == '__main__':
 	# PyTorch neural network objects as well as the optimizer
 	# and any closure functions necessary for it.
 
-	torch_net = TorchNet(neural_network_data, reduction_matrix)
+	torch_net = TorchNet(neural_network_data, reduction_matrix).to(device)
 
 	optimizer = None
 	if OPTIMIZATION_ALGORITHM == 'LBFGS':
@@ -178,7 +179,7 @@ if __name__ == '__main__':
 		# calculating the error per atom, not the error per structure.
 		difference = torch.mul(calculated_values - energies, inverse_n_atoms)
 		RMSE       = torch.sqrt((group_weights * (difference**2)).sum() / n_training_indices)
-		last_loss  = RMSE.item()
+		last_loss  = RMSE.cpu().item()
 		return RMSE
 
 	# This is called by the optimizer in order to actually evaluate the
@@ -196,7 +197,8 @@ if __name__ == '__main__':
 		f.write(' '.join([str(v) for v in volumes]))
 		f.write(' ')
 		with torch.no_grad():
-			values = [i.item() for i in torch_net(structure_params)]
+			temp   = torch_net(structure_params).cpu()
+			values = [i.item() for i in temp]
 		f.write(' '.join([str(e) for e in values]))
 		f.write('\n')
 		f.close()

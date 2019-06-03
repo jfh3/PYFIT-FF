@@ -3,5 +3,5 @@
 /PYFIT-FF-0.1/input/*
 /PYFIT-FF-0.1/output/*
 *__pycache__*
-
+*.pyc
 

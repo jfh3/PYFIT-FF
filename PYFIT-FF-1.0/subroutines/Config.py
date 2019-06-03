@@ -12,10 +12,10 @@ PROGRESS_INTERVAL = 5
 
 # The structure file that contains POSCAR structures
 # and DFT energies.
-TRAINING_SET_FILE                  = 'input/new_format/LSParam.dat'
+TRAINING_SET_FILE                  = 'input/large/LSParam-mod.dat'
 
 # The neural network file to load.
-NEURAL_NETWORK_FILE                = 'input/new_format/nn1.dat'
+NEURAL_NETWORK_FILE                = 'input/large/nn1.dat'
 
 # Where to save the neural network when done training it.
 NEURAL_NETWORK_SAVE_FILE           = 'output/nn1.dat'
@@ -26,7 +26,7 @@ NEURAL_NETWORK_SAVE_FILE           = 'output/nn1.dat'
 E_VS_V_FILE                        = 'output/E_VS_V.txt'
 
 # Interval at which energy vs. volume data is exported.
-E_VS_V_INTERVAL = 1
+E_VS_V_INTERVAL = 100
 
 # Energy shift per atom for DFT (for pre-processing use 0)
 E_SHIFT = 0.0 
