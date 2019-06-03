@@ -7,6 +7,9 @@ LOG_PATH                           = 'output/log.txt'
 # Network Loss Log File Path
 LOSS_LOG_PATH                      = 'output/loss_log.txt'
 
+# Print training error every PROGRESS_INTERVAL epochs.
+PROGRESS_INTERVAL = 5
+
 # The structure file that contains POSCAR structures
 # and DFT energies.
 TRAINING_SET_FILE                  = 'input/new_format/LSParam.dat'
@@ -22,6 +25,9 @@ NEURAL_NETWORK_SAVE_FILE           = 'output/nn1.dat'
 # immediately by all energies in order.
 E_VS_V_FILE                        = 'output/E_VS_V.txt'
 
+# Interval at which energy vs. volume data is exported.
+E_VS_V_INTERVAL = 1
+
 # Energy shift per atom for DFT (for pre-processing use 0)
 E_SHIFT = 0.0 
 
@@ -34,7 +40,7 @@ WEIGHTS = {}
 # Example: WEIGHTS['Si_B1']=1.0
 
 # Standard NN learning rate.
-LEARNING_RATE = 0.1
+LEARNING_RATE = 0.01
 
 # Which torch.optim algorithm to use.
 OPTIMIZATION_ALGORITHM = 'LBFGS'
@@ -44,9 +50,3 @@ MAX_LBFGS_ITERATIONS = 10
 
 # Maximum number of epochs to run through for training.
 MAXIMUM_TRAINING_ITERATIONS = 100
-
-# Print training error every PROGRESS_INTERVAL epochs.
-PROGRESS_INTERVAL = 5
-
-# Interval at which energy vs. volume data is exported.
-E_VS_V_INTERVAL = 5

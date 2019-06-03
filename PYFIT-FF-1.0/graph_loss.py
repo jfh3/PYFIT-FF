@@ -1,7 +1,5 @@
 # Sample Usage: python3 graph_loss.py output/loss_log.txt
 
-
-
 import matplotlib.pyplot as plt
 import numpy             as np
 import sys

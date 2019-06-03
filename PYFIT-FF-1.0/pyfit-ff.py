@@ -77,12 +77,13 @@ if __name__ == '__main__':
 	# and use the rest as a validation set.
 	n_pick             = int(TRAIN_TO_TOTAL_RATIO * training_set.n_structures)
 	training_indices   = list(np.random.choice(training_set.n_structures, n_pick, replace=False))
-
 	n_training_indices = len(training_indices)
 
 	# We need to know how many atoms are part of the training set and 
 	# how many are part of the validation set.
-	n_train_atoms = sum([len(s) for s in training_set.training_structures.values()])
+	n_train_atoms = 0
+	for index in training_indices:
+		n_train_atoms += len(training_set.training_structures[index])
 
 	# The following code assumes that the values in the LSParam file are
 	# ordered sequentially, first by structure, then by atom.
@@ -170,12 +171,13 @@ if __name__ == '__main__':
 		global last_loss
 		
 		calculated_values = torch_net(structure_params)
+		#print(calculated_values[:4])
 
 		# Here we are multiplying each structure energy error (as calculated by the neural network),
 		# by the reciprocal of the number of atoms in the structure. This is so that we are effectively
 		# calculating the error per atom, not the error per structure.
 		difference = torch.mul(calculated_values - energies, inverse_n_atoms)
-		RMSE       = torch.sqrt(torch.mul(group_weights, (difference**2)).sum() / n_training_indices)
+		RMSE       = torch.sqrt((group_weights * (difference**2)).sum() / n_training_indices)
 		last_loss  = RMSE.item()
 		return RMSE
 
@@ -189,6 +191,15 @@ if __name__ == '__main__':
 		return RMSE
 
 
+	def log_energy_vs_volume():
+		f = open(E_VS_V_FILE, 'a')
+		f.write(' '.join([str(v) for v in volumes]))
+		f.write(' ')
+		with torch.no_grad():
+			values = [i.item() for i in torch_net(structure_params)]
+		f.write(' '.join([str(e) for e in values]))
+		f.write('\n')
+		f.close()
 
 	log_unindent()
 
@@ -217,6 +228,10 @@ if __name__ == '__main__':
 
 		if current_iteration % PROGRESS_INTERVAL == 0:
 			print('Training Iteration = %5i | Error = %E'%(current_iteration, last_loss))
+
+		if current_iteration % E_VS_V_INTERVAL == 0:
+			# Add the current E vs. V values into the log file.
+			log_energy_vs_volume()
 
 		if OPTIMIZATION_ALGORITHM == 'LBFGS':
 			optimizer.step(closure)
