@@ -1,6 +1,6 @@
 from Config import *
 import Util
-from   Util import log, log_indent, log_unindent
+from   Util import log, log_indent, log_unindent, ProgressBar
 from   ConfigurationParser    import TrainingFileConfig
 
 # Contains all of the data for a training set file.
@@ -54,21 +54,26 @@ class TrainingSetFile:
 		self.n_atoms         = int(Util.GetLineCells(self.lines[10])[1])
 		self.training_structures = {}
 
+		bar = ProgressBar("Loading Training Set", 30, self.n_structures, update_every = 3)
+
 		# Every line from 13 onwards should correspond to a single atom.
 		# Line 12 doesn't contain useful information.
 		idx            = 12
 		current_struct = []
 		current_id     = 0
 		while idx < len(self.lines):
+			
 			atom = TrainingInput(self.lines[idx], self.lines[idx + 1])
 			if atom.structure_id != current_id:
 				self.training_structures[current_id] = current_struct
 				current_struct = []
 				current_id     = atom.structure_id
+				bar.update(current_id + 1)
 
 			current_struct.append(atom)
 			idx += 2
 
+		bar.finish()
 		self.training_structures[current_id] = current_struct
 			
 

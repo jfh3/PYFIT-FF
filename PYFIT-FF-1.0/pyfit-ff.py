@@ -13,18 +13,20 @@ import torch.optim         as optim
 import matplotlib.pyplot   as plt
 import numpy               as np
 import Util
-from   Util import log, log_indent, log_unindent
+import sys
+from   Util import log, log_indent, log_unindent, ProgressBar
 from   time import time
 
 
-if __name__ == '__main__':
-	device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-	log("---------- Program Started ----------\n")
+def ComputeStructureParameters():
+	pass
 
-	# This will take the contents of the configuration file and
-	# print them in a nice format in the log file. This process
-	# does not keep comme.confignts that are in the configuration file.
-	Util.LogConfiguration()
+def GraphError():
+	pass
+
+def TrainNetwork():
+	device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+	
 
 	log("Loading Data")
 	log_indent()
@@ -82,9 +84,15 @@ if __name__ == '__main__':
 
 	# We need to know how many atoms are part of the training set and 
 	# how many are part of the validation set.
+	bar = ProgressBar("Calculating Total Atoms", 30, n_training_indices, update_every = 1)
 	n_train_atoms = 0
+	idx           = 1
 	for index in training_indices:
+		bar.update(idx)
 		n_train_atoms += len(training_set.training_structures[index])
+		idx += 1
+
+	bar.finish()
 
 	# The following code assumes that the values in the LSParam file are
 	# ordered sequentially, first by structure, then by atom.
@@ -98,7 +106,6 @@ if __name__ == '__main__':
 	group_weights    = []
 	structure_params = []
 
-	idx               = 0
 	struct_idx        = 0
 	current_struct_id = -1
 	is_training       = True
@@ -108,7 +115,9 @@ if __name__ == '__main__':
 	train_reduction_row    = -1
 	train_reduction_column = 0
 
+
 	for struct_id in training_indices:
+
 		train_reduction_row += 1
 
 		current_structure = training_set.training_structures[struct_id]
@@ -128,6 +137,7 @@ if __name__ == '__main__':
 			structure_params.append(atom.structure_params)
 			reduction_matrix[train_reduction_row][train_reduction_column] = 1.0
 			train_reduction_column += 1
+
 
 	# Now we should have all of the training data ready, just not in PyTorch tensor format
 	# quite yet.
@@ -225,11 +235,15 @@ if __name__ == '__main__':
 		# with the initial value before training.
 		get_loss()
 	
+	bar = ProgressBar("Training", 30, MAXIMUM_TRAINING_ITERATIONS + 1, update_every = PROGRESS_INTERVAL)
+
 	while current_iteration < MAXIMUM_TRAINING_ITERATIONS:
 		loss_values[current_iteration] = last_loss
 
-		if current_iteration % PROGRESS_INTERVAL == 0:
-			print('Training Iteration = %5i | Error = %E'%(current_iteration, last_loss))
+		bar.update(current_iteration + 1)
+
+		# if current_iteration % PROGRESS_INTERVAL == 0:
+		# 	print('Training Iteration = %5i | Error = %E'%(current_iteration, last_loss))
 
 		if current_iteration % E_VS_V_INTERVAL == 0:
 			# Add the current E vs. V values into the log file.
@@ -243,9 +257,9 @@ if __name__ == '__main__':
 			loss.backward()
 			optimizer.step()
 
-		
-
 		current_iteration += 1
+
+	bar.finish()
 
 	end_time = time()
 	print("Training Finished")
@@ -273,5 +287,54 @@ if __name__ == '__main__':
 
 	log_unindent()
 
+
+if __name__ == '__main__':
+	log("---------- Program Started ----------\n")
+
+	log("Command Line: %s"%' '.join(sys.argv))
+
+	program_start = time()
+
+	# This will take the contents of the configuration file and
+	# print them in a nice format in the log file. This process
+	# does not keep comme.confignts that are in the configuration file.
+	Util.LogConfiguration()
+
+	# ----------------------------------------
+	# Command Line Argument Processing
+	# ----------------------------------------
+
+	args = [s.lower() for s in sys.argv[1:]]
+
+	compute_gis  = False # Whether or not to compute structure params from poscar data.
+	run_training = False # Whether or not to traing the neural network against structure params.
+	graph_error  = False # Whether or not to produce a plot of error as a function of 
+	                     # the training iteration at the end of the training process.
+
+	if len(args) == 0:
+		run_training = True
+	else:
+		if '--compute-gis' in args:
+			compute_gis = True
+		if '--run-training' in args:
+			run_training = True
+		if '--graph-error' in args:
+			graph_error = True
+
+	# By this point we know what operations the user requested.
+	# Start running them, in the logical order.
+
+	if compute_gis:
+		ComputeStructureParameters()
+
+	if run_training:
+		TrainNetwork()
+
+	if graph_error:
+		import matplotlib.pyplot as plt
+		GraphError()
+
+	program_end = time()
+	log("Total Run Time: %.1fs"%(program_end - program_start))
 
 	Util.cleanup()

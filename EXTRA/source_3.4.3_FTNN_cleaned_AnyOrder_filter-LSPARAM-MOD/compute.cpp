@@ -1568,7 +1568,7 @@ double specific_bop_constraint(VecDoub &pin)
 
 void compute_LSP()
 {
-  if (me == 0) printf("Computing Gis .... [%s:%d]\n", __FILE__, __LINE__);
+  if (me == 0) printf("TEST .... [%s:%d]\n", __FILE__, __LINE__);
 
   int n;
 
