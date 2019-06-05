@@ -16,6 +16,12 @@ Options:
 	                     LOSS_LOG_PATH in Config.py.
 	                     You must have matplotlib installed to use this option.
 
+	-v --graph-val       Display a graph of the validation error as a function
+	                     of the training iteration after training is complete.
+	                     This will load the error data from the file specified as
+	                     VALIDATION_LOG_PATH in Config.py.
+	                     You must have matplotlib installed to use this option.
+
 Configuration:
 	The file Config.py contains the majority of the important configuration
 	parameters for the program. See the comments in that file for more details.
@@ -29,7 +35,7 @@ Notes:
 	   datset of about 2,000 structures with a total of 14,000 atoms.
 
 Examples:
-	python3 pyfit-ff.py -gte
+	python3 pyfit-ff.py -gtev
 	python3 pyfit-ff.py --compute-gis --run-training --graph-error
 	python3 pyfit-ff.py -e
 	python3 pyfit-ff.py -t

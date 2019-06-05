@@ -17,6 +17,7 @@ import matplotlib.pyplot   as plt
 import numpy               as np
 import Util
 import sys
+import copy
 from   Util import log, log_indent, log_unindent, ProgressBar
 from   Help import help_str
 from   time import time
@@ -52,15 +53,31 @@ def ComputeStructureParameters():
 	log_unindent()
 
 
-def GraphError():
-	file  = open(LOSS_LOG_PATH, 'r')
-	raw   = file.read()
-	file.close()
+def GraphError(graph_error, graph_val):
+	plots = []
+	names = []
 
-	error_values = [float(i) for i in raw.split('\n') if not i.isspace() and i != '']
-	indices      = range(len(error_values))
+	if graph_error:
+		file  = open(LOSS_LOG_PATH, 'r')
+		raw   = file.read()
+		file.close()
 
-	plt.scatter(indices, error_values, s=8)
+		error_values = [float(i) for i in raw.split('\n') if not i.isspace() and i != '']
+		e_indices      = range(len(error_values))
+		plots.append(plt.scatter(e_indices, error_values, s=8))
+		names.append("Training Error")
+
+	if graph_val:
+		file  = open(VALIDATION_LOG_PATH, 'r')
+		raw   = file.read()
+		file.close()
+
+		validation_values = [float(i) for i in raw.split('\n') if not i.isspace() and i != '']
+		val_indices       = np.array(range(len(validation_values))) * VALIDATION_INTERVAL
+		plots.append(plt.scatter(val_indices, validation_values, s=8))
+		names.append("Validation Error")
+
+	plt.legend(plots, names)
 	plt.xlabel("Training Iteration")
 	plt.ylabel("Root Mean Squared Error")
 	plt.title("Error vs. Iteration")
@@ -124,8 +141,21 @@ def TrainNetwork():
 	# Randomly select a set of structure IDs to use as the training set
 	# and use the rest as a validation set.
 	n_pick             = int(TRAIN_TO_TOTAL_RATIO * training_set.n_structures)
-	training_indices   = list(np.random.choice(training_set.n_structures, n_pick, replace=False))
-	n_training_indices = len(training_indices)
+
+	# It is infinitely faster to shuffle the array and then pick the first n_pick
+	# indices rather than using np.random.choice. If we do the latter, determining
+	# the precise list of validation indices entails collecting all indices not in
+	# the training set, which takes n_structures^2 time. This is because for each 
+	# indice, we have to scan the whole list of training indices to verify that it
+	# isn't in there.
+	all_indices          = np.array(range(training_set.n_structures))
+	np.random.shuffle(all_indices)
+	all_indices          = list(all_indices)
+	training_indices     = list(all_indices[:n_pick])
+	validation_indices   = list(all_indices[n_pick:])
+	n_training_indices   = len(training_indices)
+	n_validation_indices = len(validation_indices)
+	
 
 	# We need to know how many atoms are part of the training set and 
 	# how many are part of the validation set.
@@ -147,7 +177,6 @@ def TrainNetwork():
 
 	struct_idx        = 0
 	current_struct_id = -1
-	is_training       = True
 
 	# The following four variables keep track of the current row and
 	# column in the reduction matrix that we need to be setting to 1.
@@ -180,8 +209,6 @@ def TrainNetwork():
 
 	# Now we should have all of the training data ready, just not in PyTorch tensor format
 	# quite yet.
-	# TODO: Write code that generates the accompanying validation data and actually checks
-	#       against it.
 
 	energies         = torch.tensor(np.transpose([energies])).type(torch.FloatTensor).to(device)
 	inverse_n_atoms  = torch.tensor(np.transpose([inverse_n_atoms])).type(torch.FloatTensor).to(device)
@@ -189,10 +216,68 @@ def TrainNetwork():
 	structure_params = torch.tensor(structure_params).type(torch.FloatTensor).to(device)
 	reduction_matrix = torch.tensor(reduction_matrix).type(torch.FloatTensor).to(device)
 
+	# Now we do essentially the same thing as the previous lines, except for the validation
+	# dataset.
 
+	if TRAIN_TO_TOTAL_RATIO != 1.0:
+		n_val_atoms = 0
+		for index in validation_indices:
+			n_val_atoms += len(training_set.training_structures[index])
+
+		# The following code assumes that the values in the LSParam file are
+		# ordered sequentially, first by structure, then by atom.
+
+		# This reduction matrix will be multiplied by the output column vector
+		# to reduce the energy of each atom to the energy of each structure.
+		val_reduction_matrix = np.zeros((n_validation_indices, n_val_atoms))
+		val_energies         = []
+		val_volumes          = []
+		val_inverse_n_atoms  = []
+		val_group_weights    = []
+		val_structure_params = []
+
+		val_struct_idx        = 0
+		val_current_struct_id = -1
+
+		# The following four variables keep track of the current row and
+		# column in the reduction matrix that we need to be setting to 1.
+		val_reduction_row    = -1
+		val_reduction_column = 0
+
+
+		for struct_id in validation_indices:
+
+			val_reduction_row += 1
+
+			current_structure = training_set.training_structures[struct_id]
+
+			val_energies.append(current_structure[0].structure_energy)
+			val_volumes.append(current_structure[0].structure_volume)
+			val_inverse_n_atoms.append(1.0 / current_structure[0].structure_n_atoms)
+
+			# Select the appropriate weight based on the group,
+			# if specified.
+			if current_structure[0].group_name in WEIGHTS.keys():
+				val_group_weights.append(WEIGHTS[current_structure[0].group_name])
+			else:
+				val_group_weights.append(1.0)
+
+			for atom in current_structure:
+				val_structure_params.append(atom.structure_params)
+				val_reduction_matrix[val_reduction_row][val_reduction_column] = 1.0
+				val_reduction_column += 1
+
+
+		# Now we should have all of the training data ready, just not in PyTorch tensor format
+		# quite yet.
+
+		val_energies         = torch.tensor(np.transpose([val_energies])).type(torch.FloatTensor).to(device)
+		val_inverse_n_atoms  = torch.tensor(np.transpose([val_inverse_n_atoms])).type(torch.FloatTensor).to(device)
+		val_group_weights    = torch.tensor(np.transpose([val_group_weights])).type(torch.FloatTensor).to(device)
+		val_structure_params = torch.tensor(val_structure_params).type(torch.FloatTensor).to(device)
+		val_reduction_matrix = torch.tensor(val_reduction_matrix).type(torch.FloatTensor).to(device)
 
 	log_unindent()
-
 
 	log("Configuring Neural Network")
 	log_indent()
@@ -213,15 +298,27 @@ def TrainNetwork():
 
 	# Used to track the loss as a function of the iteration,
 	# which will be dumped to a log at the end.
-	loss_values = [0.0]*MAXIMUM_TRAINING_ITERATIONS
+	loss_values            = [0.0]*MAXIMUM_TRAINING_ITERATIONS
+	validation_loss_values = []
 	global last_loss
 	last_loss   = 0.0
+
+	if TRAIN_TO_TOTAL_RATIO != 1.0:
+		def get_validation_loss():
+			with torch.no_grad():
+				temp_net          = copy.deepcopy(torch_net.cpu())
+				temp_net.set_reduction_matrix(val_reduction_matrix)
+
+				calculated_values = temp_net(val_structure_params)
+				difference = torch.mul(calculated_values - val_energies, val_inverse_n_atoms)
+				RMSE       = torch.sqrt((val_group_weights * (difference**2)).sum() / n_validation_indices)
+				RMSE       = RMSE.cpu().item()
+			return RMSE
 
 	def get_loss():
 		global last_loss
 		
 		calculated_values = torch_net(structure_params)
-		#print(calculated_values[:4])
 
 		# Here we are multiplying each structure energy error (as calculated by the neural network),
 		# by the reciprocal of the number of atoms in the structure. This is so that we are effectively
@@ -288,6 +385,22 @@ def TrainNetwork():
 			# Add the current E vs. V values into the log file.
 			log_energy_vs_volume()
 
+		if current_iteration % VALIDATION_INTERVAL == 0 and TRAIN_TO_TOTAL_RATIO != 1.0:
+			validation_loss_values.append(get_validation_loss())
+
+		if current_iteration % NETWORK_BACKUP_INTERVAL == 0:
+			# Figure out what to name the file.
+			backup_idx = current_iteration // NETWORK_BACKUP_INTERVAL
+
+			if KEEP_BACKUP_HISTORY:
+				name       = NETWORK_BACKUP_DIR + 'nn_bk_%i.dat'%backup_idx
+			else:
+				name       = NETWORK_BACKUP_DIR + 'nn_bk.dat'
+				
+			neural_network_data.layers = torch_net.get_network_values()
+			neural_network_data.writeNetwork(name)
+
+
 		if OPTIMIZATION_ALGORITHM == 'LBFGS':
 			optimizer.step(closure)
 		else:
@@ -319,10 +432,19 @@ def TrainNetwork():
 	# Write the loss for every iteration into a file, 
 	# separated by newline characters.
 
+	log("Writing Training Loss File")
+
 	loss_file = open(LOSS_LOG_PATH, 'w')
 	for loss in loss_values:
 		loss_file.write('%10.10E\n'%(loss))
 	loss_file.close()
+
+	log("Writing Validation Loss File")
+
+	valid_loss_file = open(VALIDATION_LOG_PATH, 'w')
+	for validation_loss in validation_loss_values:
+		valid_loss_file.write('%10.10E\n'%(validation_loss))
+	valid_loss_file.close()
 
 	log_unindent()
 
@@ -349,6 +471,8 @@ if __name__ == '__main__':
 	run_training = False # Whether or not to traing the neural network against structure params.
 	graph_error  = False # Whether or not to produce a plot of error as a function of 
 	                     # the training iteration at the end of the training process.
+	graph_val    = False # Whether or not to plot validation error as a function of iteration
+	                     # at the end of the process.
 
 	# Here we expand single hyphen arguments.
 	# ex: -gte => -g -t -e
@@ -376,6 +500,8 @@ if __name__ == '__main__':
 			run_training = True
 		if '--graph-error' in args or '-e' in args:
 			graph_error = True
+		if '--graph-val' in args or '-v' in args:
+			graph_val = True
 
 	# By this point we know what operations the user requested.
 	# Start running them, in the logical order.
@@ -388,7 +514,7 @@ if __name__ == '__main__':
 
 	if graph_error:
 		import matplotlib.pyplot as plt
-		GraphError()
+		GraphError(graph_error, graph_val)
 
 	program_end = time()
 	log("Total Run Time: %.1fs"%(program_end - program_start))

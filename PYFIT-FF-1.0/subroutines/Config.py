@@ -5,13 +5,13 @@ CONFIG_FNAME                       = __file__
 LOG_PATH                           = 'output/log.txt'
 
 # The neural network file to load.
-NEURAL_NETWORK_FILE                = 'input/new/nn1.dat'
+NEURAL_NETWORK_FILE                = 'input/large_modified/nn1.dat'
 
 # --------------------------------------------------
 # Structural Parameter Calculation Configuration
 # --------------------------------------------------
 
-POSCAR_DATA_FILE = 'input/new/train.dat'
+POSCAR_DATA_FILE = 'input/large_modified/modified-training.dat'
 
 # The parameter file to output. This is what gets used for neural network
 # training during the next step (usually). If you want the program to train
@@ -24,16 +24,40 @@ LSPARAM_FILE     = 'output/generated.dat'
 # it won't get written.
 NEIGHBOR_FILE    = 'output/nbl.dat'
 
+# Whether or not to divide gis by r0 squared before taking the natural logarithm.
+DIV_BY_R0_SQUARED = True
+
+# Energies put in training file = DFT + n_atoms*e_shift.
+# This shifts DFT energies to experimental values.
+E_SHIFT = 0.0
+
 
 # --------------------------------------------------
 # Neural Network Training Configuration
 # --------------------------------------------------
 
+# The directory to backup neural network files in at the
+# interval specified below.
+NETWORK_BACKUP_DIR                 = 'output/nn_backup/'
+
+# Interval to backup the neural network file on.
+NETWORK_BACKUP_INTERVAL            = 25
+
+# If True, all backups are kept. If False, only the last backup 
+# is kept.
+KEEP_BACKUP_HISTORY                = True
 
 # Network Loss Log File Path
 LOSS_LOG_PATH                      = 'output/loss_log.txt'
 
-# Print training error every PROGRESS_INTERVAL epochs.
+# The file to log the validation loss in.
+VALIDATION_LOG_PATH                = 'output/validation_loss_log.txt'
+
+# Interval on which validation error should be calculated and
+# logged in the corresponding file.
+VALIDATION_INTERVAL = 5
+
+# Update the progress bar every PROGRESS_INTERVAL epochs.
 PROGRESS_INTERVAL = 2
 
 # The structure file that contains POSCAR structures
@@ -41,7 +65,7 @@ PROGRESS_INTERVAL = 2
 TRAINING_SET_FILE                  = 'output/generated.dat'
 
 # Where to save the neural network when done training it.
-NEURAL_NETWORK_SAVE_FILE           = 'output/nn2.dat'
+NEURAL_NETWORK_SAVE_FILE           = 'output/nn1.dat'
 
 # The file to store the E_VS_V data in.
 # Each line will be all volumes in order followed
@@ -55,7 +79,7 @@ E_VS_V_INTERVAL = 100
 E_SHIFT = 0.0 
 
 # The ratio of training data to overall amount of data.
-TRAIN_TO_TOTAL_RATIO = 1.0 
+TRAIN_TO_TOTAL_RATIO = 0.68
 
 # Contains values that indicate how heavily weighted each subgroup
 # should be when computing the error.
@@ -63,7 +87,7 @@ WEIGHTS = {}
 # Example: WEIGHTS['Si_B1']=1.0
 
 # Standard NN learning rate.
-LEARNING_RATE = 0.01
+LEARNING_RATE = 0.05
 
 # Which torch.optim algorithm to use.
 OPTIMIZATION_ALGORITHM = 'LBFGS'
@@ -72,4 +96,4 @@ OPTIMIZATION_ALGORITHM = 'LBFGS'
 MAX_LBFGS_ITERATIONS = 10
 
 # Maximum number of epochs to run through for training.
-MAXIMUM_TRAINING_ITERATIONS = 100
+MAXIMUM_TRAINING_ITERATIONS = 200

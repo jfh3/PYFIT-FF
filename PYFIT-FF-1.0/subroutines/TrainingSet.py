@@ -170,7 +170,7 @@ def WriteTrainingSet(fname, config, poscar_data, structure_params, neighbor_list
 				group_idx,
 				structure_idx,
 				struct.n_atoms,
-				struct.energy,
+				struct.energy + E_SHIFT * struct.n_atoms,
 				struct_volume
 			))
 

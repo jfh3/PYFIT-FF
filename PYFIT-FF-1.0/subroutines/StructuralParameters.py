@@ -54,7 +54,8 @@ def GenerateStructuralParameters(poscar_data, nl, nn):
 				nn.config.cutoff_distance, 
 				nn.config.truncation_distance, 
 				nn.config.gi_mode, 
-				nn.config.gi_shift
+				nn.config.gi_shift,
+				nn.config.legendre_orders
 			))
 
 		n_processed += processed
@@ -74,7 +75,7 @@ def GenerateStructuralParameters(poscar_data, nl, nn):
 
 # This funciton takes the neighbor list for a single atom 
 # and computes the structural parameters for it.
-def compute_parameters(atom, r0, sigma, cutoff, truncation, gi_mode, gi_shift):
+def compute_parameters(atom, r0, sigma, cutoff, truncation, gi_mode, gi_shift, legendre_orders):
 	# First we need a list of every unique combination of
 	# two neighbors, not considering [0, 1] to be unique 
 	# compared to [1, 0]. More specifically, a different
@@ -224,56 +225,32 @@ def compute_parameters(atom, r0, sigma, cutoff, truncation, gi_mode, gi_shift):
 	# is that the squares are pre-computed outside of the loops to
 	# reduce unecessary computations.
 
-	legendre_0_values = []
-	for r0n in radial_terms:
-		legendre_0_values.append(1 * r0n)
+	# This uses the recursive definition of the Legendre Polynomials
+	# in order to generalize to any specified order in the nn file.
 
-	legendre_1_values = []
-	for r0n in radial_terms:
-		legendre_1_values.append(angular_values * r0n)
+	legendre_polynomials    = np.zeros((max(legendre_orders) + 1, len(angular_values)))
+	legendre_polynomials[0] = np.tile([1.0], len(angular_values))
+	legendre_polynomials[1] = angular_values
 
-	legendre_2_values = []
-	sq = np.square(angular_values)
-	for r0n in radial_terms:
-		legendre_2_values.append((1.5*sq - 0.5) * r0n)
+	for order in range(1, max(legendre_orders)):
+		legendre_polynomials[order + 1] = ((2*order + 1)*angular_values*legendre_polynomials[order] - order*legendre_polynomials[order - 1]) / (order + 1)
 
-	legendre_4_values = []
-	for r0n in radial_terms:
-		legendre_4_values.append((sq*(4.375*sq - 3.75) + 0.375) * r0n)
 
-	legendre_6_values = []
-	for r0n in radial_terms:
-		legendre_6_values.append((sq*(sq*(14.4375*sq - 19.6875) + 6.5625) - 0.3125) * r0n)
-
-	# Now we have an array of P_m(cos(theta_ijk))*f(r_ij)*f(r_ik) for every r0 value
-	# and for every unique neighbor combination. Now we just need to sum over every 
-	# neighbor comination and we are done.
-
-	structural_parameters = []
-	for r0n in legendre_0_values:
-		structural_parameters.append(np.sum(r0n))
-
-	for r0n in legendre_1_values:
-		structural_parameters.append(np.sum(r0n))
-
-	for r0n in legendre_2_values:
-		structural_parameters.append(np.sum(r0n))
-
-	# for r0n in legendre_3_values:
-	# 	structural_parameters.append(np.sum(r0n))
-
-	for r0n in legendre_4_values:
-		structural_parameters.append(np.sum(r0n))
-
-	for r0n in legendre_6_values:
-		structural_parameters.append(np.sum(r0n))
-
-	# TODO: Replace 5 with # of legendre polynomials
-	
+	# Now we multiply the Legendre Polynomial terms by the radial terms and
+	# sum them.
+	structural_parameters = np.zeros(len(legendre_orders) * len(r0))
+	idx = 0
+	for order in legendre_orders:
+		for r0n in radial_terms:
+			structural_parameters[idx] = np.sum(legendre_polynomials[order] * r0n)
+			idx += 1
 
 	if gi_mode == 1:
-		sp = np.array(structural_parameters) / np.square(np.tile(r0, 5))
+		if DIV_BY_R0_SQUARED:
+			sp = structural_parameters / np.square(np.tile(r0, len(legendre_orders)))
+		else:
+			sp = structural_parameters
 		return np.log(sp + gi_shift)
 	else:
-		sp = np.array(structural_parameters) / 16.0
+		sp = structural_parameters / 16.0
 		return sp

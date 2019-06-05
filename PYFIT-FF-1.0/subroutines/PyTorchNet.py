@@ -42,6 +42,9 @@ class TorchNet(nn.Module):
 
 		
 
+	def set_reduction_matrix(self, mat):
+		self.reduction_matrix = mat
+
 	# This is just used to provide a list of parameters to the
 	# optimizer when it is initialized.
 	def get_parameters(self):
