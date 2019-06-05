@@ -222,6 +222,7 @@ class NeuralNetwork:
 
 		try:
 			raw_text = file.read()
+			file.close()
 		except Exception as ex:
 			raise Exception("The training set file was opened but an error occured while reading it. File path (%s)."%self.path) from ex
 

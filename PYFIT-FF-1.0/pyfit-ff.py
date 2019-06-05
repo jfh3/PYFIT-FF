@@ -108,15 +108,16 @@ def CompareStructureParameters(first, second):
 	first  = []
 	second = []
 
-	for struct_idx in range(len(first_file.structures)):
-		for atom_idx in range(len(first_file.structures[struct_idx])):
-			for gi_idx in range(len(first_file.structures[struct_idx][atom_idx])):
-				first.append(first_file.structures[struct_idx][atom_idx][gi_idx])
-				second.append(second_file.structures[struct_idx][atom_idx][gi_idx])
+	for struct_idx in range(len(first_file.training_structures.keys())):
+		for atom_idx in range(len(first_file.training_structures[struct_idx])):
+			for gi_idx in range(len(first_file.training_structures[struct_idx][atom_idx].structure_params)):
+				first.append(first_file.training_structures[struct_idx][atom_idx].structure_params[gi_idx])
+				second.append(second_file.training_structures[struct_idx][atom_idx].structure_params[gi_idx])
+
 
 	first  = np.array(first)
 	second = np.array(second)
-	percent_error = np.abs(first - second) / first
+	percent_error = np.abs(np.abs(first - second) / first)
 
 	total_error = np.sum(percent_error)
 	std_error   = np.std(percent_error)
@@ -130,6 +131,13 @@ def CompareStructureParameters(first, second):
 	print("\tstd:   %e"%std_error)
 	print("\tmax:   %e"%max_error)
 	print("\tmin:   %e"%min_error)
+
+	plt.title("Structure Parameter Comparison")
+	plt.scatter(first[:100000], second[:100000], s=3, c='red')
+	plt.plot([min(first), max(first)], [min(first), max(first)])
+	plt.xlabel("First File")
+	plt.ylabel("Second File")
+	plt.show()
 
 
 def TrainNetwork():
@@ -563,7 +571,12 @@ if __name__ == '__main__':
 	# Command Line Argument Processing
 	# ----------------------------------------
 
-	args = [s.lower() for s in sys.argv[1:]]
+	args = []
+	for s in sys.argv[1:]:
+		if s[0] != '-':
+			args.append(s)
+		else:
+			args.append(s.lower())
 
 	compute_gis  = False # Whether or not to compute structure params from poscar data.
 	run_training = False # Whether or not to traing the neural network against structure params.
@@ -577,7 +590,7 @@ if __name__ == '__main__':
 
 	tmp = []
 	for arg in args:
-		if len(arg) > 1 and arg[:2] != '--' and len(arg) > 2:
+		if len(arg) > 1 and arg[:2] != '--' and arg[0] == '-' and len(arg) > 2:
 			# This is a single hypen argument specifying
 			# more than one option.
 			tmp.extend(['-' + c for c in arg[1:]])

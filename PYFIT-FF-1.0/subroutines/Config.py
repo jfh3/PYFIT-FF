@@ -5,13 +5,13 @@ CONFIG_FNAME                       = __file__
 LOG_PATH                           = 'output/log.txt'
 
 # The neural network file to load.
-NEURAL_NETWORK_FILE                = 'input/large_modified/nn-bigger.dat'
+NEURAL_NETWORK_FILE                = 'input/new/nn1.dat'
 
 # --------------------------------------------------
 # Structural Parameter Calculation Configuration
 # --------------------------------------------------
 
-POSCAR_DATA_FILE = 'input/large_modified/modified-training.dat'
+POSCAR_DATA_FILE = 'input/new/train.dat'
 
 # The parameter file to output. This is what gets used for neural network
 # training during the next step (usually). If you want the program to train

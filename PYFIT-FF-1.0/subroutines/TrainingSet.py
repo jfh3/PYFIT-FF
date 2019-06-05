@@ -16,7 +16,6 @@ class TrainingSetFile:
 		log("Path = %s"%path)
 
 		self.path       = path
-		self.structures = []
 		self.initialize()
 
 		log_unindent()
@@ -35,6 +34,7 @@ class TrainingSetFile:
 
 		try:
 			raw_text = file.read()
+			file.close()
 		except Exception as ex:
 			raise Exception("The training set file was opened but an error occured while reading it. File path (%s)."%self.path) from ex
 

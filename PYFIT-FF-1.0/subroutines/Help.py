@@ -29,7 +29,7 @@ Options:
 	                     parameters between the two files. It will also graph the
 	                     flattened structure parameters against eachother so that
 	                     any error trends can be seen. A maximum of the first 
-	                     4096 will be graphed in order to avoid crashing matplotlib.
+	                     100,000 will be graphed in order to avoid crashing matplotlib.
 
 Configuration:
 	The file Config.py contains the majority of the important configuration
