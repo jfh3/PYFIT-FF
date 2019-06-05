@@ -106,6 +106,22 @@ DEFAULT_WEIGHT = 1.0
 WEIGHTS = {}
 # Example: WEIGHTS['Si_B1']=1.0
 
+# This is the means by which error is calculated. 'rmse' is the standard,
+# but 'group-targets' allows you to specify an error target for each 
+# structural group if desired. This will allow you to train your network
+# to very high accuracy in a particular subgroup, while not caring much
+# about others.
+OBJECTIVE_FUNCTION = 'group-targets'
+
+# This is the default rmse value to target for subgroups if
+# OBJECTIVE_FUNCTION = 'group-targets'. This is overriden by 
+# any values explicitely specified in SUBGROUP_TARGETS.
+DEFAULT_TARGET = 0.010
+
+# The rmse target for each subgroup. This is only used if OBJECTIVE_FUNCTION = 'group-targets'
+SUBGROUP_TARGETS = {}
+# Example: SUBGROUP_TARGETS['Si_B1']= 0.004
+
 # Standard NN learning rate.
 LEARNING_RATE = 0.07
 
