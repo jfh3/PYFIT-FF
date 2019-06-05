@@ -5,7 +5,7 @@ CONFIG_FNAME                       = __file__
 LOG_PATH                           = 'output/log.txt'
 
 # The neural network file to load.
-NEURAL_NETWORK_FILE                = 'input/new2/nn1.dat'
+NEURAL_NETWORK_FILE                = 'output/nn1.dat'
 
 # --------------------------------------------------
 # Structural Parameter Calculation Configuration
@@ -41,7 +41,7 @@ PROGRESS_INTERVAL = 5
 TRAINING_SET_FILE                  = 'output/generated.dat'
 
 # Where to save the neural network when done training it.
-NEURAL_NETWORK_SAVE_FILE           = 'output/nn1.dat'
+NEURAL_NETWORK_SAVE_FILE           = 'output/nn2.dat'
 
 # The file to store the E_VS_V data in.
 # Each line will be all volumes in order followed

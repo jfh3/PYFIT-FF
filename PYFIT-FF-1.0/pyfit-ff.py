@@ -118,15 +118,9 @@ def TrainNetwork():
 
 	# We need to know how many atoms are part of the training set and 
 	# how many are part of the validation set.
-	bar = ProgressBar("Calculating Total Atoms", 30, n_training_indices, update_every = 1)
 	n_train_atoms = 0
-	idx           = 1
 	for index in training_indices:
-		bar.update(idx)
 		n_train_atoms += len(training_set.training_structures[index])
-		idx += 1
-
-	bar.finish()
 
 	# The following code assumes that the values in the LSParam file are
 	# ordered sequentially, first by structure, then by atom.
@@ -345,17 +339,31 @@ if __name__ == '__main__':
 	graph_error  = False # Whether or not to produce a plot of error as a function of 
 	                     # the training iteration at the end of the training process.
 
+	# Here we expand single hyphen arguments.
+	# ex: -gte => -g -t -e
+
+	tmp = []
+	for arg in args:
+		if len(arg) > 1 and arg[:2] != '--' and len(arg) > 2:
+			# This is a single hypen argument specifying
+			# more than one option.
+			tmp.extend(['-' + c for c in arg[1:]])
+		else:
+			tmp.append(arg)
+	args = tmp
+
+
 	if len(args) == 0:
 		run_training = True
 	else:
 		if '--help' in args or '-h' in args:
 			print(help_str)
 			exit()
-		if '--compute-gis' in args:
+		if '--compute-gis' in args or '-g' in args:
 			compute_gis = True
-		if '--run-training' in args:
+		if '--run-training' in args or '-t' in args:
 			run_training = True
-		if '--graph-error' in args:
+		if '--graph-error' in args or '-e' in args:
 			graph_error = True
 
 	# By this point we know what operations the user requested.
