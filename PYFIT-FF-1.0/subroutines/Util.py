@@ -2,6 +2,7 @@ from Config   import *
 from datetime import datetime
 import numpy as np
 import sys
+import atexit
 
 def GetLineCells(line_string):
 	return [i for i in line_string.split(' ') if i != '' and not i.isspace()]
@@ -59,6 +60,9 @@ def LogConfiguration():
 log_file  = open(LOG_PATH, 'w')
 indent    = 0
 
+# This ensures that all log file information will write
+# in the event of a crash. (hopefully)
+@atexit.register
 def cleanup():
 	log_file.close()
 

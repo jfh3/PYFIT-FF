@@ -15,6 +15,11 @@ class NeuralNetwork:
 
 		self.load()
 
+		log("File Configuration: ")
+		log_indent()
+		log(str(self.config))
+		log_unindent()
+
 		log_unindent()
 
 	def generateNetwork(self):

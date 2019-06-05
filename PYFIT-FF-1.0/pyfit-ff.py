@@ -2,10 +2,13 @@ from sys import path
 path.append("subroutines")
 
 from   Config                 import *
+from   PoscarLoader           import PoscarDataFile
+from   NeighborList           import generateNeighborList
 from   TrainingSet            import TrainingSetFile
 from   NeuralNetwork          import NeuralNetwork
 from   PyTorchNet             import TorchNet
 from   ConfigurationParser    import TrainingFileConfig
+from   StructuralParameters   import GenerateStructuralParameters
 import torch
 import torch.nn            as nn
 import torch.nn.functional as F
@@ -19,12 +22,26 @@ from   time import time
 
 
 def ComputeStructureParameters():
-	pass
+	log("Beginning Structural Parameter Computation")
+	log_indent()
+
+
+	neural_network        = NeuralNetwork(NEURAL_NETWORK_FILE)
+	poscar_data           = PoscarDataFile(POSCAR_DATA_FILE)
+	neighborLists         = generateNeighborList(poscar_data, neural_network)
+	structural_parameters = GenerateStructuralParameters(poscar_data, neighborLists, neural_network)
+
+	
+	log_unindent()
+
 
 def GraphError():
 	pass
 
 def TrainNetwork():
+	log("Beginning Training Process")
+	log_indent()
+
 	device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 	
 
@@ -291,7 +308,7 @@ def TrainNetwork():
 if __name__ == '__main__':
 	log("---------- Program Started ----------\n")
 
-	log("Command Line: %s"%' '.join(sys.argv))
+	log("Command Line: %s\n"%' '.join(sys.argv))
 
 	program_start = time()
 

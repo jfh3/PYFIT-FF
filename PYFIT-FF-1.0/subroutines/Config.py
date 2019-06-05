@@ -4,6 +4,32 @@ CONFIG_FNAME                       = __file__
 # File to use for writing log information.
 LOG_PATH                           = 'output/log.txt'
 
+# The neural network file to load.
+NEURAL_NETWORK_FILE                = 'input/new/nn1.dat'
+
+# --------------------------------------------------
+# Structural Parameter Calculation Configuration
+# --------------------------------------------------
+
+POSCAR_DATA_FILE = 'input/new/train.dat'
+
+# The parameter file to output. This is what gets used for neural network
+# training during the next step (usually). If you want the program to train
+# on this file immediately after generating it, specify the same file for
+# the TRAINING_SET_FILE parameter and pass the --run-training flag to the
+# program.
+LSPARAM_FILE     = 'output/gi_gen_test/generated.dat'
+
+# The file to store training data and neighbors lists in. If you don't specify this
+# it won't get written.
+NEIGHBOR_FILE    = ''
+
+
+# --------------------------------------------------
+# Neural Network Training Configuration
+# --------------------------------------------------
+
+
 # Network Loss Log File Path
 LOSS_LOG_PATH                      = 'output/loss_log.txt'
 
@@ -12,10 +38,7 @@ PROGRESS_INTERVAL = 5
 
 # The structure file that contains POSCAR structures
 # and DFT energies.
-TRAINING_SET_FILE                  = 'input/large/LSParam-mod.dat'
-
-# The neural network file to load.
-NEURAL_NETWORK_FILE                = 'input/large/nn1.dat'
+TRAINING_SET_FILE                  = 'output/gi_gen_test/generated.dat'
 
 # Where to save the neural network when done training it.
 NEURAL_NETWORK_SAVE_FILE           = 'output/nn1.dat'
