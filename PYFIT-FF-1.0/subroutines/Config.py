@@ -5,13 +5,13 @@ CONFIG_FNAME                       = __file__
 LOG_PATH                           = 'output/log.txt'
 
 # The neural network file to load.
-NEURAL_NETWORK_FILE                = 'output/nn1.dat'
+NEURAL_NETWORK_FILE                = 'input/new/nn1.dat'
 
 # --------------------------------------------------
 # Structural Parameter Calculation Configuration
 # --------------------------------------------------
 
-POSCAR_DATA_FILE = 'input/new2/train.dat'
+POSCAR_DATA_FILE = 'input/new/train.dat'
 
 # The parameter file to output. This is what gets used for neural network
 # training during the next step (usually). If you want the program to train
@@ -34,7 +34,7 @@ NEIGHBOR_FILE    = 'output/nbl.dat'
 LOSS_LOG_PATH                      = 'output/loss_log.txt'
 
 # Print training error every PROGRESS_INTERVAL epochs.
-PROGRESS_INTERVAL = 5
+PROGRESS_INTERVAL = 2
 
 # The structure file that contains POSCAR structures
 # and DFT energies.
@@ -72,4 +72,4 @@ OPTIMIZATION_ALGORITHM = 'LBFGS'
 MAX_LBFGS_ITERATIONS = 10
 
 # Maximum number of epochs to run through for training.
-MAXIMUM_TRAINING_ITERATIONS = 10
+MAXIMUM_TRAINING_ITERATIONS = 100
