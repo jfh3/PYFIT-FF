@@ -256,7 +256,7 @@ def TrainNetwork():
 		if current_structure[0].group_name in WEIGHTS.keys():
 			group_weights.append(WEIGHTS[current_structure[0].group_name])
 		else:
-			group_weights.append(1.0)
+			group_weights.append(DEFAULT_WEIGHT)
 
 		for atom in current_structure:
 			structure_params.append(atom.structure_params)
@@ -317,7 +317,7 @@ def TrainNetwork():
 			if current_structure[0].group_name in WEIGHTS.keys():
 				val_group_weights.append(WEIGHTS[current_structure[0].group_name])
 			else:
-				val_group_weights.append(1.0)
+				val_group_weights.append(DEFAULT_WEIGHT)
 
 			for atom in current_structure:
 				val_structure_params.append(atom.structure_params)

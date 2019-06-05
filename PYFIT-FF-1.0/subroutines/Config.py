@@ -5,7 +5,7 @@ CONFIG_FNAME                       = __file__
 LOG_PATH                           = 'output/log.txt'
 
 # The neural network file to load.
-NEURAL_NETWORK_FILE                = 'input/new/nn1.dat'
+NEURAL_NETWORK_FILE                = 'output/nn1.dat'
 
 # --------------------------------------------------
 # Structural Parameter Calculation Configuration
@@ -60,7 +60,7 @@ NETWORK_BACKUP_INTERVAL            = 25
 
 # If True, all backups are kept. If False, only the last backup 
 # is kept.
-KEEP_BACKUP_HISTORY                = True
+KEEP_BACKUP_HISTORY                = False
 
 # Network Loss Log File Path
 LOSS_LOG_PATH                      = 'output/loss_log.txt'
@@ -96,13 +96,18 @@ E_SHIFT = 0.0
 # The ratio of training data to overall amount of data.
 TRAIN_TO_TOTAL_RATIO = 0.85
 
+
+# The weight to assign to any group not explicitely enumerated
+# in WEIGHTS
+DEFAULT_WEIGHT = 1.0
+
 # Contains values that indicate how heavily weighted each subgroup
 # should be when computing the error.
 WEIGHTS = {}
 # Example: WEIGHTS['Si_B1']=1.0
 
 # Standard NN learning rate.
-LEARNING_RATE = 0.09
+LEARNING_RATE = 0.07
 
 # Which torch.optim algorithm to use.
 OPTIMIZATION_ALGORITHM = 'LBFGS'
@@ -111,4 +116,4 @@ OPTIMIZATION_ALGORITHM = 'LBFGS'
 MAX_LBFGS_ITERATIONS = 10
 
 # Maximum number of epochs to run through for training.
-MAXIMUM_TRAINING_ITERATIONS = 50
+MAXIMUM_TRAINING_ITERATIONS = 100
