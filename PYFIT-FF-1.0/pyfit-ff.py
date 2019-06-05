@@ -18,8 +18,12 @@ import numpy               as np
 import Util
 import sys
 from   Util import log, log_indent, log_unindent, ProgressBar
+from   Help import help_str
 from   time import time
 
+
+def print_help():
+	print(help_str)
 
 def ComputeStructureParameters():
 	log("Beginning Structural Parameter Computation")
@@ -304,7 +308,6 @@ def TrainNetwork():
 
 	log_unindent()
 
-
 if __name__ == '__main__':
 	log("---------- Program Started ----------\n")
 
@@ -331,6 +334,9 @@ if __name__ == '__main__':
 	if len(args) == 0:
 		run_training = True
 	else:
+		if '--help' in args or '-h' in args:
+			print_help()
+			exit()
 		if '--compute-gis' in args:
 			compute_gis = True
 		if '--run-training' in args:
