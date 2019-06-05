@@ -83,6 +83,55 @@ def GraphError(graph_error, graph_val):
 	plt.title("Error vs. Iteration")
 	plt.show()
 
+def CompareStructureParameters(first, second):
+	first_file  = TrainingSetFile(first)
+	second_file = TrainingSetFile(second)
+
+	if first_file.config.layer_sizes[0] != second_file.config.layer_sizes[0]:
+		print("The files have a different number of structure parameters per atom.")
+		exit()
+
+	if first_file.n_structures != second_file.n_structures:
+		print("The two files have a different number of structures.")
+		exit()
+
+	if first_file.n_atoms != second_file.n_atoms:
+		print("The files have a different number of atoms.")
+		exit()
+
+	if first_file.config != second_file.config:
+		print("The two files have different configuration parameters.")
+		print("You shouldn't expect their structural parameters to match.\n")
+
+	# Now we want a flattened array of all structural parameters in order from
+	# both files.
+	first  = []
+	second = []
+
+	for struct_idx in range(len(first_file.structures)):
+		for atom_idx in range(len(first_file.structures[struct_idx])):
+			for gi_idx in range(len(first_file.structures[struct_idx][atom_idx])):
+				first.append(first_file.structures[struct_idx][atom_idx][gi_idx])
+				second.append(second_file.structures[struct_idx][atom_idx][gi_idx])
+
+	first  = np.array(first)
+	second = np.array(second)
+	percent_error = np.abs(first - second) / first
+
+	total_error = np.sum(percent_error)
+	std_error   = np.std(percent_error)
+	mean_error  = np.mean(percent_error)
+	max_error   = percent_error.max()
+	min_error   = percent_error.min()
+
+	print("Error Summary")
+	print("\ttotal: %e"%total_error)
+	print("\tmean:  %e"%mean_error)
+	print("\tstd:   %e"%std_error)
+	print("\tmax:   %e"%max_error)
+	print("\tmin:   %e"%min_error)
+
+
 def TrainNetwork():
 	log("Beginning Training Process")
 	log_indent()
@@ -366,6 +415,16 @@ def TrainNetwork():
 	current_iteration = 0
 	start_time        = time()
 
+	# This keeps track of the number of times in a row that
+	# the difference between the error of two subsequent iterations
+	# has been below FLAT_ERROR_STOP. When this exceeds or equals 
+	# FLAT_ERROR_ITERATIONS training will terminate.
+	error_below_threshold_count = 0
+
+
+	last_training_validation_difference = 10.0
+	train_validate_incrase_count        = 0
+
 	with torch.no_grad():
 		# This will populate the list of loss values
 		# with the initial value before training.
@@ -374,19 +433,58 @@ def TrainNetwork():
 	bar = ProgressBar("Training", 30, MAXIMUM_TRAINING_ITERATIONS + 1, update_every = PROGRESS_INTERVAL)
 
 	while current_iteration < MAXIMUM_TRAINING_ITERATIONS:
+		# Most of this code actually just handles stopping conditions and
+		# error logging.
+
 		loss_values[current_iteration] = last_loss
 
 		bar.update(current_iteration + 1)
 
-		# if current_iteration % PROGRESS_INTERVAL == 0:
-		# 	print('Training Iteration = %5i | Error = %E'%(current_iteration, last_loss))
+		# This if statement handles the logic that ensures that the training
+		# stops when the error reaches an apparent minimum.
+		if current_iteration > 0:
+			error_delta      = np.abs(last_loss - loss_values[current_iteration - 1])
+			inside_threshold = error_delta <= FLAT_ERROR_STOP
+
+			if inside_threshold:
+				error_below_threshold_count += 1
+				if error_below_threshold_count >= FLAT_ERROR_ITERATIONS:
+					bar.finish()
+					print("Error Has Reached an Apparent Minimum.")
+					break
+			else:
+				error_below_threshold_count = 0
 
 		if current_iteration % E_VS_V_INTERVAL == 0:
 			# Add the current E vs. V values into the log file.
 			log_energy_vs_volume()
 
+		# This if statement handles the logic to ensure that the training
+		# stops if the validation error gets too far away from the training
+		# error or if the validation error starts to consistently diverge 
+		# from the training error.
 		if current_iteration % VALIDATION_INTERVAL == 0 and TRAIN_TO_TOTAL_RATIO != 1.0:
 			validation_loss_values.append(get_validation_loss())
+
+			if current_iteration > 25:
+				# Make sure that there isn't an overfit.
+				train_val_diff = validation_loss_values[-1] - last_loss
+				
+				if train_val_diff >= OVERFIT_ERROR_STOP:
+					bar.finish()
+					print("The Network Appears to be Becoming Overfit.")
+					break
+
+				if train_val_diff > last_training_validation_difference:
+					train_validate_incrase_count += 1
+					if train_validate_incrase_count >= OVERFIT_INCREASE_MAX_ITERATIONS:
+						bar.finish()
+						print("The Validation Error is Diverging from the Training Error.")
+						break
+				else:
+					train_validate_incrase_count = 0
+
+				last_training_validation_difference = train_val_diff
 
 		if current_iteration % NETWORK_BACKUP_INTERVAL == 0:
 			# Figure out what to name the file.
@@ -396,11 +494,11 @@ def TrainNetwork():
 				name       = NETWORK_BACKUP_DIR + 'nn_bk_%i.dat'%backup_idx
 			else:
 				name       = NETWORK_BACKUP_DIR + 'nn_bk.dat'
-				
+
 			neural_network_data.layers = torch_net.get_network_values()
 			neural_network_data.writeNetwork(name)
 
-
+		# The remaining lines in this loop are where the actaul training takes place.
 		if OPTIMIZATION_ALGORITHM == 'LBFGS':
 			optimizer.step(closure)
 		else:
@@ -493,6 +591,16 @@ if __name__ == '__main__':
 	else:
 		if '--help' in args or '-h' in args:
 			print(help_str)
+			exit()
+		if '--compare' in args or '-c' in args:
+			if len(args) != 3:
+				print("Invalid Argument Combination:")
+				print("If -c or --compare is specified, you must specify two file names after and nothing else.")
+				exit()
+
+			first_file  = args[1]
+			second_file = args[2]
+			CompareStructureParameters(first_file, second_file)
 			exit()
 		if '--compute-gis' in args or '-g' in args:
 			compute_gis = True

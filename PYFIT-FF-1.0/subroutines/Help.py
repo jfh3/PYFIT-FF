@@ -22,6 +22,15 @@ Options:
 	                     VALIDATION_LOG_PATH in Config.py.
 	                     You must have matplotlib installed to use this option.
 
+	-c --compare         This must be the only option if specified. Will compare
+	                     the two training set files listed after this argument.
+	                     The program will summarize the mean, min, max and 
+	                     standard deviation of the difference between the structure
+	                     parameters between the two files. It will also graph the
+	                     flattened structure parameters against eachother so that
+	                     any error trends can be seen. A maximum of the first 
+	                     4096 will be graphed in order to avoid crashing matplotlib.
+
 Configuration:
 	The file Config.py contains the majority of the important configuration
 	parameters for the program. See the comments in that file for more details.
@@ -39,4 +48,5 @@ Examples:
 	python3 pyfit-ff.py --compute-gis --run-training --graph-error
 	python3 pyfit-ff.py -e
 	python3 pyfit-ff.py -t
+	python3 pyfit-ff.py --compare train01.dat train02.dat
 """

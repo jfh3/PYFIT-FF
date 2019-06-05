@@ -5,7 +5,7 @@ CONFIG_FNAME                       = __file__
 LOG_PATH                           = 'output/log.txt'
 
 # The neural network file to load.
-NEURAL_NETWORK_FILE                = 'input/large_modified/nn1.dat'
+NEURAL_NETWORK_FILE                = 'input/large_modified/nn-bigger.dat'
 
 # --------------------------------------------------
 # Structural Parameter Calculation Configuration
@@ -35,6 +35,21 @@ E_SHIFT = 0.0
 # --------------------------------------------------
 # Neural Network Training Configuration
 # --------------------------------------------------
+
+# If the difference in the loss between each subsequent training iteration is
+# less than FLAT_ERROR_STOP for FLAT_ERROR_ITERATIONS, the training will stop
+# before reaching MAXIMUM_TRAINING_ITERATIONS.
+FLAT_ERROR_STOP       = 1e-6
+FLAT_ERROR_ITERATIONS = 4
+
+# After 25 training iterations, if the difference between the training error and
+# the validation error is greater than this, the training with stop before reaching
+# MAXIMUM_TRAINING_ITERATIONS.
+OVERFIT_ERROR_STOP = 2e-2
+
+# The maximum number of times in a row that the difference between the validation
+# error and the training error can increase.
+OVERFIT_INCREASE_MAX_ITERATIONS = 5
 
 # The directory to backup neural network files in at the
 # interval specified below.
@@ -79,7 +94,7 @@ E_VS_V_INTERVAL = 100
 E_SHIFT = 0.0 
 
 # The ratio of training data to overall amount of data.
-TRAIN_TO_TOTAL_RATIO = 0.68
+TRAIN_TO_TOTAL_RATIO = 0.85
 
 # Contains values that indicate how heavily weighted each subgroup
 # should be when computing the error.
@@ -87,7 +102,7 @@ WEIGHTS = {}
 # Example: WEIGHTS['Si_B1']=1.0
 
 # Standard NN learning rate.
-LEARNING_RATE = 0.05
+LEARNING_RATE = 0.09
 
 # Which torch.optim algorithm to use.
 OPTIMIZATION_ALGORITHM = 'LBFGS'
@@ -96,4 +111,4 @@ OPTIMIZATION_ALGORITHM = 'LBFGS'
 MAX_LBFGS_ITERATIONS = 10
 
 # Maximum number of epochs to run through for training.
-MAXIMUM_TRAINING_ITERATIONS = 200
+MAXIMUM_TRAINING_ITERATIONS = 50
