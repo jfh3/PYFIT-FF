@@ -102,6 +102,47 @@ class TrainingFileConfig:
 		if self.layer_sizes[0] != self.n_r0 * self.n_legendre_polynomials:
 			raise ValueError("The input layer dimensions of the neural network do not match the structural parameter dimensions.")
 
+	# This converts the configuration parameters into a string suitable for writing
+	# into a file. If prepend_comment = True, '#' will go at the beginning of each line.
+	def toFileString(self, prepend_comment = False):
+		string  = ""
+
+		string += ' %i %.7f %i '%(self.gi_mode, self.gi_shift, self.activation_function)
+		string += '- Gi version, reference Gi and type of logistic function.\n'
+
+		string += ' %i '%self.n_species
+		string += '- number of chemical species in the system.\n'
+
+		string += ' %s %.7f\n'%(self.element, self.mass)
+
+		string += ' %i %.7f %.7f %.7f %.7f\n'%(
+			1 if self.randomize else 0, 
+			self.max_random, 
+			self.cutoff_distance, 
+			self.truncation_distance, 
+			self.gi_sigma
+		)
+
+		legendre_orders = ' '.join([str(l) for l in self.legendre_orders])
+		string += ' %i %s\n'%(self.n_legendre_polynomials, legendre_orders)
+
+		r0_values = ' '.join([str(r) for r in self.r0])
+		string += ' %i %s\n'%(self.n_r0, r0_values)
+
+		bop_params = ' '.join([str(b) for b in self.BOP_parameters])
+		string += ' %i %s\n'%(self.BOP_param0, bop_params)
+
+		network_layers = ' '.join([str(n) for n in self.layer_sizes])
+		string += ' %i %s'%(self.n_layers, network_layers)
+
+		if prepend_comment:
+			string = '\n'.join([' #' + line for line in string.split('\n')])
+
+		if string[-1] != '\n':
+			string += '\n'
+
+		return string
+
 	def __str__(self):
 		# This is a built-in function that should be defined for all classes. Python automatically
 		# calls this to convert an object to a string whenever an object is passed to a function

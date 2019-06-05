@@ -1,7 +1,9 @@
 from Config import *
 import Util
+import numpy as np
 from   Util import log, log_indent, log_unindent, ProgressBar
 from   ConfigurationParser    import TrainingFileConfig
+from   datetime import datetime
 
 # Contains all of the data for a training set file.
 # Can be sued to load data from a file and to dump
@@ -50,6 +52,7 @@ class TrainingSetFile:
 		# values that we need.
 		# TODO: Write code that checks all of these properties against
 		#       those specified in the neural network file.
+		self.potential_type  = int(Util.GetLineCells(self.lines[8])[1])
 		self.n_structures    = int(Util.GetLineCells(self.lines[9])[1])
 		self.n_atoms         = int(Util.GetLineCells(self.lines[10])[1])
 		self.training_structures = {}
@@ -111,3 +114,86 @@ class TrainingInput:
 		result += "Structure Volume     = %s\n"%(self.structure_volume)
 		result += "Structure Parameters = %s\n"%(' '.join([str(i) for i in self.structure_params]))
 		return result
+
+# This function is designed to write the generated structure parameter
+# information to a file in the format also used by this program to store
+# and load training data. If the neighbor_lists parameter is specified,
+# this function will write neighbor list data as well.
+def WriteTrainingSet(fname, config, poscar_data, structure_params, neighbor_lists = None):
+	starttime = datetime.now()
+	if neighbor_lists == None:
+		log("Writing LSParam File")
+	else:
+		log("Writing Neighbor List File")
+
+	log_indent()
+	log("Write Started   at %s"%(starttime.strftime("%Y-%m-%d %H:%M:%S")))
+
+
+	file = open(fname, 'w')
+
+	file.write(config.toFileString(prepend_comment = True))
+	file.write(' # %i - Potential Type\n'%(1))
+	file.write(' # %i - Number of Structures\n'%(len(poscar_data.structures)))
+	file.write(' # %i - Number of Atoms\n'%(poscar_data.n_atoms))
+	file.write(' # ATOM-ID GROUP-NAME GROUP_ID STRUCTURE_ID STRUCTURE_Natom STRUCTURE_E_DFT STRUCTURE_Vol\n')
+
+	total_atom_idx = 0
+	atom_idx       = 0
+	structure_idx  = 0
+	group_idx      = 1
+	current_group  = poscar_data.structures[0].comment
+
+	bar_title = 'Writing LSParams ' if neighbor_lists == None else 'Writing Neighbor Lists'
+	bar = ProgressBar(bar_title, 30, poscar_data.n_atoms, update_every = 50)
+
+
+	for struct in poscar_data.structures:
+		if struct.comment != current_group:
+			current_group = struct.comment
+			group_idx += 1
+
+		# This compute the parallelepiped volume of the 
+		# structure based purely on its basis vectors.
+		struct_volume = np.linalg.norm(
+			np.cross(
+				np.cross(struct.A1, struct.A2),
+				struct.A3
+			)
+		)
+
+		atom_idx = 0
+		for atom in struct.atoms:
+			file.write('ATOM-%i %s %i %i %i %.6E %.6E\n'%(
+				total_atom_idx,
+				current_group,
+				group_idx,
+				structure_idx,
+				struct.n_atoms,
+				struct.energy,
+				struct_volume
+			))
+
+			params_string = ' '.join(['%.6E'%g for g in structure_params[structure_idx][atom_idx]])
+			file.write('Gi  %s\n'%(params_string))
+
+			if neighbor_lists != None:
+				current_list = neighbor_lists[structure_idx][atom_idx]
+				nbl_string   = ' '.join(['%.6E %.6E %.6E'%(n[0], n[1], n[2]) for n in current_list])
+				file.write('NBL %i %s\n'%(len(current_list), nbl_string))
+
+			total_atom_idx += 1
+			atom_idx       += 1
+		
+		bar.update(total_atom_idx)
+
+		structure_idx += 1
+
+	bar.finish()
+	file.write('\n')
+	file.close()
+
+	endtime = datetime.now()
+	log("Write Completed at %s"%(endtime.strftime("%Y-%m-%d %H:%M:%S")))
+	log("Seconds Elapsed = %i\n"%((endtime - starttime).seconds))
+	log_unindent()

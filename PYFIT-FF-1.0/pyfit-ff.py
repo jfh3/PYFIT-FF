@@ -4,7 +4,7 @@ path.append("subroutines")
 from   Config                 import *
 from   PoscarLoader           import PoscarDataFile
 from   NeighborList           import generateNeighborList
-from   TrainingSet            import TrainingSetFile
+from   TrainingSet            import TrainingSetFile, WriteTrainingSet
 from   NeuralNetwork          import NeuralNetwork
 from   PyTorchNet             import TorchNet
 from   ConfigurationParser    import TrainingFileConfig
@@ -22,9 +22,6 @@ from   Help import help_str
 from   time import time
 
 
-def print_help():
-	print(help_str)
-
 def ComputeStructureParameters():
 	log("Beginning Structural Parameter Computation")
 	log_indent()
@@ -34,7 +31,23 @@ def ComputeStructureParameters():
 	poscar_data           = PoscarDataFile(POSCAR_DATA_FILE)
 	neighborLists         = generateNeighborList(poscar_data, neural_network)
 	structural_parameters = GenerateStructuralParameters(poscar_data, neighborLists, neural_network)
+	
 
+	WriteTrainingSet(
+		LSPARAM_FILE, 
+		neural_network.config, 
+		poscar_data, 
+		structural_parameters
+	)
+
+	if NEIGHBOR_FILE != None and NEIGHBOR_FILE != '':
+		WriteTrainingSet(
+			NEIGHBOR_FILE, 
+			neural_network.config, 
+			poscar_data, 
+			structural_parameters,
+			neighborLists
+		)
 	
 	log_unindent()
 
@@ -309,6 +322,7 @@ def TrainNetwork():
 	log_unindent()
 
 if __name__ == '__main__':
+	Util.init()
 	log("---------- Program Started ----------\n")
 
 	log("Command Line: %s\n"%' '.join(sys.argv))
@@ -335,7 +349,7 @@ if __name__ == '__main__':
 		run_training = True
 	else:
 		if '--help' in args or '-h' in args:
-			print_help()
+			print(help_str)
 			exit()
 		if '--compute-gis' in args:
 			compute_gis = True
@@ -359,5 +373,3 @@ if __name__ == '__main__':
 
 	program_end = time()
 	log("Total Run Time: %.1fs"%(program_end - program_start))
-
-	Util.cleanup()

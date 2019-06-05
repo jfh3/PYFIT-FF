@@ -191,13 +191,7 @@ class NeuralNetwork:
 	def writeNetwork(self, path):
 		file = open(path, 'w')
 
-		if not self.config.randomize:
-			self.lines[3] = self.lines[3].replace(' 1 ', ' 0 ')
-
-		# Write the global configuration values
-		# from the first six lines.
-		for line in self.lines[:8]:
-			file.write(line + '\n')
+		file.write(self.config.toFileString())
 
 		# Now we write the weights by column, rather than
 		# by row for each layer. The biases go at the end

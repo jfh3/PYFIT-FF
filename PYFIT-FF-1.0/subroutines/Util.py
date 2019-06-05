@@ -56,9 +56,11 @@ def LogConfiguration():
 # -------------------------------------
 # Initialization and Logging
 # -------------------------------------
-
-log_file  = open(LOG_PATH, 'w')
-indent    = 0
+def init():
+	global log_file
+	global indent
+	log_file  = open(LOG_PATH, 'w')
+	indent    = 0
 
 # This ensures that all log file information will write
 # in the event of a crash. (hopefully)
