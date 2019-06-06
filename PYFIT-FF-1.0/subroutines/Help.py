@@ -1,7 +1,9 @@
 help_str = """Usage: python3 pyfit-ff.py --compute-gis --run-training
 
 Options:
-	-g --compute-gis     Compute structural parameters using poscar file data,
+	-h --help            Print this message.
+	
+	-g --compute-gis     Compute structural parameters using poscar file data.
 
 	-t --run-training    Train the neural network file on existing structure 
 	                     parameter data. If --compute-gis is specified, the
@@ -42,6 +44,9 @@ Notes:
 	   order of n^2 time where n is the number of atoms. Expect it to take a 
 	   while for large datasets. Typical times are around 30 seconds for a 
 	   datset of about 2,000 structures with a total of 14,000 atoms.
+	3) You can use the control-c interrupt during the training process to quit 
+	   early. The program will save the network in its current state and write 
+	   log information.
 
 Examples:
 	python3 pyfit-ff.py -gtev

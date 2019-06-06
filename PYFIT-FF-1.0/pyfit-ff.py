@@ -198,9 +198,7 @@ def TrainNetwork():
 	#     6) A matrix that reduces a set of energy outputs for each atom
 	#        into a list of total energies, one for each structure.
 
-	# Randomly select a set of structure IDs to use as the training set
-	# and use the rest as a validation set.
-	n_pick             = int(TRAIN_TO_TOTAL_RATIO * training_set.n_structures)
+	
 
 	# It is infinitely faster to shuffle the array and then pick the first n_pick
 	# indices rather than using np.random.choice. If we do the latter, determining
@@ -208,13 +206,58 @@ def TrainNetwork():
 	# the training set, which takes n_structures^2 time. This is because for each 
 	# indice, we have to scan the whole list of training indices to verify that it
 	# isn't in there.
-	all_indices          = np.array(range(training_set.n_structures))
-	np.random.shuffle(all_indices)
-	all_indices          = list(all_indices)
-	training_indices     = list(all_indices[:n_pick])
-	validation_indices   = list(all_indices[n_pick:])
-	n_training_indices   = len(training_indices)
-	n_validation_indices = len(validation_indices)
+	if OBJECTIVE_FUNCTION == 'group-targets':
+		# If we are training to specific group error targets, we
+		# need to split up the training and validation data so that
+		# each group is evenly represented in both the training and
+		# validation set. If we don't do this, there is a random 
+		# chance that a group that we want to train to a specific
+		# error will be underrepresented in the training set or
+		# underrepresented in the validation set.
+
+		# Split up the training structures by their group.
+		training_group_dict = {}
+		current_group       = training_set.training_structures[0][0].group_name
+		training_group_dict[current_group] = []
+		for struct_idx in training_set.training_structures:
+			current_group = training_set.training_structures[struct_idx][0].group_name
+			if current_group not in training_group_dict:
+				training_group_dict[current_group] = []
+
+			# Here we are appending a tuple structured as (structure, index within list)
+			# This is so that the index within the large list of structures is not
+			# lost while constructing the grouping.
+			training_group_dict[current_group].append(struct_idx)
+
+		# Now that we have all of the structural groups separated, we select 
+		# the appropriate percentage of each group and add it into the list of
+		# training and validation indices.
+		training_indices   = []
+		validation_indices = []
+
+		for group in training_group_dict:
+			n_pick      = int(TRAIN_TO_TOTAL_RATIO * len(training_group_dict[group]))
+			all_indices = np.array(training_group_dict[group])
+			np.random.shuffle(all_indices)
+			all_indices = list(all_indices)
+
+			training_indices.extend(list(all_indices[:n_pick]))
+			validation_indices.extend(list(all_indices[n_pick:]))
+
+		n_training_indices   = len(training_indices)
+		n_validation_indices = len(validation_indices)
+
+	else:
+		# Randomly select a set of structure IDs to use as the training set
+		# and use the rest as a validation set.
+		n_pick               = int(TRAIN_TO_TOTAL_RATIO * training_set.n_structures)
+		all_indices          = np.array(range(training_set.n_structures))
+		np.random.shuffle(all_indices)
+		all_indices          = list(all_indices)
+		training_indices     = list(all_indices[:n_pick])
+		validation_indices   = list(all_indices[n_pick:])
+		n_training_indices   = len(training_indices)
+		n_validation_indices = len(validation_indices)
 	
 
 	# We need to know how many atoms are part of the training set and 
@@ -234,12 +277,16 @@ def TrainNetwork():
 
 		# We need to know the number of distinct groups.
 		n_groups = 1
-		last_group = training_set.training_structures[training_indices[0]][0].group_name
+
+		last_group  = training_set.training_structures[training_indices[0]][0].group_name
+		used_groups = [last_group]
 		for struct_id in training_indices:
 			current_group = training_set.training_structures[struct_id][0].group_name
 			if current_group != last_group:
-				n_groups  += 1
-				last_group = current_group
+				if current_group not in used_groups:
+					n_groups  += 1
+					last_group = current_group
+					used_groups.append(current_group)
 
 		group_reduction_matrix = np.zeros((n_groups, n_training_indices))
 
@@ -364,13 +411,16 @@ def TrainNetwork():
 			n_val_atoms += len(training_set.training_structures[index])
 
 		if OBJECTIVE_FUNCTION == 'group-targets':
-			val_n_groups   = 1
-			val_last_group = training_set.training_structures[validation_indices[0]][0].group_name
+			val_n_groups    = 1
+			val_last_group  = training_set.training_structures[validation_indices[0]][0].group_name
+			val_used_groups = [val_last_group]
 			for struct_id in validation_indices:
 				current_group = training_set.training_structures[struct_id][0].group_name
 				if current_group != val_last_group:
-					val_n_groups  += 1
-					val_last_group = current_group
+					if current_group not in val_used_groups:
+						val_n_groups  += 1
+						val_last_group = current_group
+						val_used_groups.append(current_group)
 
 			val_group_reduction_matrix = np.zeros((val_n_groups, n_validation_indices))
 
@@ -382,7 +432,7 @@ def TrainNetwork():
 
 			# We need to know the size of each group so that we can divide by this
 			# when calculating the RMSE for each group.
-			val_group_sizes            = [0]*n_groups
+			val_group_sizes            = [0]*val_n_groups
 
 			# Here we store a row index that corresponds to each
 			# structural group in the group_reduction_matrix.
@@ -397,10 +447,10 @@ def TrainNetwork():
 
 			# Here we handle the insertion of the target error value
 			# for this structural group into the array.
-			if last_group in SUBGROUP_TARGETS:
-				group_target_array.append(SUBGROUP_TARGETS[last_group])
+			if val_last_group in SUBGROUP_TARGETS:
+				val_group_target_array.append(SUBGROUP_TARGETS[val_last_group])
 			else:
-				group_target_array.append(DEFAULT_TARGET)
+				val_group_target_array.append(DEFAULT_TARGET)
 
 		# The following code assumes that the values in the LSParam file are
 		# ordered sequentially, first by structure, then by atom.
@@ -438,7 +488,7 @@ def TrainNetwork():
 
 					# Make sure that a row has been assigned for this group.
 					if current_group not in val_group_rows:
-						val_group_rows[val_current_group] = val_current_group_row_idx
+						val_group_rows[current_group] = val_current_group_row_idx
 						val_current_group_row_idx    += 1
 						val_ordered_group_names.append(current_group)
 
@@ -506,7 +556,7 @@ def TrainNetwork():
 		optimizer = optim.LBFGS(torch_net.get_parameters(), lr=LEARNING_RATE, max_iter=MAX_LBFGS_ITERATIONS)
 	else:
 		# TODO: Figure out if this should also be a configuration value.
-		optimizer = optim.SGD(torch_net.get_parameters(), lr=0.001, momentum=0.9)
+		optimizer = optim.SGD(torch_net.get_parameters(), lr=LEARNING_RATE, momentum=0.9)
 
 
 	# Used to track the loss as a function of the iteration,
@@ -608,6 +658,7 @@ def TrainNetwork():
 			net_cpu.randomize_self(PLATEAU_ANNEALING_RAND_STD)
 			torch_net = net_cpu.to(device)
 
+		global LEARNING_RATE
 		LEARNING_RATE -= PLATEAU_ANNEALING_LR_DECREMENT 
 		# Now that there have been copies and modifications,
 		# generate an optimizer for the new parameters.
@@ -649,8 +700,8 @@ def TrainNetwork():
 	# They are used to shutdown the training process if the 
 	# network becomes overfit. See OVERFIT_ERROR_STOP and
 	# OVERFIT_INCREASE_MAX_ITERATIONS in Config.py
-	last_training_validation_difference = 10.0
-	train_validate_incrase_count        = 0
+	last_training_validation_difference  = 10.0
+	train_validate_increase_count        = 0
 
 	# This is used to keep track of the number of times that the
 	# system has reached a plateau in the error and then been partially
@@ -717,14 +768,14 @@ def TrainNetwork():
 
 					if train_val_diff > last_training_validation_difference and train_val_diff > 0.0:
 						log("Iteration: %i, (Validation Error - Training Error) Increase = %f"%(current_iteration, train_val_diff))
-						train_validate_incrase_count += 1
-						if train_validate_incrase_count >= OVERFIT_INCREASE_MAX_ITERATIONS:
+						train_validate_increase_count += 1
+						if train_validate_increase_count >= OVERFIT_INCREASE_MAX_ITERATIONS:
 							log("(Validation Error - Training Error) Increased too many times (%i)"%OVERFIT_INCREASE_MAX_ITERATIONS)
 							bar.finish()
 							print("The Validation Error is Diverging from the Training Error.")
 							break
 					else:
-						train_validate_incrase_count = 0
+						train_validate_increase_count = 0
 
 					last_training_validation_difference = train_val_diff
 
@@ -842,14 +893,14 @@ def TrainNetwork():
 
 			log("Training: ")
 			log_indent()
-			for idx in range(len(per_group_rmse))
+			for idx in range(len(per_group_rmse)):
 				log('%15s = %.3E'%(ordered_group_names[idx], per_group_rmse[idx]))
 
 			log_unindent()
 
 			log("Validation: ")
 			log_indent()
-			for idx in range(len(val_per_group_rmse))
+			for idx in range(len(val_per_group_rmse)):
 				log('%15s = %.3E'%(val_ordered_group_names[idx], val_per_group_rmse[idx]))
 
 			log_unindent()
@@ -860,6 +911,11 @@ def TrainNetwork():
 
 		log_unindent()
 
+	if OBJECTIVE_FUNCTION == 'group-targets':
+		log("Note: The current objective mode is \"group-targets\", so the following")
+		log("      error values are relative to the specified desired error. Depending")
+		log("      on your choice of target errors for groups, these error values may")
+		log("      be very misleading.")
 	log("Final Training Error:   %.3E"%(last_loss))
 	log("Final Validation Error: %.3E"%(validation_loss_values[-1]))
 

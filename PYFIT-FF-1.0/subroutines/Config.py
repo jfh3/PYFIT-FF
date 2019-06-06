@@ -5,7 +5,7 @@ CONFIG_FNAME                       = __file__
 LOG_PATH                           = 'output/log.txt'
 
 # The neural network file to load.
-NEURAL_NETWORK_FILE                = 'output/nn1.dat'
+NEURAL_NETWORK_FILE                = 'input/large_modified/nn1.dat'
 
 # --------------------------------------------------
 # Structural Parameter Calculation Configuration
@@ -39,15 +39,15 @@ E_SHIFT = 0.0
 # If the difference in the loss between each subsequent training iteration is
 # less than FLAT_ERROR_STOP for FLAT_ERROR_ITERATIONS, the training will stop
 # before reaching MAXIMUM_TRAINING_ITERATIONS.
-FLAT_ERROR_STOP       = 1.1e-6
-FLAT_ERROR_ITERATIONS = 10
+FLAT_ERROR_STOP       = 1e-20
+FLAT_ERROR_ITERATIONS = 1
 
 # When a plateau in the error is reached, based on the FLAT_ERROR_STOP and
 # FLAT_ERROR_ITERATIONS conditions, this is the maximum number of times to
 # perform an annealing step. In this context, that means adding a small random
 # number to all weights in order to temporarily increase error, but potentially
 # break out of a local minima. 
-PLATEAU_ANNEALING_MAX_ITERATIONS = 3
+PLATEAU_ANNEALING_MAX_ITERATIONS = 0
 
 # This is the amount to reduce the learning rate by each time a 
 # plateau in the error is reached.
@@ -68,11 +68,11 @@ CHECK_OVERFIT_AFTER = 25
 # After CHECK_OVERFIT_AFTER training iterations, if the difference between the training error and
 # the validation error is greater than this, the training with stop before reaching
 # MAXIMUM_TRAINING_ITERATIONS.
-OVERFIT_ERROR_STOP = 2e-2
+OVERFIT_ERROR_STOP = 2e5
 
 # The maximum number of times in a row that the difference between the validation
 # error and the training error can increase.
-OVERFIT_INCREASE_MAX_ITERATIONS = 50
+OVERFIT_INCREASE_MAX_ITERATIONS = 18
 
 # The directory to backup neural network files in at the
 # interval specified below.
@@ -139,14 +139,15 @@ OBJECTIVE_FUNCTION = 'group-targets'
 # This is the default rmse value to target for subgroups if
 # OBJECTIVE_FUNCTION = 'group-targets'. This is overriden by 
 # any values explicitely specified in SUBGROUP_TARGETS.
-DEFAULT_TARGET = 0.010
+DEFAULT_TARGET = 0.005
 
 # The rmse target for each subgroup. This is only used if OBJECTIVE_FUNCTION = 'group-targets'
 SUBGROUP_TARGETS = {}
+SUBGROUP_TARGETS['Si_B17']= 0.001
 # Example: SUBGROUP_TARGETS['Si_B1']= 0.004
 
 # Standard NN learning rate.
-LEARNING_RATE = 0.05
+LEARNING_RATE = 0.04
 
 # Which torch.optim algorithm to use. Currently this is just an
 # if statement that only does SGD and LBFGS.
@@ -156,4 +157,4 @@ OPTIMIZATION_ALGORITHM = 'LBFGS'
 MAX_LBFGS_ITERATIONS = 10
 
 # Maximum number of epochs to run through for training.
-MAXIMUM_TRAINING_ITERATIONS = 1500
+MAXIMUM_TRAINING_ITERATIONS = 300
