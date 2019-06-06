@@ -11,7 +11,7 @@ NEURAL_NETWORK_FILE                = 'output/nn1.dat'
 # Structural Parameter Calculation Configuration
 # --------------------------------------------------
 
-POSCAR_DATA_FILE = 'input/new/train.dat'
+POSCAR_DATA_FILE = 'input/large_modified/modified-training.dat'
 
 # The parameter file to output. This is what gets used for neural network
 # training during the next step (usually). If you want the program to train
@@ -39,28 +39,51 @@ E_SHIFT = 0.0
 # If the difference in the loss between each subsequent training iteration is
 # less than FLAT_ERROR_STOP for FLAT_ERROR_ITERATIONS, the training will stop
 # before reaching MAXIMUM_TRAINING_ITERATIONS.
-FLAT_ERROR_STOP       = 1e-6
-FLAT_ERROR_ITERATIONS = 4
+FLAT_ERROR_STOP       = 1.1e-6
+FLAT_ERROR_ITERATIONS = 10
 
-# After 25 training iterations, if the difference between the training error and
+# When a plateau in the error is reached, based on the FLAT_ERROR_STOP and
+# FLAT_ERROR_ITERATIONS conditions, this is the maximum number of times to
+# perform an annealing step. In this context, that means adding a small random
+# number to all weights in order to temporarily increase error, but potentially
+# break out of a local minima. 
+PLATEAU_ANNEALING_MAX_ITERATIONS = 3
+
+# This is the amount to reduce the learning rate by each time a 
+# plateau in the error is reached.
+PLATEAU_ANNEALING_LR_DECREMENT = 0.01
+
+# This is the standard deviation of the normally distributed random values to add.
+# The program will generate numbers normally distributed around zero and add
+# them onto the weights. This number is multiplied by of each
+# network parameter to determine the actually STD to use. 
+# Example: if PLATEAU_ANNEALING_RAND_STD = 0.25,
+#          numbers will be np.random.normal(0.0, 0.25 * np.abs(nn_parameters[i]))
+PLATEAU_ANNEALING_RAND_STD = 0.09
+
+# The number of iterations after which the system should start checking
+# for a significant difference between training error and validation error.
+CHECK_OVERFIT_AFTER = 25
+
+# After CHECK_OVERFIT_AFTER training iterations, if the difference between the training error and
 # the validation error is greater than this, the training with stop before reaching
 # MAXIMUM_TRAINING_ITERATIONS.
 OVERFIT_ERROR_STOP = 2e-2
 
 # The maximum number of times in a row that the difference between the validation
 # error and the training error can increase.
-OVERFIT_INCREASE_MAX_ITERATIONS = 5
+OVERFIT_INCREASE_MAX_ITERATIONS = 50
 
 # The directory to backup neural network files in at the
 # interval specified below.
 NETWORK_BACKUP_DIR                 = 'output/nn_backup/'
 
 # Interval to backup the neural network file on.
-NETWORK_BACKUP_INTERVAL            = 25
+NETWORK_BACKUP_INTERVAL            = 100
 
 # If True, all backups are kept. If False, only the last backup 
 # is kept.
-KEEP_BACKUP_HISTORY                = False
+KEEP_BACKUP_HISTORY                = True
 
 # Network Loss Log File Path
 LOSS_LOG_PATH                      = 'output/loss_log.txt'
@@ -123,13 +146,14 @@ SUBGROUP_TARGETS = {}
 # Example: SUBGROUP_TARGETS['Si_B1']= 0.004
 
 # Standard NN learning rate.
-LEARNING_RATE = 0.07
+LEARNING_RATE = 0.05
 
-# Which torch.optim algorithm to use.
+# Which torch.optim algorithm to use. Currently this is just an
+# if statement that only does SGD and LBFGS.
 OPTIMIZATION_ALGORITHM = 'LBFGS'
 
 # Maximum number of iterations for an LBFGS optimization step.
 MAX_LBFGS_ITERATIONS = 10
 
 # Maximum number of epochs to run through for training.
-MAXIMUM_TRAINING_ITERATIONS = 100
+MAXIMUM_TRAINING_ITERATIONS = 1500

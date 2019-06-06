@@ -52,8 +52,7 @@ def ComputeStructureParameters():
 	
 	log_unindent()
 
-
-def GraphError(graph_error, graph_val):
+def GraphError(graph_error, graph_val, annealings):
 	plots = []
 	names = []
 
@@ -76,6 +75,11 @@ def GraphError(graph_error, graph_val):
 		val_indices       = np.array(range(len(validation_values))) * VALIDATION_INTERVAL
 		plots.append(plt.scatter(val_indices, validation_values, s=8))
 		names.append("Validation Error")
+
+	if annealings != None:
+		# Draw vertical red lines where randomization took place.
+		for annealing in annealings:
+			plt.axvline(annealing, c='red')
 
 	plt.legend(plots, names)
 	plt.xlabel("Training Iteration")
@@ -138,7 +142,6 @@ def CompareStructureParameters(first, second):
 	plt.xlabel("First File")
 	plt.ylabel("Second File")
 	plt.show()
-
 
 def TrainNetwork():
 	log("Beginning Training Process")
@@ -223,6 +226,33 @@ def TrainNetwork():
 	# The following code assumes that the values in the LSParam file are
 	# ordered sequentially, first by structure, then by atom.
 
+	if OBJECTIVE_FUNCTION == 'group-targets':
+		# If we are targeting specific errors for different groups,
+		# we need to construct a matrix for determining the error
+		# of each group. This is very similar to the regular reduction
+		# matrix.
+
+		# We need to know the number of distinct groups.
+		n_groups = 1
+		last_group = training_set.training_structures[training_indices[0]][0].group_name
+		for struct_id in training_indices:
+			current_group = training_set.training_structures[struct_id][0].group_name
+			if current_group != last_group:
+				n_groups  += 1
+				last_group = current_group
+
+		group_reduction_matrix = np.zeros((n_groups, n_training_indices))
+
+		# We also need an array of group target error values in the same
+		# order as the groups in the output of the group reduction matrix
+		# so that we can compute the individual groups errors with a PyTorch
+		# operation.
+		group_target_array     = []
+
+		# We need to know the size of each group so that we can divide by this
+		# when calculating the RMSE for each group.
+		group_sizes            = [0]*n_groups
+
 	# This reduction matrix will be multiplied by the output column vector
 	# to reduce the energy of each atom to the energy of each structure.
 	reduction_matrix = np.zeros((n_training_indices, n_train_atoms))
@@ -240,12 +270,60 @@ def TrainNetwork():
 	train_reduction_row    = -1
 	train_reduction_column = 0
 
+	if OBJECTIVE_FUNCTION == 'group-targets':
+		# Here we store a row index that corresponds to each
+		# structural group in the group_reduction_matrix.
+		group_rows             = {}
+		current_group_row_idx  = 1
+		current_group_row      = 0
+		current_group_column   = 0
+		last_group             = training_set.training_structures[training_indices[0]][0].group_name
+		group_rows[last_group] = 0
+
+		# This is just used for reporting per group error at the end.
+		ordered_group_names    = [last_group]
+
+		# Here we handle the insertion of the target error value
+		# for this structural group into the array.
+		if last_group in SUBGROUP_TARGETS:
+			group_target_array.append(SUBGROUP_TARGETS[last_group])
+		else:
+			group_target_array.append(DEFAULT_TARGET)
 
 	for struct_id in training_indices:
 
 		train_reduction_row += 1
 
 		current_structure = training_set.training_structures[struct_id]
+
+		if OBJECTIVE_FUNCTION == 'group-targets':
+			# Figure out what group the current structure corresponds to.
+			current_group = current_structure[0].group_name
+
+			# If we have switched groups, some things need to be handled.
+			if current_group != last_group:
+
+				# Make sure that a row has been assigned for this group.
+				if current_group not in group_rows:
+					group_rows[current_group] = current_group_row_idx
+					current_group_row_idx    += 1
+					ordered_group_names.append(current_group)
+
+					if current_group in SUBGROUP_TARGETS:
+						group_target_array.append(SUBGROUP_TARGETS[current_group])
+					else:
+						group_target_array.append(DEFAULT_TARGET)
+
+				current_group_row = group_rows[current_group]
+				last_group        = current_group
+
+
+			group_sizes[current_group_row] += 1
+
+			# Set the appropriate column of the
+			# appropriate row for this group and structure.
+			group_reduction_matrix[current_group_row][current_group_column] = 1.0
+			current_group_column += 1
 
 		energies.append(current_structure[0].structure_energy)
 		volumes.append(current_structure[0].structure_volume)
@@ -263,6 +341,10 @@ def TrainNetwork():
 			reduction_matrix[train_reduction_row][train_reduction_column] = 1.0
 			train_reduction_column += 1
 
+	if OBJECTIVE_FUNCTION == 'group-targets':
+		group_reduction_matrix = torch.tensor(group_reduction_matrix).type(torch.FloatTensor).to(device)
+		group_target_array     = torch.tensor(np.transpose([group_target_array])).type(torch.FloatTensor).to(device)
+		group_sizes            = torch.tensor(np.transpose([group_sizes])).type(torch.FloatTensor).to(device)
 
 	# Now we should have all of the training data ready, just not in PyTorch tensor format
 	# quite yet.
@@ -280,6 +362,45 @@ def TrainNetwork():
 		n_val_atoms = 0
 		for index in validation_indices:
 			n_val_atoms += len(training_set.training_structures[index])
+
+		if OBJECTIVE_FUNCTION == 'group-targets':
+			val_n_groups   = 1
+			val_last_group = training_set.training_structures[validation_indices[0]][0].group_name
+			for struct_id in validation_indices:
+				current_group = training_set.training_structures[struct_id][0].group_name
+				if current_group != val_last_group:
+					val_n_groups  += 1
+					val_last_group = current_group
+
+			val_group_reduction_matrix = np.zeros((val_n_groups, n_validation_indices))
+
+			# We also need an array of group target error values in the same
+			# order as the groups in the output of the group reduction matrix
+			# so that we can compute the individual groups errors with a PyTorch
+			# operation.
+			val_group_target_array     = []
+
+			# We need to know the size of each group so that we can divide by this
+			# when calculating the RMSE for each group.
+			val_group_sizes            = [0]*n_groups
+
+			# Here we store a row index that corresponds to each
+			# structural group in the group_reduction_matrix.
+			val_group_rows             = {}
+			val_current_group_row_idx  = 1
+			val_current_group_row      = 0
+			val_current_group_column   = 0
+			val_last_group             = training_set.training_structures[validation_indices[0]][0].group_name
+			val_group_rows[val_last_group] = 0
+
+			val_ordered_group_names = [val_last_group]
+
+			# Here we handle the insertion of the target error value
+			# for this structural group into the array.
+			if last_group in SUBGROUP_TARGETS:
+				group_target_array.append(SUBGROUP_TARGETS[last_group])
+			else:
+				group_target_array.append(DEFAULT_TARGET)
 
 		# The following code assumes that the values in the LSParam file are
 		# ordered sequentially, first by structure, then by atom.
@@ -308,6 +429,35 @@ def TrainNetwork():
 
 			current_structure = training_set.training_structures[struct_id]
 
+			if OBJECTIVE_FUNCTION == 'group-targets':
+				# Figure out what group the current structure corresponds to.
+				current_group = current_structure[0].group_name
+
+				# If we have switched groups, some things need to be handled.
+				if current_group != val_last_group:
+
+					# Make sure that a row has been assigned for this group.
+					if current_group not in val_group_rows:
+						val_group_rows[val_current_group] = val_current_group_row_idx
+						val_current_group_row_idx    += 1
+						val_ordered_group_names.append(current_group)
+
+						if current_group in SUBGROUP_TARGETS:
+							val_group_target_array.append(SUBGROUP_TARGETS[current_group])
+						else:
+							val_group_target_array.append(DEFAULT_TARGET)
+
+					val_current_group_row = val_group_rows[current_group]
+					val_last_group        = current_group
+
+
+				val_group_sizes[val_current_group_row] += 1
+
+				# Set the appropriate column of the
+				# appropriate row for this group and structure.
+				val_group_reduction_matrix[val_current_group_row][val_current_group_column] = 1.0
+				val_current_group_column += 1
+
 			val_energies.append(current_structure[0].structure_energy)
 			val_volumes.append(current_structure[0].structure_volume)
 			val_inverse_n_atoms.append(1.0 / current_structure[0].structure_n_atoms)
@@ -324,6 +474,12 @@ def TrainNetwork():
 				val_reduction_matrix[val_reduction_row][val_reduction_column] = 1.0
 				val_reduction_column += 1
 
+
+
+		if OBJECTIVE_FUNCTION == 'group-targets':
+			val_group_reduction_matrix = torch.tensor(val_group_reduction_matrix).type(torch.FloatTensor).to(device)
+			val_group_target_array     = torch.tensor(np.transpose([val_group_target_array])).type(torch.FloatTensor).to(device)
+			val_group_sizes            = torch.tensor(np.transpose([val_group_sizes])).type(torch.FloatTensor).to(device)
 
 		# Now we should have all of the training data ready, just not in PyTorch tensor format
 		# quite yet.
@@ -355,35 +511,70 @@ def TrainNetwork():
 
 	# Used to track the loss as a function of the iteration,
 	# which will be dumped to a log at the end.
-	loss_values            = [0.0]*MAXIMUM_TRAINING_ITERATIONS
+	loss_values            = [None]*MAXIMUM_TRAINING_ITERATIONS
 	validation_loss_values = []
 	global last_loss
 	last_loss   = 0.0
 
 	if TRAIN_TO_TOTAL_RATIO != 1.0:
-		def get_validation_loss():
-			with torch.no_grad():
-				temp_net          = copy.deepcopy(torch_net.cpu())
-				temp_net.set_reduction_matrix(val_reduction_matrix)
+		if OBJECTIVE_FUNCTION == 'group-targets':
+			def get_validation_loss():
+				with torch.no_grad():
+					temp_net          = copy.deepcopy(torch_net.cpu())
+					temp_net.set_reduction_matrix(val_reduction_matrix)
 
-				calculated_values = temp_net(val_structure_params)
-				difference = torch.mul(calculated_values - val_energies, val_inverse_n_atoms)
-				RMSE       = torch.sqrt((val_group_weights * (difference**2)).sum() / n_validation_indices)
-				RMSE       = RMSE.cpu().item()
+					calculated_values = temp_net(val_structure_params)
+					difference        = torch.mul(calculated_values - val_energies, val_inverse_n_atoms)
+					# Multiple by the group reduction matrix in order to get the 
+					# error in each group.
+
+					# This multiplication sums the difference squared on a per-group basis.
+					per_group_diff_squared_sum = val_group_reduction_matrix.mm(difference**2)
+					per_group_diff_squared_avg = per_group_diff_squared_sum / val_group_sizes
+					per_group_rmse             = torch.sqrt(per_group_diff_squared_avg)
+					loss                       = ((val_group_target_array - per_group_rmse)**2).sum()
+				return loss.cpu().item()
+		else:
+			def get_validation_loss():
+				with torch.no_grad():
+					temp_net          = copy.deepcopy(torch_net.cpu())
+					temp_net.set_reduction_matrix(val_reduction_matrix)
+
+					calculated_values = temp_net(val_structure_params)
+					difference = torch.mul(calculated_values - val_energies, val_inverse_n_atoms)
+					RMSE       = torch.sqrt((val_group_weights * (difference**2)).sum() / n_validation_indices)
+					RMSE       = RMSE.cpu().item()
+				return RMSE
+
+	if OBJECTIVE_FUNCTION == 'group-targets':
+		def get_loss():
+			global last_loss
+			
+			calculated_values = torch_net(structure_params)
+			difference        = torch.mul(calculated_values - energies, inverse_n_atoms)
+			# Multiple by the group reduction matrix in order to get the 
+			# error in each group.
+
+			# This multiplication sums the difference squared on a per-group basis.
+			per_group_diff_squared_sum = group_reduction_matrix.mm(difference**2)
+			per_group_diff_squared_avg = per_group_diff_squared_sum / group_sizes
+			per_group_rmse             = torch.sqrt(per_group_diff_squared_avg)
+			loss                       = ((group_target_array - per_group_rmse)**2).sum()
+			last_loss  = loss.cpu().item()
+			return loss
+	else:
+		def get_loss():
+			global last_loss
+			
+			calculated_values = torch_net(structure_params)
+
+			# Here we are multiplying each structure energy error (as calculated by the neural network),
+			# by the reciprocal of the number of atoms in the structure. This is so that we are effectively
+			# calculating the error per atom, not the error per structure.
+			difference = torch.mul(calculated_values - energies, inverse_n_atoms)
+			RMSE       = torch.sqrt((group_weights * (difference**2)).sum() / n_training_indices)
+			last_loss  = RMSE.cpu().item()
 			return RMSE
-
-	def get_loss():
-		global last_loss
-		
-		calculated_values = torch_net(structure_params)
-
-		# Here we are multiplying each structure energy error (as calculated by the neural network),
-		# by the reciprocal of the number of atoms in the structure. This is so that we are effectively
-		# calculating the error per atom, not the error per structure.
-		difference = torch.mul(calculated_values - energies, inverse_n_atoms)
-		RMSE       = torch.sqrt((group_weights * (difference**2)).sum() / n_training_indices)
-		last_loss  = RMSE.cpu().item()
-		return RMSE
 
 	# This is called by the optimizer in order to actually evaluate the
 	# neural net and to calculate the error.
@@ -405,6 +596,29 @@ def TrainNetwork():
 		f.write(' '.join([str(e) for e in values]))
 		f.write('\n')
 		f.close()
+
+	def partial_randomize(network):
+		# Here we copy the network to the CPU,
+		# have it modify itself based on the 
+		# parameter given by the user and then
+		# copy it back to whichever device we
+		# are training on.
+		with torch.no_grad():
+			net_cpu = network.cpu()
+			net_cpu.randomize_self(PLATEAU_ANNEALING_RAND_STD)
+			torch_net = net_cpu.to(device)
+
+		LEARNING_RATE -= PLATEAU_ANNEALING_LR_DECREMENT 
+		# Now that there have been copies and modifications,
+		# generate an optimizer for the new parameters.
+		if OPTIMIZATION_ALGORITHM == 'LBFGS':
+			optimizer = optim.LBFGS(torch_net.get_parameters(), lr=LEARNING_RATE, max_iter=MAX_LBFGS_ITERATIONS)
+		else:
+			# TODO: Figure out if this should also be a configuration value.
+			optimizer = optim.SGD(torch_net.get_parameters(), lr=LEARNING_RATE, momentum=0.9)
+
+		return torch_net, optimizer
+
 
 	log_unindent()
 
@@ -430,8 +644,31 @@ def TrainNetwork():
 	error_below_threshold_count = 0
 
 
+	# These values are used to keep track of how many times
+	# validation_error - training_error has increased in a row.
+	# They are used to shutdown the training process if the 
+	# network becomes overfit. See OVERFIT_ERROR_STOP and
+	# OVERFIT_INCREASE_MAX_ITERATIONS in Config.py
 	last_training_validation_difference = 10.0
 	train_validate_incrase_count        = 0
+
+	# This is used to keep track of the number of times that the
+	# system has reached a plateau in the error and then been partially
+	# randomized in and attempt to break out of a local minima.
+	# See PLATEAU_ANNEALING_MAX_ITERATIONS and PLATEAU_ANNEALING_RAND_STD
+	# in Config.py
+	plateau_annealing_count = 0
+
+	# We store the iterations that the randomization process
+	# was performed on here, so that they can be displayed at
+	# the end of requested.
+	plateau_annealing_iterations = []
+
+	# If the training gets interrupted by ctrl-c,
+	# this will be set to instruct the program to exit
+	# instead of performing other tasks asked for by the 
+	# user.
+	terminate_early = False
 
 	with torch.no_grad():
 		# This will populate the list of loss values
@@ -441,85 +678,192 @@ def TrainNetwork():
 	bar = ProgressBar("Training", 30, MAXIMUM_TRAINING_ITERATIONS + 1, update_every = PROGRESS_INTERVAL)
 
 	while current_iteration < MAXIMUM_TRAINING_ITERATIONS:
-		# Most of this code actually just handles stopping conditions and
-		# error logging.
+		try:
+			# Most of this code actually just handles stopping conditions and
+			# error logging.
 
-		loss_values[current_iteration] = last_loss
+			loss_values[current_iteration] = last_loss
 
-		bar.update(current_iteration + 1)
+			bar.update(current_iteration + 1)
 
-		# This if statement handles the logic that ensures that the training
-		# stops when the error reaches an apparent minimum.
-		if current_iteration > 0:
-			error_delta      = np.abs(last_loss - loss_values[current_iteration - 1])
-			inside_threshold = error_delta <= FLAT_ERROR_STOP
+			# This if statement handles the logic to ensure that the training
+			# stops if the validation error gets too far away from the training
+			# error or if the validation error starts to consistently diverge 
+			# from the training error.
+			if current_iteration % VALIDATION_INTERVAL == 0 and TRAIN_TO_TOTAL_RATIO != 1.0:
+				validation_loss_values.append(get_validation_loss())
 
-			if inside_threshold:
-				error_below_threshold_count += 1
-				if error_below_threshold_count >= FLAT_ERROR_ITERATIONS:
-					bar.finish()
-					print("Error Has Reached an Apparent Minimum.")
-					break
-			else:
-				error_below_threshold_count = 0
+				if current_iteration > CHECK_OVERFIT_AFTER:
+					# Make sure that there isn't an overfit.
+					train_val_diff = validation_loss_values[-1] - last_loss
 
-		if current_iteration % E_VS_V_INTERVAL == 0:
-			# Add the current E vs. V values into the log file.
-			log_energy_vs_volume()
+					if train_val_diff >= OVERFIT_ERROR_STOP:
 
-		# This if statement handles the logic to ensure that the training
-		# stops if the validation error gets too far away from the training
-		# error or if the validation error starts to consistently diverge 
-		# from the training error.
-		if current_iteration % VALIDATION_INTERVAL == 0 and TRAIN_TO_TOTAL_RATIO != 1.0:
-			validation_loss_values.append(get_validation_loss())
+						# Iterations since last annealing
+						if len(plateau_annealing_iterations) > 0:
+							last_annealing_iteration = plateau_annealing_iterations[-1]
+						else:
+							last_annealing_iteration = -CHECK_OVERFIT_AFTER
 
-			if current_iteration > 25:
-				# Make sure that there isn't an overfit.
-				train_val_diff = validation_loss_values[-1] - last_loss
-				
-				if train_val_diff >= OVERFIT_ERROR_STOP:
-					bar.finish()
-					print("The Network Appears to be Becoming Overfit.")
-					break
+						iterations_since_last_randomize = current_iteration - last_annealing_iteration
+						# We want to makre sure that we don't check this too soon after an
+						# annealing, because it will likely be high.
 
-				if train_val_diff > last_training_validation_difference:
-					train_validate_incrase_count += 1
-					if train_validate_incrase_count >= OVERFIT_INCREASE_MAX_ITERATIONS:
-						bar.finish()
-						print("The Validation Error is Diverging from the Training Error.")
-						break
+						if iterations_since_last_randomize > CHECK_OVERFIT_AFTER:
+							log("Difference between validation error and training error was %f."%train_val_diff)
+							bar.finish()
+							print("The Network Appears to be Becoming Overfit.")
+							break
+
+					if train_val_diff > last_training_validation_difference and train_val_diff > 0.0:
+						log("Iteration: %i, (Validation Error - Training Error) Increase = %f"%(current_iteration, train_val_diff))
+						train_validate_incrase_count += 1
+						if train_validate_incrase_count >= OVERFIT_INCREASE_MAX_ITERATIONS:
+							log("(Validation Error - Training Error) Increased too many times (%i)"%OVERFIT_INCREASE_MAX_ITERATIONS)
+							bar.finish()
+							print("The Validation Error is Diverging from the Training Error.")
+							break
+					else:
+						train_validate_incrase_count = 0
+
+					last_training_validation_difference = train_val_diff
+
+			# This if statement handles the logic that ensures that the training
+			# stops when the error reaches an apparent minimum.
+			if current_iteration > 0:
+				error_delta      = np.abs(last_loss - loss_values[current_iteration - 1])
+				inside_threshold = error_delta <= FLAT_ERROR_STOP
+
+				if inside_threshold:
+					log("Iteration: %i, Error Delta = %f"%(current_iteration, error_delta))
+
+					error_below_threshold_count += 1
+					if error_below_threshold_count >= FLAT_ERROR_ITERATIONS:
+						if plateau_annealing_count < PLATEAU_ANNEALING_MAX_ITERATIONS:
+							# We can partially randomize the network at least one more
+							# time.
+							# Backup the network before the randomization.
+							name = NETWORK_BACKUP_DIR + 'nn_bk_anneal_%i.dat'%(plateau_annealing_count + 1)
+							neural_network_data.layers = torch_net.get_network_values()
+							neural_network_data.writeNetwork(name)
+
+							log("Network reached local minima, partially randomizing.")
+							torch_net, optimizer = partial_randomize(torch_net)
+							plateau_annealing_iterations.append(current_iteration)
+							plateau_annealing_count += 1
+						else:
+							log("Error Delta was less than %f for %i iterations."%(FLAT_ERROR_STOP, FLAT_ERROR_ITERATIONS))
+							log("Maximum number of randomizations (%i) was also exceeded."%(PLATEAU_ANNEALING_MAX_ITERATIONS))
+							bar.finish()
+							print("Error Has Reached an Apparent Minimum.")
+							break
 				else:
-					train_validate_incrase_count = 0
+					error_below_threshold_count = 0
 
-				last_training_validation_difference = train_val_diff
+			if current_iteration % E_VS_V_INTERVAL == 0:
+				# Add the current E vs. V values into the log file.
+				log_energy_vs_volume()
 
-		if current_iteration % NETWORK_BACKUP_INTERVAL == 0:
-			# Figure out what to name the file.
-			backup_idx = current_iteration // NETWORK_BACKUP_INTERVAL
+			
 
-			if KEEP_BACKUP_HISTORY:
-				name       = NETWORK_BACKUP_DIR + 'nn_bk_%i.dat'%backup_idx
+			if current_iteration % NETWORK_BACKUP_INTERVAL == 0:
+				# Figure out what to name the file.
+				backup_idx = current_iteration // NETWORK_BACKUP_INTERVAL
+
+				if KEEP_BACKUP_HISTORY:
+					name       = NETWORK_BACKUP_DIR + 'nn_bk_%i.dat'%backup_idx
+				else:
+					name       = NETWORK_BACKUP_DIR + 'nn_bk.dat'
+
+				neural_network_data.layers = torch_net.get_network_values()
+				neural_network_data.writeNetwork(name)
+
+			# The remaining lines in this loop are where the actaul training takes place.
+			if OPTIMIZATION_ALGORITHM == 'LBFGS':
+				optimizer.step(closure)
 			else:
-				name       = NETWORK_BACKUP_DIR + 'nn_bk.dat'
+				optimizer.zero_grad()
+				loss = get_loss()
+				loss.backward()
+				optimizer.step()
 
-			neural_network_data.layers = torch_net.get_network_values()
-			neural_network_data.writeNetwork(name)
+			current_iteration += 1
 
-		# The remaining lines in this loop are where the actaul training takes place.
-		if OPTIMIZATION_ALGORITHM == 'LBFGS':
-			optimizer.step(closure)
-		else:
-			optimizer.zero_grad()
-			loss = get_loss()
-			loss.backward()
-			optimizer.step()
+		except KeyboardInterrupt as kbi:
+			# The user is trying to terminate the program.
+			# Nothing that takes place after the training loop
+			# should take very long. Set a flag that tells
+			# the script to terminate after dumping all log info.
+			terminate_early = True
+			log("User input terminated training process early.")
+			break
 
-		current_iteration += 1
 
 	bar.finish()
 
+	if terminate_early:
+		print("Detected Keyboard Interrupt")
+		print("Cleaning up and terminating . . .")
+
 	end_time = time()
+
+	if OBJECTIVE_FUNCTION == 'group-targets':
+		# Here we log the training error and validation
+		# error on a per-group basis.
+		log("Validation and Training Error Per Group")
+		log_indent()
+
+		with torch.no_grad():
+			# First get the per group training error.
+			temp_net          = copy.deepcopy(torch_net.cpu())
+
+			calculated_values = temp_net(structure_params)
+			difference        = torch.mul(calculated_values - energies, inverse_n_atoms)
+			# Multiple by the group reduction matrix in order to get the 
+			# error in each group.
+
+			# This multiplication sums the difference squared on a per-group basis.
+			per_group_diff_squared_sum = group_reduction_matrix.mm(difference**2)
+			per_group_diff_squared_avg = per_group_diff_squared_sum / group_sizes
+			per_group_rmse             = torch.sqrt(per_group_diff_squared_avg)
+
+
+			# Now get the per group validation error.
+			temp_net.set_reduction_matrix(val_reduction_matrix)
+			calculated_values = temp_net(val_structure_params)
+			difference        = torch.mul(calculated_values - val_energies, val_inverse_n_atoms)
+			# Multiple by the group reduction matrix in order to get the 
+			# error in each group.
+
+			# This multiplication sums the difference squared on a per-group basis.
+			per_group_diff_squared_sum = val_group_reduction_matrix.mm(difference**2)
+			per_group_diff_squared_avg = per_group_diff_squared_sum / val_group_sizes
+			val_per_group_rmse         = torch.sqrt(per_group_diff_squared_avg)
+
+			log("Training: ")
+			log_indent()
+			for idx in range(len(per_group_rmse))
+				log('%15s = %.3E'%(ordered_group_names[idx], per_group_rmse[idx]))
+
+			log_unindent()
+
+			log("Validation: ")
+			log_indent()
+			for idx in range(len(val_per_group_rmse))
+				log('%15s = %.3E'%(val_ordered_group_names[idx], val_per_group_rmse[idx]))
+
+			log_unindent()
+
+
+
+
+
+		log_unindent()
+
+	log("Final Training Error:   %.3E"%(last_loss))
+	log("Final Validation Error: %.3E"%(validation_loss_values[-1]))
+
+
 	print("Training Finished")
 	print("Time Elapsed: %.1fs"%(end_time - start_time))
 
@@ -542,6 +886,8 @@ def TrainNetwork():
 
 	loss_file = open(LOSS_LOG_PATH, 'w')
 	for loss in loss_values:
+		if loss == None:
+			break
 		loss_file.write('%10.10E\n'%(loss))
 	loss_file.close()
 
@@ -553,6 +899,11 @@ def TrainNetwork():
 	valid_loss_file.close()
 
 	log_unindent()
+
+	if terminate_early:
+		exit()
+
+	return plateau_annealing_iterations
 
 if __name__ == '__main__':
 	Util.init()
@@ -627,15 +978,17 @@ if __name__ == '__main__':
 	# By this point we know what operations the user requested.
 	# Start running them, in the logical order.
 
+	plateau_annealing_iterations = None
+
 	if compute_gis:
 		ComputeStructureParameters()
 
 	if run_training:
-		TrainNetwork()
+		plateau_annealing_iterations = TrainNetwork()
 
 	if graph_error:
 		import matplotlib.pyplot as plt
-		GraphError(graph_error, graph_val)
+		GraphError(graph_error, graph_val, plateau_annealing_iterations)
 
 	program_end = time()
 	log("Total Run Time: %.1fs"%(program_end - program_start))

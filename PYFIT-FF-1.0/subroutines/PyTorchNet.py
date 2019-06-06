@@ -2,6 +2,7 @@ import torch
 import torch.nn            as nn
 import torch.nn.functional as F
 import torch.optim         as optim
+import numpy               as np
 
 # This class handles the process of loading information from the raw
 # set of neural network weights and biases into a proper PyTorch neural
@@ -31,7 +32,7 @@ class TorchNet(nn.Module):
 				prev_layer_size = network_data.config.layer_sizes[idx - 1]
 				curr_layer_size = network_data.config.layer_sizes[idx]
 				layer           = nn.Linear(prev_layer_size, curr_layer_size)
-				current_layer     = network_data.layers[idx - 1]
+				current_layer   = network_data.layers[idx - 1]
 				with torch.no_grad():
 					layer.weight.copy_(torch.tensor([node[0] for node in current_layer]))
 					layer.bias.copy_(torch.tensor([node[1] for node in current_layer]))
@@ -40,7 +41,27 @@ class TorchNet(nn.Module):
 			
 			
 
-		
+	def randomize_self(self, relative_standard_deviation):
+		# For each parameter in self.params, we need to add a
+		# normal distributed random number with a standard deviation
+		# equal to PLATEAU_ANNEALING_RAND_STD times its absolute value.
+		for param in self.params:
+			if len(param.data.shape) == 2:
+				# This is a two dimensional parameter and therefore
+				# a set of weights.
+				for node_idx in range(len(param.data)):
+					for weight_idx in range(len(param.data[node_idx])):
+
+						value = np.abs(relative_standard_deviation*param.data[node_idx][weight_idx])
+						param.data[node_idx][weight_idx] += np.random.normal(0.0, value)
+
+			elif len(param.data.shape) == 1:
+				# This is a one dimensional parameter and therefore
+				# an array of biases.
+				for node_idx in range(len(param.data)):
+
+					value = np.abs(relative_standard_deviation*param.data[node_idx])
+					param.data[node_idx] += np.random.normal(0.0, value)
 
 	def set_reduction_matrix(self, mat):
 		self.reduction_matrix = mat
