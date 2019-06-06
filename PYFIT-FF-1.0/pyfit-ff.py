@@ -87,6 +87,39 @@ def GraphError(graph_error, graph_val, annealings):
 	plt.title("Error vs. Iteration")
 	plt.show()
 
+def GraphGroupError(to_highlight):
+	from mpldatacursor import datacursor
+	import warnings
+	warnings.filterwarnings("ignore")
+
+	file = open(GROUP_ERROR_FILE, 'r')
+	raw  = file.read()
+	file.close()
+
+	lines       = [l for l in raw.split('\n') if l != '']
+	group_names = lines[0].split(' ')[1:]
+	errors      = [[float(c) for c in l.split(' ')[1:]] for l in lines[1:]]
+	iterations  = [GROUP_ERROR_RECORD_INTERVAL*int(l.split(' ')[0]) for l in lines[1:]]
+
+	plots = []
+	for group in range(len(group_names)):
+		group_errors = [e[group] for e in errors]
+
+		if to_highlight != None and group_names[group] == to_highlight:
+			plots.append(plt.scatter(iterations, group_errors, s=24, label=group_names[group], marker="x", c='red', zorder=100000))
+		else:
+			plots.append(plt.scatter(iterations, group_errors, s=4, label=group_names[group]))
+
+		
+
+	datacursor(formatter='{label}'.format)
+
+	plt.xlabel("Iteration")
+	plt.ylabel("Group Error")
+
+	plt.title("Error vs. Iteration")
+	plt.show()
+
 def CompareStructureParameters(first, second):
 	first_file  = TrainingSetFile(first)
 	second_file = TrainingSetFile(second)
@@ -559,6 +592,23 @@ def TrainNetwork():
 		optimizer = optim.SGD(torch_net.get_parameters(), lr=LEARNING_RATE, momentum=0.9)
 
 
+	if OBJECTIVE_FUNCTION == 'group-targets':
+		group_loss_values = [None]*(MAXIMUM_TRAINING_ITERATIONS // GROUP_ERROR_RECORD_INTERVAL)
+
+		def get_group_error():
+			with torch.no_grad():
+				temp_net          = copy.deepcopy(torch_net)
+				calculated_values = temp_net(structure_params)
+				difference        = torch.mul(calculated_values - energies, inverse_n_atoms)
+				# Multiple by the group reduction matrix in order to get the 
+				# error in each group.
+
+				# This multiplication sums the difference squared on a per-group basis.
+				per_group_diff_squared_sum = group_reduction_matrix.mm(difference**2)
+				per_group_diff_squared_avg = per_group_diff_squared_sum / group_sizes
+				per_group_rmse             = torch.sqrt(per_group_diff_squared_avg)
+			return [rmse[0] for rmse in per_group_rmse.cpu().tolist()]
+
 	# Used to track the loss as a function of the iteration,
 	# which will be dumped to a log at the end.
 	loss_values            = [None]*MAXIMUM_TRAINING_ITERATIONS
@@ -737,6 +787,10 @@ def TrainNetwork():
 
 			bar.update(current_iteration + 1)
 
+			if current_iteration % GROUP_ERROR_RECORD_INTERVAL == 0:
+				if OBJECTIVE_FUNCTION == 'group-targets':
+					group_loss_values[current_iteration // GROUP_ERROR_RECORD_INTERVAL] = get_group_error()
+
 			# This if statement handles the logic to ensure that the training
 			# stops if the validation error gets too far away from the training
 			# error or if the validation error starts to consistently diverge 
@@ -859,6 +913,15 @@ def TrainNetwork():
 	end_time = time()
 
 	if OBJECTIVE_FUNCTION == 'group-targets':
+
+		log("Exporting error as a function of iteration for each group.")
+		f = open(GROUP_ERROR_FILE, 'w')
+		f.write('iteration %s\n'%(' '.join(ordered_group_names)))
+		for idx in range(MAXIMUM_TRAINING_ITERATIONS // GROUP_ERROR_RECORD_INTERVAL):
+			if group_loss_values[idx] != None:
+				f.write('%i %s\n'%(idx * GROUP_ERROR_RECORD_INTERVAL, ' '.join(['%.6E'%e for e in group_loss_values[idx]])))
+		f.close()
+
 		# Here we log the training error and validation
 		# error on a per-group basis.
 		log("Validation and Training Error Per Group")
@@ -991,6 +1054,7 @@ if __name__ == '__main__':
 	                     # the training iteration at the end of the training process.
 	graph_val    = False # Whether or not to plot validation error as a function of iteration
 	                     # at the end of the process.
+	graph_group  = False # Whether or not to graph the per-group error at the end.
 
 	# Here we expand single hyphen arguments.
 	# ex: -gte => -g -t -e
@@ -1006,9 +1070,13 @@ if __name__ == '__main__':
 	args = tmp
 
 
+	group_to_highlight = None
+
 	if len(args) == 0:
 		run_training = True
 	else:
+
+
 		if '--help' in args or '-h' in args:
 			print(help_str)
 			exit()
@@ -1022,6 +1090,12 @@ if __name__ == '__main__':
 			second_file = args[2]
 			CompareStructureParameters(first_file, second_file)
 			exit()
+
+		if '--highlight' in args:
+			group_to_highlight = args[args.index('--highlight') + 1]
+		if '-i' in args:
+			group_to_highlight = args[args.index('-i') + 1]
+
 		if '--compute-gis' in args or '-g' in args:
 			compute_gis = True
 		if '--run-training' in args or '-t' in args:
@@ -1030,6 +1104,8 @@ if __name__ == '__main__':
 			graph_error = True
 		if '--graph-val' in args or '-v' in args:
 			graph_val = True
+		if '--group-error' in args or '-s' in args:
+			graph_group = True
 
 	# By this point we know what operations the user requested.
 	# Start running them, in the logical order.
@@ -1045,6 +1121,11 @@ if __name__ == '__main__':
 	if graph_error:
 		import matplotlib.pyplot as plt
 		GraphError(graph_error, graph_val, plateau_annealing_iterations)
+
+	if graph_group:
+		import matplotlib.pyplot as plt
+		GraphGroupError(group_to_highlight)
+
 
 	program_end = time()
 	log("Total Run Time: %.1fs"%(program_end - program_start))

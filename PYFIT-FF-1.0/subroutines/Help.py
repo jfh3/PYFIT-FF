@@ -24,6 +24,15 @@ Options:
 	                     VALIDATION_LOG_PATH in Config.py.
 	                     You must have matplotlib installed to use this option.
 
+	-s --group-error     Display a graph of the error of each group as a function
+	                     of the training iteration.
+	                     You must install mpldatacursor to use this feature.
+	                     cmd: sudo pip3 install mpldatacursor
+
+	-i --highlight       If you want to highlight a particular group with a different
+	                     icon in a group error scatterplot, specify the name of that
+	                     group after this argument.
+
 	-c --compare         This must be the only option if specified. Will compare
 	                     the two training set files listed after this argument.
 	                     The program will summarize the mean, min, max and 
@@ -54,4 +63,5 @@ Examples:
 	python3 pyfit-ff.py -e
 	python3 pyfit-ff.py -t
 	python3 pyfit-ff.py --compare train01.dat train02.dat
+	python3 pyfit-ff.py -s -i Si_B17
 """

@@ -5,13 +5,13 @@ CONFIG_FNAME                       = __file__
 LOG_PATH                           = 'output/log.txt'
 
 # The neural network file to load.
-NEURAL_NETWORK_FILE                = 'input/large_modified/nn1.dat'
+NEURAL_NETWORK_FILE                = 'input/old/medium/nn1.dat'
 
 # --------------------------------------------------
 # Structural Parameter Calculation Configuration
 # --------------------------------------------------
 
-POSCAR_DATA_FILE = 'input/large_modified/modified-training.dat'
+POSCAR_DATA_FILE = 'input/old/medium/train.dat'
 
 # The parameter file to output. This is what gets used for neural network
 # training during the next step (usually). If you want the program to train
@@ -134,12 +134,20 @@ WEIGHTS = {}
 # structural group if desired. This will allow you to train your network
 # to very high accuracy in a particular subgroup, while not caring much
 # about others.
-OBJECTIVE_FUNCTION = 'group-targets'
+OBJECTIVE_FUNCTION = 'rmse'
+
+# The file to store the subgroup error in. If you specify --group-error,
+# this will be graphed after the main error graph so that you can see how the 
+# error of each group varied throughout the training process.
+GROUP_ERROR_FILE = 'output/group_error.txt'
+
+# This is how often the error per-group should be recorded.
+GROUP_ERROR_RECORD_INTERVAL = 1
 
 # This is the default rmse value to target for subgroups if
 # OBJECTIVE_FUNCTION = 'group-targets'. This is overriden by 
 # any values explicitely specified in SUBGROUP_TARGETS.
-DEFAULT_TARGET = 0.005
+DEFAULT_TARGET = 0.020
 
 # The rmse target for each subgroup. This is only used if OBJECTIVE_FUNCTION = 'group-targets'
 SUBGROUP_TARGETS = {}
@@ -157,4 +165,4 @@ OPTIMIZATION_ALGORITHM = 'LBFGS'
 MAX_LBFGS_ITERATIONS = 10
 
 # Maximum number of epochs to run through for training.
-MAXIMUM_TRAINING_ITERATIONS = 300
+MAXIMUM_TRAINING_ITERATIONS = 500
