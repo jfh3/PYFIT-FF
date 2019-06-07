@@ -575,6 +575,13 @@ def TrainNetwork():
 
 	log_unindent()
 
+	if OBJECTIVE_FUNCTION == 'group-targets':
+		if UNWEIGHTED_NEGATIVE_ERROR:
+			# This is compared to the group error - target group error
+			# with a max function in order to score error below the
+			# target error as zero.
+			negative_error_zero_compare = torch.zeros(len(group_sizes)).type(torch.FloatTensor).to(device)
+
 	log("Configuring Neural Network")
 	log_indent()
 
@@ -594,6 +601,7 @@ def TrainNetwork():
 
 	if OBJECTIVE_FUNCTION == 'group-targets':
 		group_loss_values = [None]*(MAXIMUM_TRAINING_ITERATIONS // GROUP_ERROR_RECORD_INTERVAL)
+
 
 		def get_group_error():
 			with torch.no_grad():
@@ -618,22 +626,41 @@ def TrainNetwork():
 
 	if TRAIN_TO_TOTAL_RATIO != 1.0:
 		if OBJECTIVE_FUNCTION == 'group-targets':
-			def get_validation_loss():
-				with torch.no_grad():
-					temp_net          = copy.deepcopy(torch_net.cpu())
-					temp_net.set_reduction_matrix(val_reduction_matrix)
+			if UNWEIGHTED_NEGATIVE_ERROR:
+				def get_validation_loss():
+					with torch.no_grad():
+						temp_net          = copy.deepcopy(torch_net.cpu())
+						temp_net.set_reduction_matrix(val_reduction_matrix)
 
-					calculated_values = temp_net(val_structure_params)
-					difference        = torch.mul(calculated_values - val_energies, val_inverse_n_atoms)
-					# Multiple by the group reduction matrix in order to get the 
-					# error in each group.
+						calculated_values = temp_net(val_structure_params)
+						difference        = torch.mul(calculated_values - val_energies, val_inverse_n_atoms)
+						# Multiple by the group reduction matrix in order to get the 
+						# error in each group.
 
-					# This multiplication sums the difference squared on a per-group basis.
-					per_group_diff_squared_sum = val_group_reduction_matrix.mm(difference**2)
-					per_group_diff_squared_avg = per_group_diff_squared_sum / val_group_sizes
-					per_group_rmse             = torch.sqrt(per_group_diff_squared_avg)
-					loss                       = ((val_group_target_array - per_group_rmse)**2).sum()
-				return loss.cpu().item()
+						# This multiplication sums the difference squared on a per-group basis.
+						per_group_diff_squared_sum  = val_group_reduction_matrix.mm(difference**2)
+						per_group_diff_squared_avg  = per_group_diff_squared_sum / val_group_sizes
+						per_group_rmse              = torch.sqrt(per_group_diff_squared_avg)
+						loss_zeroed                 = torch.max(per_group_rmse - val_group_target_array, negative_error_zero_compare)
+						loss                        = (SUBGROUP_ERROR_COEFFICIENT*loss_zeroed**2).sum()
+					return loss.cpu().item()
+			else:
+				def get_validation_loss():
+					with torch.no_grad():
+						temp_net          = copy.deepcopy(torch_net.cpu())
+						temp_net.set_reduction_matrix(val_reduction_matrix)
+
+						calculated_values = temp_net(val_structure_params)
+						difference        = torch.mul(calculated_values - val_energies, val_inverse_n_atoms)
+						# Multiple by the group reduction matrix in order to get the 
+						# error in each group.
+
+						# This multiplication sums the difference squared on a per-group basis.
+						per_group_diff_squared_sum = val_group_reduction_matrix.mm(difference**2)
+						per_group_diff_squared_avg = per_group_diff_squared_sum / val_group_sizes
+						per_group_rmse             = torch.sqrt(per_group_diff_squared_avg)
+						loss                       = (SUBGROUP_ERROR_COEFFICIENT*(val_group_target_array - per_group_rmse)**2).sum()
+					return loss.cpu().item()
 		else:
 			def get_validation_loss():
 				with torch.no_grad():
@@ -647,21 +674,39 @@ def TrainNetwork():
 				return RMSE
 
 	if OBJECTIVE_FUNCTION == 'group-targets':
-		def get_loss():
-			global last_loss
-			
-			calculated_values = torch_net(structure_params)
-			difference        = torch.mul(calculated_values - energies, inverse_n_atoms)
-			# Multiple by the group reduction matrix in order to get the 
-			# error in each group.
+		if UNWEIGHTED_NEGATIVE_ERROR:
+			def get_loss():
+				global last_loss
+				
+				calculated_values = torch_net(structure_params)
+				difference        = torch.mul(calculated_values - energies, inverse_n_atoms)
+				# Multiple by the group reduction matrix in order to get the 
+				# error in each group.
 
-			# This multiplication sums the difference squared on a per-group basis.
-			per_group_diff_squared_sum = group_reduction_matrix.mm(difference**2)
-			per_group_diff_squared_avg = per_group_diff_squared_sum / group_sizes
-			per_group_rmse             = torch.sqrt(per_group_diff_squared_avg)
-			loss                       = ((group_target_array - per_group_rmse)**2).sum()
-			last_loss  = loss.cpu().item()
-			return loss
+				# This multiplication sums the difference squared on a per-group basis.
+				per_group_diff_squared_sum = group_reduction_matrix.mm(difference**2)
+				per_group_diff_squared_avg = per_group_diff_squared_sum / group_sizes
+				per_group_rmse             = torch.sqrt(per_group_diff_squared_avg)
+				loss_zeroed                = torch.max(per_group_rmse - group_target_array, negative_error_zero_compare)
+				loss                       = (SUBGROUP_ERROR_COEFFICIENT*loss_zeroed**2).sum()
+				last_loss  = loss.cpu().item()
+				return loss
+		else:
+			def get_loss():
+				global last_loss
+				
+				calculated_values = torch_net(structure_params)
+				difference        = torch.mul(calculated_values - energies, inverse_n_atoms)
+				# Multiple by the group reduction matrix in order to get the 
+				# error in each group.
+
+				# This multiplication sums the difference squared on a per-group basis.
+				per_group_diff_squared_sum = group_reduction_matrix.mm(difference**2)
+				per_group_diff_squared_avg = per_group_diff_squared_sum / group_sizes
+				per_group_rmse             = torch.sqrt(per_group_diff_squared_avg)
+				loss                       = ((group_target_array - per_group_rmse)**2).sum()
+				last_loss  = loss.cpu().item()
+				return loss
 	else:
 		def get_loss():
 			global last_loss
@@ -943,16 +988,17 @@ def TrainNetwork():
 
 
 			# Now get the per group validation error.
-			temp_net.set_reduction_matrix(val_reduction_matrix)
-			calculated_values = temp_net(val_structure_params)
-			difference        = torch.mul(calculated_values - val_energies, val_inverse_n_atoms)
-			# Multiple by the group reduction matrix in order to get the 
-			# error in each group.
+			if TRAIN_TO_TOTAL_RATIO != 1.0:
+				temp_net.set_reduction_matrix(val_reduction_matrix)
+				calculated_values = temp_net(val_structure_params)
+				difference        = torch.mul(calculated_values - val_energies, val_inverse_n_atoms)
+				# Multiple by the group reduction matrix in order to get the 
+				# error in each group.
 
-			# This multiplication sums the difference squared on a per-group basis.
-			per_group_diff_squared_sum = val_group_reduction_matrix.mm(difference**2)
-			per_group_diff_squared_avg = per_group_diff_squared_sum / val_group_sizes
-			val_per_group_rmse         = torch.sqrt(per_group_diff_squared_avg)
+				# This multiplication sums the difference squared on a per-group basis.
+				per_group_diff_squared_sum = val_group_reduction_matrix.mm(difference**2)
+				per_group_diff_squared_avg = per_group_diff_squared_sum / val_group_sizes
+				val_per_group_rmse         = torch.sqrt(per_group_diff_squared_avg)
 
 			log("Training: ")
 			log_indent()
@@ -961,12 +1007,13 @@ def TrainNetwork():
 
 			log_unindent()
 
-			log("Validation: ")
-			log_indent()
-			for idx in range(len(val_per_group_rmse)):
-				log('%15s = %.3E'%(val_ordered_group_names[idx], val_per_group_rmse[idx]))
+			if TRAIN_TO_TOTAL_RATIO != 1.0:
+				log("Validation: ")
+				log_indent()
+				for idx in range(len(val_per_group_rmse)):
+					log('%15s = %.3E'%(val_ordered_group_names[idx], val_per_group_rmse[idx]))
 
-			log_unindent()
+				log_unindent()
 
 
 
@@ -980,7 +1027,8 @@ def TrainNetwork():
 		log("      on your choice of target errors for groups, these error values may")
 		log("      be very misleading.")
 	log("Final Training Error:   %.3E"%(last_loss))
-	log("Final Validation Error: %.3E"%(validation_loss_values[-1]))
+	TRAIN_TO_TOTAL_RATIO != 1.0:
+		log("Final Validation Error: %.3E"%(validation_loss_values[-1]))
 
 
 	print("Training Finished")

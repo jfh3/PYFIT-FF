@@ -2,27 +2,27 @@
 CONFIG_FNAME                       = __file__
 
 # File to use for writing log information.
-LOG_PATH                           = 'output/log.txt'
+LOG_PATH                           = 'output/run_0.10_weight/log.txt'
 
 # The neural network file to load.
-NEURAL_NETWORK_FILE                = 'input/old/medium/nn1.dat'
+NEURAL_NETWORK_FILE                = 'input/EOS/nn1-60-gi-shifted-10-train-iter.dat'
 
 # --------------------------------------------------
 # Structural Parameter Calculation Configuration
 # --------------------------------------------------
 
-POSCAR_DATA_FILE = 'input/old/medium/train.dat'
+POSCAR_DATA_FILE = 'input/EOS/EOS-POSCAR-E-clean.dat'
 
 # The parameter file to output. This is what gets used for neural network
 # training during the next step (usually). If you want the program to train
 # on this file immediately after generating it, specify the same file for
 # the TRAINING_SET_FILE parameter and pass the --run-training flag to the
 # program.
-LSPARAM_FILE     = 'output/generated.dat'
+LSPARAM_FILE     = 'input/EOS/EOS-E-lsparam.dat'
 
 # The file to store training data and neighbors lists in. If you don't specify this
 # it won't get written.
-NEIGHBOR_FILE    = 'output/nbl.dat'
+NEIGHBOR_FILE    = ''
 
 # Whether or not to divide gis by r0 squared before taking the natural logarithm.
 DIV_BY_R0_SQUARED = True
@@ -72,11 +72,11 @@ OVERFIT_ERROR_STOP = 2e5
 
 # The maximum number of times in a row that the difference between the validation
 # error and the training error can increase.
-OVERFIT_INCREASE_MAX_ITERATIONS = 18
+OVERFIT_INCREASE_MAX_ITERATIONS = 10000
 
 # The directory to backup neural network files in at the
 # interval specified below.
-NETWORK_BACKUP_DIR                 = 'output/nn_backup/'
+NETWORK_BACKUP_DIR                 = 'output/run_0.10_weight/nn_backup/'
 
 # Interval to backup the neural network file on.
 NETWORK_BACKUP_INTERVAL            = 100
@@ -86,10 +86,10 @@ NETWORK_BACKUP_INTERVAL            = 100
 KEEP_BACKUP_HISTORY                = True
 
 # Network Loss Log File Path
-LOSS_LOG_PATH                      = 'output/loss_log.txt'
+LOSS_LOG_PATH                      = 'output/run_0.10_weight/loss_log.txt'
 
 # The file to log the validation loss in.
-VALIDATION_LOG_PATH                = 'output/validation_loss_log.txt'
+VALIDATION_LOG_PATH                = 'output/run_0.10_weight/validation_loss_log.txt'
 
 # Interval on which validation error should be calculated and
 # logged in the corresponding file.
@@ -100,15 +100,15 @@ PROGRESS_INTERVAL = 2
 
 # The structure file that contains POSCAR structures
 # and DFT energies.
-TRAINING_SET_FILE                  = 'output/generated.dat'
+TRAINING_SET_FILE                  = 'input/EOS/EOS-E-lsparam.dat'
 
 # Where to save the neural network when done training it.
-NEURAL_NETWORK_SAVE_FILE           = 'output/nn1.dat'
+NEURAL_NETWORK_SAVE_FILE           = 'output/run_0.10_weight/nn1.dat'
 
 # The file to store the E_VS_V data in.
 # Each line will be all volumes in order followed
 # immediately by all energies in order.
-E_VS_V_FILE                        = 'output/E_VS_V.txt'
+E_VS_V_FILE                        = 'output/run_0.10_weight/ev.txt'
 
 # Interval at which energy vs. volume data is exported.
 E_VS_V_INTERVAL = 100
@@ -134,12 +134,17 @@ WEIGHTS = {}
 # structural group if desired. This will allow you to train your network
 # to very high accuracy in a particular subgroup, while not caring much
 # about others.
-OBJECTIVE_FUNCTION = 'rmse'
+OBJECTIVE_FUNCTION = 'group-targets'
+
+# If set to true, the system will score groups below their target error as
+# having no error at all. This will allow groups to migrate down below 
+# their target error if training of another group drags them down.
+UNWEIGHTED_NEGATIVE_ERROR = False
 
 # The file to store the subgroup error in. If you specify --group-error,
 # this will be graphed after the main error graph so that you can see how the 
 # error of each group varied throughout the training process.
-GROUP_ERROR_FILE = 'output/group_error.txt'
+GROUP_ERROR_FILE = 'output/run_0.10_weight/group_error.txt'
 
 # This is how often the error per-group should be recorded.
 GROUP_ERROR_RECORD_INTERVAL = 1
@@ -151,11 +156,16 @@ DEFAULT_TARGET = 0.020
 
 # The rmse target for each subgroup. This is only used if OBJECTIVE_FUNCTION = 'group-targets'
 SUBGROUP_TARGETS = {}
-SUBGROUP_TARGETS['Si_B17']= 0.001
+SUBGROUP_TARGETS['Si_B17'] = 0.001
 # Example: SUBGROUP_TARGETS['Si_B1']= 0.004
 
+# This is multiplied by the subgroup error at the end. This effectively
+# makes the parabola that defines the error for each group steaper
+# or more shallow.
+SUBGROUP_ERROR_COEFFICIENT = 0.10
+
 # Standard NN learning rate.
-LEARNING_RATE = 0.04
+LEARNING_RATE = 0.06
 
 # Which torch.optim algorithm to use. Currently this is just an
 # if statement that only does SGD and LBFGS.
@@ -165,4 +175,4 @@ OPTIMIZATION_ALGORITHM = 'LBFGS'
 MAX_LBFGS_ITERATIONS = 10
 
 # Maximum number of epochs to run through for training.
-MAXIMUM_TRAINING_ITERATIONS = 500
+MAXIMUM_TRAINING_ITERATIONS = 1000
