@@ -1027,7 +1027,7 @@ def TrainNetwork():
 		log("      on your choice of target errors for groups, these error values may")
 		log("      be very misleading.")
 	log("Final Training Error:   %.3E"%(last_loss))
-	TRAIN_TO_TOTAL_RATIO != 1.0:
+	if TRAIN_TO_TOTAL_RATIO != 1.0:
 		log("Final Validation Error: %.3E"%(validation_loss_values[-1]))
 
 
