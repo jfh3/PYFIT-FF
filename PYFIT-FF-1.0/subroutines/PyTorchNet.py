@@ -3,6 +3,7 @@ import torch.nn            as nn
 import torch.nn.functional as F
 import torch.optim         as optim
 import numpy               as np
+import copy
 
 # This class handles the process of loading information from the raw
 # set of neural network weights and biases into a proper PyTorch neural
@@ -25,6 +26,7 @@ class TorchNet(nn.Module):
 		self.params           = nn.ParameterList()
 		self.activation_mode  = network_data.config.activation_function
 		self.reduction_matrix = reduction_matrix
+		self.offset           = torch.tensor(0.5)
 
 		# Create a set of linear transforms.
 		for idx in range(len(network_data.config.layer_sizes)):
@@ -38,8 +40,23 @@ class TorchNet(nn.Module):
 					layer.bias.copy_(torch.tensor([node[1] for node in current_layer]))
 				self.layers.append(layer)
 				self.params.extend(layer.parameters())
-			
-			
+
+	def to(self, device):
+		super(TorchNet, self).to(device)
+		self.reduction_matrix = self.reduction_matrix.to(device)
+		self.offset           = self.offset.to(device)
+		return self
+
+	def cpu(self):
+		return self.to('cpu')
+
+	def print_device_info(self):
+		for param in self.params:
+			print("Parameter: %s"%(str(param.device)))
+
+		print("Reduction Matrix: %s"%str(self.reduction_matrix.device))
+		print("Offset: %s"%str(self.offset.device))
+
 
 	def randomize_self(self, relative_standard_deviation):
 		# For each parameter in self.params, we need to add a
@@ -94,9 +111,9 @@ class TorchNet(nn.Module):
 			for layer in self.layers[1:-1]:
 				x0 = torch.sigmoid(layer(x0))
 		else:
-			x0 = torch.sigmoid(self.layers[0](x)) - 0.5
+			x0 = torch.sigmoid(self.layers[0](x)) - self.offset
 			for layer in self.layers[1:-1]:
-				x0 = torch.sigmoid(layer(x0)) - 0.5
+				x0 = torch.sigmoid(layer(x0)) - self.offset
 
 		x0 = self.reduction_matrix.mm(self.layers[-1](x0))
 		return x0

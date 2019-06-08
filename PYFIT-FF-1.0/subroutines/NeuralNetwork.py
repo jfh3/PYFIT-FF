@@ -22,8 +22,11 @@ class NeuralNetwork:
 
 		log_unindent()
 
-	def generateNetwork(self):
-		log("Generating Network")
+	def generateNetwork(self, just_randomize=False):
+		if just_randomize:
+			log("Randomizing Network")
+		else:
+			log("Generating Network")
 		# TODO: Verify that this code is correct.
 		n_values = 0
 
@@ -42,7 +45,9 @@ class NeuralNetwork:
 		# and appropriate structure.
 		self.loadNetwork()
 		self.config.randomize = False
-		self.writeNetwork(self.path)
+
+		if not just_randomize:
+			self.writeNetwork(self.path)
 
 
 	# This function loads the actual weights and biases of

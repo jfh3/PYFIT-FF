@@ -33,6 +33,26 @@ Options:
 	                     icon in a group error scatterplot, specify the name of that
 	                     group after this argument.
 
+	-p --cpu             Force all operations onto the cpu. The default is to use the
+	                     GPU if available.
+
+	-r --randomize-nn    Regardless of any configuration values, this flag will cause
+	                     the neural network to be randomized before training. This 
+	                     not effect the neural network input file.
+
+	-n --n-threads       Force the process to use a certain number of threads for 
+	                     training. Often times, a very small model will not speed
+	                     up when using more than one thread. Follow this argument
+	                     immediately with a number between 1 and the number of threads
+	                     your hardware can run simultaneously.
+
+	-d --directory       Use this to specify an output directory to append to the
+	                     current output directory as specified in Config.py. This is
+	                     useful if you want to run multiple instances of pyfit-ff at
+	                     the same time and you don't want them to overwrite eachothers
+	                     output files. Follow this argument immediately with a path name.
+	                     The path will be created if it doesn't exist.
+
 	-c --compare         This must be the only option if specified. Will compare
 	                     the two training set files listed after this argument.
 	                     The program will summarize the mean, min, max and 

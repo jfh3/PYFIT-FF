@@ -56,10 +56,13 @@ def LogConfiguration():
 # -------------------------------------
 # Initialization and Logging
 # -------------------------------------
-def init():
+def init(log=None):
 	global log_file
 	global indent
-	log_file  = open(LOG_PATH, 'w')
+	if log == None:
+		log_file  = open(LOG_PATH, 'w')
+	else:
+		log_file  = open(log, 'w')
 	indent    = 0
 
 # This ensures that all log file information will write

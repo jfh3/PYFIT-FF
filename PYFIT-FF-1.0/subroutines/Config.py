@@ -5,20 +5,20 @@ CONFIG_FNAME                       = __file__
 LOG_PATH                           = 'output/log.txt'
 
 # The neural network file to load.
-NEURAL_NETWORK_FILE                = 'output/nn1.dat'
+NEURAL_NETWORK_FILE                = 'input/EOS/nn1-60-gi-shifted.dat'
 
 # --------------------------------------------------
 # Structural Parameter Calculation Configuration
 # --------------------------------------------------
 
-POSCAR_DATA_FILE = 'input/EOS/EOS-POSCAR-E-clean-no-clusters.dat'
+POSCAR_DATA_FILE = 'input/EOS/EOS-POSCAR-E-clean-bad-removed.dat'
 
 # The parameter file to output. This is what gets used for neural network
 # training during the next step (usually). If you want the program to train
 # on this file immediately after generating it, specify the same file for
 # the TRAINING_SET_FILE parameter and pass the --run-training flag to the
 # program.
-LSPARAM_FILE     = 'input/EOS/EOS-E-lsparam.dat'
+LSPARAM_FILE     = 'input/EOS/EOS-E-lsparam-clean-bad-removed.dat'
 
 # The file to store training data and neighbors lists in. If you don't specify this
 # it won't get written.
@@ -93,14 +93,20 @@ VALIDATION_LOG_PATH                = 'output/validation_loss_log.txt'
 
 # Interval on which validation error should be calculated and
 # logged in the corresponding file.
-VALIDATION_INTERVAL = 1
+VALIDATION_INTERVAL = 4
+
+# Whether or not to ensure that the validation set is sampled
+# equally for every structural group. This prevents the random
+# selection of validation data from missing too much of one
+# group. 
+GROUP_WISE_VALIDATION_SPLIT = True
 
 # Update the progress bar every PROGRESS_INTERVAL epochs.
 PROGRESS_INTERVAL = 2
 
 # The structure file that contains POSCAR structures
 # and DFT energies.
-TRAINING_SET_FILE                  = 'input/EOS/EOS-E-lsparam.dat'
+TRAINING_SET_FILE                  = 'input/EOS/EOS-E-lsparam-clean-bad-removed.dat'
 
 # Where to save the neural network when done training it.
 NEURAL_NETWORK_SAVE_FILE           = 'output/nn1.dat'
@@ -111,7 +117,7 @@ NEURAL_NETWORK_SAVE_FILE           = 'output/nn1.dat'
 E_VS_V_FILE                        = 'output/ev.txt'
 
 # Interval at which energy vs. volume data is exported.
-E_VS_V_INTERVAL = 100
+E_VS_V_INTERVAL = 10000000
 
 # Energy shift per atom for DFT (for pre-processing use 0)
 E_SHIFT = 0.0 
@@ -139,7 +145,7 @@ OBJECTIVE_FUNCTION = 'rmse'
 # If set to true, the system will score groups below their target error as
 # having no error at all. This will allow groups to migrate down below 
 # their target error if training of another group drags them down.
-UNWEIGHTED_NEGATIVE_ERROR = True
+UNWEIGHTED_NEGATIVE_ERROR = False
 
 # The file to store the subgroup error in. If you specify --group-error,
 # this will be graphed after the main error graph so that you can see how the 
@@ -152,7 +158,7 @@ GROUP_ERROR_RECORD_INTERVAL = 1
 # This is the default rmse value to target for subgroups if
 # OBJECTIVE_FUNCTION = 'group-targets'. This is overriden by 
 # any values explicitely specified in SUBGROUP_TARGETS.
-DEFAULT_TARGET = 0.0
+DEFAULT_TARGET = 0.014
 
 # The rmse target for each subgroup. This is only used if OBJECTIVE_FUNCTION = 'group-targets'
 SUBGROUP_TARGETS = {}
@@ -161,10 +167,10 @@ SUBGROUP_TARGETS = {}
 # This is multiplied by the subgroup error at the end. This effectively
 # makes the parabola that defines the error for each group steaper
 # or more shallow.
-SUBGROUP_ERROR_COEFFICIENT = 0.10
+SUBGROUP_ERROR_COEFFICIENT = 1.0
 
 # Standard NN learning rate.
-LEARNING_RATE = 0.06
+LEARNING_RATE = 0.07
 
 # Which torch.optim algorithm to use. Currently this is just an
 # if statement that only does SGD and LBFGS.
@@ -174,4 +180,4 @@ OPTIMIZATION_ALGORITHM = 'LBFGS'
 MAX_LBFGS_ITERATIONS = 10
 
 # Maximum number of epochs to run through for training.
-MAXIMUM_TRAINING_ITERATIONS = 100
+MAXIMUM_TRAINING_ITERATIONS = 1000

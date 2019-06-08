@@ -93,8 +93,15 @@ class TrainingFileConfig:
 		try:
 			self.n_layers    = int(line8[0])
 			self.layer_sizes = [int(c) for c in line8[1:]]
+
+
 		except ValueError as ex:
 			raise ValueError("Unable to parse value on line 8 of %s"%(self.path)) from ex
+
+		if self.n_layers != len(line8[1:]):
+			err  = "It appears as though more layers were specified than the first "
+			err += "number on line 8 would indicate."
+			raise ValueError(err) 
 
 		# Make sure that the network structure actaully matches the number of 
 		# structure parameters that will be supplied to it.

@@ -17,6 +17,7 @@ import matplotlib.pyplot   as plt
 import numpy               as np
 import Util
 import sys
+import os
 import copy
 from   Util import log, log_indent, log_unindent, ProgressBar
 from   Help import help_str
@@ -176,13 +177,14 @@ def CompareStructureParameters(first, second):
 	plt.ylabel("Second File")
 	plt.show()
 
-def TrainNetwork():
+def TrainNetwork(force_cpu, randomize_nn):
 	log("Beginning Training Process")
 	log_indent()
 
 	device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-	
-
+	if force_cpu:
+		device = 'cpu'
+		
 	log("Loading Data")
 	log_indent()
 
@@ -193,6 +195,9 @@ def TrainNetwork():
 
 	neural_network_data = NeuralNetwork(NEURAL_NETWORK_FILE) 
 	training_set        = TrainingSetFile(TRAINING_SET_FILE)
+
+	if randomize_nn:
+		neural_network_data.generateNetwork(just_randomize=True)
 
 	# Make sure that the configurations actually match.
 	if neural_network_data.config != training_set.config:
@@ -239,7 +244,7 @@ def TrainNetwork():
 	# the training set, which takes n_structures^2 time. This is because for each 
 	# indice, we have to scan the whole list of training indices to verify that it
 	# isn't in there.
-	if OBJECTIVE_FUNCTION == 'group-targets':
+	if OBJECTIVE_FUNCTION == 'group-targets' or GROUP_WISE_VALIDATION_SPLIT:
 		# If we are training to specific group error targets, we
 		# need to split up the training and validation data so that
 		# each group is evenly represented in both the training and
@@ -429,11 +434,14 @@ def TrainNetwork():
 	# Now we should have all of the training data ready, just not in PyTorch tensor format
 	# quite yet.
 
-	energies         = torch.tensor(np.transpose([energies])).type(torch.FloatTensor).to(device)
-	inverse_n_atoms  = torch.tensor(np.transpose([inverse_n_atoms])).type(torch.FloatTensor).to(device)
-	group_weights    = torch.tensor(np.transpose([group_weights])).type(torch.FloatTensor).to(device)
-	structure_params = torch.tensor(structure_params).type(torch.FloatTensor).to(device)
-	reduction_matrix = torch.tensor(reduction_matrix).type(torch.FloatTensor).to(device)
+	energies           = torch.tensor(np.transpose([energies])).type(torch.FloatTensor).to(device)
+	inverse_n_atoms    = torch.tensor(np.transpose([inverse_n_atoms])).type(torch.FloatTensor).to(device)
+	group_weights      = torch.tensor(np.transpose([group_weights])).type(torch.FloatTensor).to(device)
+	structure_params   = torch.tensor(structure_params).type(torch.FloatTensor).to(device)
+	n_training_indices = torch.tensor(n_training_indices).type(torch.FloatTensor).to(device)
+	reduction_matrix = torch.tensor(reduction_matrix).type(torch.FloatTensor)
+	# The reduction matrix will be automatically moved to the device (cpu or cuda) when
+	# torch_net.to(device) is called later.
 
 	# Now we do essentially the same thing as the previous lines, except for the validation
 	# dataset.
@@ -560,18 +568,19 @@ def TrainNetwork():
 
 
 		if OBJECTIVE_FUNCTION == 'group-targets':
-			val_group_reduction_matrix = torch.tensor(val_group_reduction_matrix).type(torch.FloatTensor).to(device)
-			val_group_target_array     = torch.tensor(np.transpose([val_group_target_array])).type(torch.FloatTensor).to(device)
-			val_group_sizes            = torch.tensor(np.transpose([val_group_sizes])).type(torch.FloatTensor).to(device)
+			val_group_reduction_matrix = torch.tensor(val_group_reduction_matrix).type(torch.FloatTensor)
+			val_group_target_array     = torch.tensor(np.transpose([val_group_target_array])).type(torch.FloatTensor)
+			val_group_sizes            = torch.tensor(np.transpose([val_group_sizes])).type(torch.FloatTensor)
 
 		# Now we should have all of the training data ready, just not in PyTorch tensor format
 		# quite yet.
 
-		val_energies         = torch.tensor(np.transpose([val_energies])).type(torch.FloatTensor).to(device)
-		val_inverse_n_atoms  = torch.tensor(np.transpose([val_inverse_n_atoms])).type(torch.FloatTensor).to(device)
-		val_group_weights    = torch.tensor(np.transpose([val_group_weights])).type(torch.FloatTensor).to(device)
-		val_structure_params = torch.tensor(val_structure_params).type(torch.FloatTensor).to(device)
-		val_reduction_matrix = torch.tensor(val_reduction_matrix).type(torch.FloatTensor).to(device)
+		val_energies         = torch.tensor(np.transpose([val_energies])).type(torch.FloatTensor)
+		val_inverse_n_atoms  = torch.tensor(np.transpose([val_inverse_n_atoms])).type(torch.FloatTensor)
+		val_group_weights    = torch.tensor(np.transpose([val_group_weights])).type(torch.FloatTensor)
+		val_structure_params = torch.tensor(val_structure_params).type(torch.FloatTensor)
+		val_reduction_matrix = torch.tensor(val_reduction_matrix).type(torch.FloatTensor)
+		# This stays on the cpu because thats the only place where we ever compute validation error.
 
 	log_unindent()
 
@@ -629,7 +638,7 @@ def TrainNetwork():
 			if UNWEIGHTED_NEGATIVE_ERROR:
 				def get_validation_loss():
 					with torch.no_grad():
-						temp_net          = copy.deepcopy(torch_net.cpu())
+						temp_net          = copy.deepcopy(torch_net).cpu()
 						temp_net.set_reduction_matrix(val_reduction_matrix)
 
 						calculated_values = temp_net(val_structure_params)
@@ -641,13 +650,13 @@ def TrainNetwork():
 						per_group_diff_squared_sum  = val_group_reduction_matrix.mm(difference**2)
 						per_group_diff_squared_avg  = per_group_diff_squared_sum / val_group_sizes
 						per_group_rmse              = torch.sqrt(per_group_diff_squared_avg)
-						loss_zeroed                 = torch.max(per_group_rmse - val_group_target_array, negative_error_zero_compare)
+						loss_zeroed                 = torch.max(per_group_rmse - val_group_target_array, negative_error_zero_compare.cpu())
 						loss                        = (SUBGROUP_ERROR_COEFFICIENT*loss_zeroed**2).sum()
 					return loss.cpu().item()
 			else:
 				def get_validation_loss():
 					with torch.no_grad():
-						temp_net          = copy.deepcopy(torch_net.cpu())
+						temp_net          = copy.deepcopy(torch_net).cpu()
 						temp_net.set_reduction_matrix(val_reduction_matrix)
 
 						calculated_values = temp_net(val_structure_params)
@@ -664,7 +673,7 @@ def TrainNetwork():
 		else:
 			def get_validation_loss():
 				with torch.no_grad():
-					temp_net          = copy.deepcopy(torch_net.cpu())
+					temp_net          = copy.deepcopy(torch_net).cpu()
 					temp_net.set_reduction_matrix(val_reduction_matrix)
 
 					calculated_values = temp_net(val_structure_params)
@@ -710,7 +719,17 @@ def TrainNetwork():
 	else:
 		def get_loss():
 			global last_loss
-			
+
+
+			# print('----------------------------------------\n')
+			# torch_net.print_device_info()
+			# print("Params: %s"%(structure_params.device))
+			# print("Energy: %s"%(energies.device))
+			# print("Inverse: %s"%(inverse_n_atoms.device))
+			# print("GW: %s"%(group_weights.device))
+			# print("N: %s"%(n_training_indices.device))
+			# print('----------------------------------------\n')
+
 			calculated_values = torch_net(structure_params)
 
 			# Here we are multiplying each structure energy error (as calculated by the neural network),
@@ -736,8 +755,8 @@ def TrainNetwork():
 		f.write(' '.join([str(v) for v in volumes]))
 		f.write(' ')
 		with torch.no_grad():
-			temp   = torch_net(structure_params).cpu()
-			values = [i.item() for i in temp]
+			temp   = torch_net(structure_params)
+			values = [i.item() for i in temp.cpu()]
 		f.write(' '.join([str(e) for e in values]))
 		f.write('\n')
 		f.close()
@@ -974,7 +993,7 @@ def TrainNetwork():
 
 		with torch.no_grad():
 			# First get the per group training error.
-			temp_net          = copy.deepcopy(torch_net.cpu())
+			temp_net          = copy.deepcopy(torch_net)
 
 			calculated_values = temp_net(structure_params)
 			difference        = torch.mul(calculated_values - energies, inverse_n_atoms)
@@ -984,12 +1003,13 @@ def TrainNetwork():
 			# This multiplication sums the difference squared on a per-group basis.
 			per_group_diff_squared_sum = group_reduction_matrix.mm(difference**2)
 			per_group_diff_squared_avg = per_group_diff_squared_sum / group_sizes
-			per_group_rmse             = torch.sqrt(per_group_diff_squared_avg)
+			per_group_rmse             = torch.sqrt(per_group_diff_squared_avg).cpu()
 
 
 			# Now get the per group validation error.
 			if TRAIN_TO_TOTAL_RATIO != 1.0:
 				temp_net.set_reduction_matrix(val_reduction_matrix)
+				temp_net = temp_net.cpu()
 				calculated_values = temp_net(val_structure_params)
 				difference        = torch.mul(calculated_values - val_energies, val_inverse_n_atoms)
 				# Multiple by the group reduction matrix in order to get the 
@@ -1033,6 +1053,8 @@ def TrainNetwork():
 
 	print("Training Finished")
 	print("Time Elapsed: %.1fs"%(end_time - start_time))
+	log("Training Finished")
+	log("Time Elapsed: %.1fs"%(end_time - start_time))
 
 	log_unindent()
 
@@ -1072,8 +1094,85 @@ def TrainNetwork():
 
 	return plateau_annealing_iterations
 
+def SetupOutputPath(output_path):
+	if output_path[-1] != '/':
+		output_path += '/'
+
+	global LOG_PATH
+	global LSPARAM_FILE
+	global NEIGHBOR_FILE
+	global NETWORK_BACKUP_DIR
+	global LOSS_LOG_PATH
+	global VALIDATION_LOG_PATH
+	global NEURAL_NETWORK_SAVE_FILE
+	global E_VS_V_FILE
+	global GROUP_ERROR_FILE
+
+	LOG_PATH                 = output_path + LOG_PATH
+	LSPARAM_FILE             = output_path + LSPARAM_FILE
+	NEIGHBOR_FILE            = output_path + NEIGHBOR_FILE
+	NETWORK_BACKUP_DIR       = output_path + NETWORK_BACKUP_DIR
+	LOSS_LOG_PATH            = output_path + LOSS_LOG_PATH
+	VALIDATION_LOG_PATH      = output_path + VALIDATION_LOG_PATH
+	NEURAL_NETWORK_SAVE_FILE = output_path + NEURAL_NETWORK_SAVE_FILE
+	E_VS_V_FILE              = output_path + E_VS_V_FILE
+	GROUP_ERROR_FILE         = output_path + GROUP_ERROR_FILE			
+
+	paths = [
+		LOG_PATH,
+		LSPARAM_FILE,
+		NEIGHBOR_FILE,
+		NETWORK_BACKUP_DIR,
+		LOSS_LOG_PATH,
+		VALIDATION_LOG_PATH,
+		NEURAL_NETWORK_SAVE_FILE,
+		E_VS_V_FILE,
+		GROUP_ERROR_FILE
+	]
+	
+	for path in paths:
+		# We need to split the path up on '/' characters
+		# and ensure that each subdirectory exists.
+
+		current = ''
+		if path[-1] == '/':
+			spl = path.split('/')
+		else:
+			spl = path.split('/')[:-1]
+
+		for p in spl:
+			current += p
+
+			if not os.path.exists(current):
+				os.mkdir(current)
+
+			current += '/'
+
+
 if __name__ == '__main__':
-	Util.init()
+
+	args = []
+	for s in sys.argv[1:]:
+		if s[0] != '-':
+			args.append(s)
+		else:
+			args.append(s.lower())
+
+	output_path = None
+	if '--directory' in args:
+		output_path = str(args[args.index('--directory') + 1])
+	if '-d' in args:
+		output_path = str(args[args.index('-d') + 1])
+
+	if output_path != None:
+		SetupOutputPath(output_path)
+
+		Util.init(LOG_PATH)
+		log('---------- IMPORTANT ----------')
+		log('Output was redirected to: %s\n'%output_path)
+	else:
+		Util.init()
+	
 	log("---------- Program Started ----------\n")
 
 	log("Command Line: %s\n"%' '.join(sys.argv))
@@ -1089,12 +1188,7 @@ if __name__ == '__main__':
 	# Command Line Argument Processing
 	# ----------------------------------------
 
-	args = []
-	for s in sys.argv[1:]:
-		if s[0] != '-':
-			args.append(s)
-		else:
-			args.append(s.lower())
+	
 
 	compute_gis  = False # Whether or not to compute structure params from poscar data.
 	run_training = False # Whether or not to traing the neural network against structure params.
@@ -1103,6 +1197,8 @@ if __name__ == '__main__':
 	graph_val    = False # Whether or not to plot validation error as a function of iteration
 	                     # at the end of the process.
 	graph_group  = False # Whether or not to graph the per-group error at the end.
+	force_cpu    = False # Whether or not to keep all execution on cpu
+	randomize_nn = False # Whether or not to ignore configuration and randomize the nn.
 
 	# Here we expand single hyphen arguments.
 	# ex: -gte => -g -t -e
@@ -1144,8 +1240,20 @@ if __name__ == '__main__':
 		if '-i' in args:
 			group_to_highlight = args[args.index('-i') + 1]
 
+		if '--n-threads' in args:
+			os.environ["OMP_NUM_THREADS"] = str(args[args.index('--n-threads') + 1])
+			os.environ["MKL_NUM_THREADS"] = str(args[args.index('--n-threads') + 1])
+			torch.set_num_threads(int(args[args.index('--n-threads') + 1]))
+		if '-n' in args:
+			os.environ["OMP_NUM_THREADS"] = str(args[args.index('-n') + 1])
+			os.environ["MKL_NUM_THREADS"] = str(args[args.index('-n') + 1])
+			torch.set_num_threads(int(args[args.index('-n') + 1]))
+
+
 		if '--compute-gis' in args or '-g' in args:
 			compute_gis = True
+		if '--randomize-nn' in args or '-r' in args:
+			randomize_nn = True
 		if '--run-training' in args or '-t' in args:
 			run_training = True
 		if '--graph-error' in args or '-e' in args:
@@ -1154,6 +1262,8 @@ if __name__ == '__main__':
 			graph_val = True
 		if '--group-error' in args or '-s' in args:
 			graph_group = True
+		if '--cpu' in args or '-p' in args:
+			force_cpu = True
 
 	# By this point we know what operations the user requested.
 	# Start running them, in the logical order.
@@ -1164,7 +1274,7 @@ if __name__ == '__main__':
 		ComputeStructureParameters()
 
 	if run_training:
-		plateau_annealing_iterations = TrainNetwork()
+		plateau_annealing_iterations = TrainNetwork(force_cpu, randomize_nn)
 
 	if graph_error:
 		import matplotlib.pyplot as plt
