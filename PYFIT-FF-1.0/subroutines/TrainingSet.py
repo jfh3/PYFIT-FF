@@ -130,7 +130,7 @@ def WriteTrainingSet(fname, config, poscar_data, structure_params, neighbor_list
 	log("Write Started   at %s"%(starttime.strftime("%Y-%m-%d %H:%M:%S")))
 
 
-	file = open(fname, 'w')
+	file = open(fname, 'w', FILE_BUFFERING)
 
 	file.write(config.toFileString(prepend_comment = True))
 	file.write(' # %i - Potential Type\n'%(1))
@@ -156,7 +156,7 @@ def WriteTrainingSet(fname, config, poscar_data, structure_params, neighbor_list
 		# This compute the parallelepiped volume of the 
 		# structure based purely on its basis vectors.
 		struct_volume = np.linalg.norm(
-			np.cross(
+			np.dot(
 				np.cross(struct.A1, struct.A2),
 				struct.A3
 			)
@@ -170,7 +170,7 @@ def WriteTrainingSet(fname, config, poscar_data, structure_params, neighbor_list
 				group_idx,
 				structure_idx,
 				struct.n_atoms,
-				struct.energy + E_SHIFT * struct.n_atoms,
+				struct.energy,
 				struct_volume
 			))
 

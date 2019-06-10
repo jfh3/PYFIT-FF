@@ -1,8 +1,19 @@
 # Name of this file, used for error messages.
 CONFIG_FNAME                       = __file__
 
+# Use this to change the file write buffer size.
+# This is useful if you are piping stdout into a file
+# and you want to check progress during the runtime of
+# the program.
+#
+#  0 = No buffer, probably won't work (requires binary mode)
+#  1 = line buffer, should probably use this
+# >1 = buffer size, default is usually 4096 - 8192
+# See: https://docs.python.org/3/library/functions.html#open
+FILE_BUFFERING                     = 1
+
 # File to use for writing log information.
-LOG_PATH                           = 'output/log.txt'
+LOG_PATH                           = 'log.txt'
 
 # The neural network file to load.
 NEURAL_NETWORK_FILE                = 'input/EOS/nn1-60-gi-shifted.dat'
@@ -11,14 +22,14 @@ NEURAL_NETWORK_FILE                = 'input/EOS/nn1-60-gi-shifted.dat'
 # Structural Parameter Calculation Configuration
 # --------------------------------------------------
 
-POSCAR_DATA_FILE = 'input/EOS/EOS-POSCAR-E-clean-bad-removed.dat'
+POSCAR_DATA_FILE = 'input/EOS/EOS-POSCAR-E-clean-no-clusters.dat'
 
 # The parameter file to output. This is what gets used for neural network
 # training during the next step (usually). If you want the program to train
 # on this file immediately after generating it, specify the same file for
 # the TRAINING_SET_FILE parameter and pass the --run-training flag to the
 # program.
-LSPARAM_FILE     = 'input/EOS/EOS-E-lsparam-clean-bad-removed.dat'
+LSPARAM_FILE     = 'output/generated-lsparam.dat'
 
 # The file to store training data and neighbors lists in. If you don't specify this
 # it won't get written.
@@ -106,7 +117,7 @@ PROGRESS_INTERVAL = 2
 
 # The structure file that contains POSCAR structures
 # and DFT energies.
-TRAINING_SET_FILE                  = 'input/EOS/EOS-E-lsparam-clean-bad-removed.dat'
+TRAINING_SET_FILE                  = 'input/EOS/EOS-E-lsparam.dat'
 
 # Where to save the neural network when done training it.
 NEURAL_NETWORK_SAVE_FILE           = 'output/nn1.dat'
@@ -114,7 +125,7 @@ NEURAL_NETWORK_SAVE_FILE           = 'output/nn1.dat'
 # The file to store the E_VS_V data in.
 # Each line will be all volumes in order followed
 # immediately by all energies in order.
-E_VS_V_FILE                        = 'output/ev.txt'
+E_VS_V_FILE                        = 'output/E_vs_V.txt'
 
 # Interval at which energy vs. volume data is exported.
 E_VS_V_INTERVAL = 10000000
@@ -180,4 +191,4 @@ OPTIMIZATION_ALGORITHM = 'LBFGS'
 MAX_LBFGS_ITERATIONS = 10
 
 # Maximum number of epochs to run through for training.
-MAXIMUM_TRAINING_ITERATIONS = 1000
+MAXIMUM_TRAINING_ITERATIONS = 150

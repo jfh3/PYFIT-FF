@@ -144,7 +144,6 @@ def compute_parameters(atom, r0, sigma, cutoff, truncation, gi_mode, gi_shift, l
 
 	# Next, we need to compute and array of radial terms for each r0 value.
 	s2 = 1.0/(sigma**2)
-	s3 = 1.0/(sigma**3)
 
 	# This is an array of all radial terms for 
 	# all values of r0.
@@ -187,16 +186,16 @@ def compute_parameters(atom, r0, sigma, cutoff, truncation, gi_mode, gi_shift, l
 		# The left_* and right_* arrays correspond to cases where 
 		# r_i != r_j. In these cases, we need to calculate both of 
 		# the functions (f) independently.
-		left_term       = s3*np.exp(-s2*np.square(left_magnitudes - r0n))
+		left_term       = np.exp(-s2*np.square(left_magnitudes - r0n))
 		full_left_term  = left_term*left_fc
 
-		right_term      = s3*np.exp(-s2*np.square(right_magnitudes - r0n))
+		right_term      = np.exp(-s2*np.square(right_magnitudes - r0n))
 		full_right_term = right_term*right_fc
 
 		# These two arrays correspond to cases where r_i = r_j and we 
 		# know that we just need to square the value of the function 
 		# (f) after computing it once.
-		term            = s3*np.exp(-s2*np.square(dupl_magnitudes - r0n))
+		term            = np.exp(-s2*np.square(dupl_magnitudes - r0n))
 		full_term       = term*fc
 
 		# In this statement, we multiply the radial term by 2, because 

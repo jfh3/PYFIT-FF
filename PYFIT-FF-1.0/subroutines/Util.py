@@ -4,6 +4,12 @@ import numpy as np
 import sys
 import atexit
 
+UNSUPERVISED_MODE = False
+
+def set_mode(unsupervised=False):
+	global UNSUPERVISED_MODE
+	UNSUPERVISED_MODE = unsupervised
+
 def GetLineCells(line_string):
 	return [i for i in line_string.split(' ') if i != '' and not i.isspace()]
 
@@ -95,6 +101,8 @@ class ProgressBar:
 		self.prefix        = prefix
 		self.prefix_width  = prefix_width
 		self.update_every  = update_every
+		if UNSUPERVISED_MODE:
+			self.update_every = self.update_every * 4
 		self.total         = total
 		self.current       = 0.0
 		self.fill_char     = fill_char
@@ -143,5 +151,11 @@ class ProgressBar:
 		# Using a \r character at the end of the line only works for
 		# some environments. Odds are that this will not work on windows
 		# but who cares.
-		sys.stdout.write("\033[K")
-		print(prefix + self.border[0] + fill + space + self.border[1] + ' ' + disp, end=_end)
+		if UNSUPERVISED_MODE:
+			if self.update_count == 0:
+				print(prefix + '| %s |'%disp, end='')
+			else:
+				print('| %s |'%disp, end='')
+		else:
+			#sys.stdout.write("\033[K")
+			print(prefix + self.border[0] + fill + space + self.border[1] + ' ' + disp, end=_end)

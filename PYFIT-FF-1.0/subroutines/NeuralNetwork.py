@@ -194,7 +194,7 @@ class NeuralNetwork:
 	# verbatim, as this program does not change them.
 	# The weights and biases may change though.
 	def writeNetwork(self, path):
-		file = open(path, 'w')
+		file = open(path, 'w', FILE_BUFFERING)
 
 		file.write(self.config.toFileString())
 

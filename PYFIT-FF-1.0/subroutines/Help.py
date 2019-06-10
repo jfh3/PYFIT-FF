@@ -53,6 +53,13 @@ Options:
 	                     output files. Follow this argument immediately with a path name.
 	                     The path will be created if it doesn't exist.
 
+	-u --unsupervised    Program will minimize the number of print calls made during 
+	                     runtime. This is useful when piping stdout into a file, because
+	                     the normal progress bars use ANSI escape sequences that will 
+	                     cause a line to be written to the file for every progress bar
+	                     update. In unsupervised mode, each progress bar will only 
+	                     occupy one line in the stdout file.
+
 	-c --compare         This must be the only option if specified. Will compare
 	                     the two training set files listed after this argument.
 	                     The program will summarize the mean, min, max and 

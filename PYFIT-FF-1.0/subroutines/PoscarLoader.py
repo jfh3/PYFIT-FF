@@ -129,7 +129,7 @@ class TrainingSetStructure:
 
 
 		try:
-			self.energy = float(lines[-1]) + self.n_atoms * E_SHIFT
+			self.energy = float(lines[-1]) + (self.n_atoms * E_SHIFT)
 		except ValueError as ex:
 			raise ValueError("Invalid value encountered for structure energy in POSCAR structure.") from ex
 

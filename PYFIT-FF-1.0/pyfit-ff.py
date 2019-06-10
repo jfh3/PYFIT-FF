@@ -751,7 +751,7 @@ def TrainNetwork(force_cpu, randomize_nn):
 
 
 	def log_energy_vs_volume():
-		f = open(E_VS_V_FILE, 'a')
+		f = open(E_VS_V_FILE, 'a', FILE_BUFFERING)
 		f.write(' '.join([str(v) for v in volumes]))
 		f.write(' ')
 		with torch.no_grad():
@@ -839,6 +839,7 @@ def TrainNetwork(force_cpu, randomize_nn):
 		# This will populate the list of loss values
 		# with the initial value before training.
 		get_loss()
+		log("Initial RMSE before any training: %E"%(last_loss))
 	
 	bar = ProgressBar("Training", 30, MAXIMUM_TRAINING_ITERATIONS + 1, update_every = PROGRESS_INTERVAL)
 
@@ -979,7 +980,7 @@ def TrainNetwork(force_cpu, randomize_nn):
 	if OBJECTIVE_FUNCTION == 'group-targets':
 
 		log("Exporting error as a function of iteration for each group.")
-		f = open(GROUP_ERROR_FILE, 'w')
+		f = open(GROUP_ERROR_FILE, 'w', FILE_BUFFERING)
 		f.write('iteration %s\n'%(' '.join(ordered_group_names)))
 		for idx in range(MAXIMUM_TRAINING_ITERATIONS // GROUP_ERROR_RECORD_INTERVAL):
 			if group_loss_values[idx] != None:
@@ -1047,7 +1048,7 @@ def TrainNetwork(force_cpu, randomize_nn):
 		log("      on your choice of target errors for groups, these error values may")
 		log("      be very misleading.")
 	log("Final Training Error:   %.3E"%(last_loss))
-	if TRAIN_TO_TOTAL_RATIO != 1.0:
+	if TRAIN_TO_TOTAL_RATIO != 1.0 and len(validation_loss_values) != 0:
 		log("Final Validation Error: %.3E"%(validation_loss_values[-1]))
 
 
@@ -1073,7 +1074,7 @@ def TrainNetwork(force_cpu, randomize_nn):
 
 	log("Writing Training Loss File")
 
-	loss_file = open(LOSS_LOG_PATH, 'w')
+	loss_file = open(LOSS_LOG_PATH, 'w', FILE_BUFFERING)
 	for loss in loss_values:
 		if loss == None:
 			break
@@ -1082,7 +1083,7 @@ def TrainNetwork(force_cpu, randomize_nn):
 
 	log("Writing Validation Loss File")
 
-	valid_loss_file = open(VALIDATION_LOG_PATH, 'w')
+	valid_loss_file = open(VALIDATION_LOG_PATH, 'w', FILE_BUFFERING)
 	for validation_loss in validation_loss_values:
 		valid_loss_file.write('%10.10E\n'%(validation_loss))
 	valid_loss_file.close()
@@ -1199,6 +1200,7 @@ if __name__ == '__main__':
 	graph_group  = False # Whether or not to graph the per-group error at the end.
 	force_cpu    = False # Whether or not to keep all execution on cpu
 	randomize_nn = False # Whether or not to ignore configuration and randomize the nn.
+	unsupervised = False # Whether or not to use minimal progress bars.
 
 	# Here we expand single hyphen arguments.
 	# ex: -gte => -g -t -e
@@ -1249,7 +1251,9 @@ if __name__ == '__main__':
 			os.environ["MKL_NUM_THREADS"] = str(args[args.index('-n') + 1])
 			torch.set_num_threads(int(args[args.index('-n') + 1]))
 
-
+		if '--unsupervised' in args or '-u' in args:
+			unsupervised = True
+			Util.set_mode(unsupervised)
 		if '--compute-gis' in args or '-g' in args:
 			compute_gis = True
 		if '--randomize-nn' in args or '-r' in args:
