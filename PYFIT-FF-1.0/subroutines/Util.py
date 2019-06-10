@@ -157,5 +157,5 @@ class ProgressBar:
 			else:
 				print('| %s |'%disp, end='')
 		else:
-			#sys.stdout.write("\033[K")
+			sys.stdout.write("\033[K")
 			print(prefix + self.border[0] + fill + space + self.border[1] + ' ' + disp, end=_end)
