@@ -13,7 +13,7 @@ CONFIG_FNAME                       = __file__
 FILE_BUFFERING                     = 1
 
 # File to use for writing log information.
-LOG_PATH                           = 'log.txt'
+LOG_PATH                           = 'output/log.txt'
 
 # The neural network file to load.
 NEURAL_NETWORK_FILE                = 'input/EOS/nn1-60-gi-shifted.dat'
@@ -134,7 +134,7 @@ E_VS_V_INTERVAL = 10000000
 E_SHIFT = 0.0 
 
 # The ratio of training data to overall amount of data.
-TRAIN_TO_TOTAL_RATIO = 0.85
+TRAIN_TO_TOTAL_RATIO = 1.0
 
 
 # The weight to assign to any group not explicitely enumerated
@@ -151,7 +151,7 @@ WEIGHTS = {}
 # structural group if desired. This will allow you to train your network
 # to very high accuracy in a particular subgroup, while not caring muchx
 # about others.
-OBJECTIVE_FUNCTION = 'rmse'
+OBJECTIVE_FUNCTION = 'group-targets'
 
 # If set to true, the system will score groups below their target error as
 # having no error at all. This will allow groups to migrate down below 
@@ -178,7 +178,7 @@ SUBGROUP_TARGETS = {}
 # This is multiplied by the subgroup error at the end. This effectively
 # makes the parabola that defines the error for each group steaper
 # or more shallow.
-SUBGROUP_ERROR_COEFFICIENT = 1.0
+SUBGROUP_ERROR_COEFFICIENT = 4.0
 
 # Standard NN learning rate.
 LEARNING_RATE = 0.07
@@ -191,4 +191,4 @@ OPTIMIZATION_ALGORITHM = 'LBFGS'
 MAX_LBFGS_ITERATIONS = 10
 
 # Maximum number of epochs to run through for training.
-MAXIMUM_TRAINING_ITERATIONS = 150
+MAXIMUM_TRAINING_ITERATIONS = 100

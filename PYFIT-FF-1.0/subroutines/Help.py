@@ -69,6 +69,14 @@ Options:
 	                     any error trends can be seen. A maximum of the first 
 	                     100,000 will be graphed in order to avoid crashing matplotlib.
 
+	Experimental
+
+	--target-errors      If this argument is specified, follow it by first, a default 
+	                     error to target for all structural groups. All subsequent 
+	                     arguments should be in the following format <group>:<target>.
+	                     Any groups specified will be set to have the target error given.
+	                     This should be the last argument.
+
 Configuration:
 	The file Config.py contains the majority of the important configuration
 	parameters for the program. See the comments in that file for more details.
@@ -91,4 +99,5 @@ Examples:
 	python3 pyfit-ff.py -t
 	python3 pyfit-ff.py --compare train01.dat train02.dat
 	python3 pyfit-ff.py -s -i Si_B17
+	Python3 pyfit-ff.py -t -q 0.020 Si_B17:0.001
 """

@@ -1241,6 +1241,24 @@ if __name__ == '__main__':
 		if '-i' in args:
 			group_to_highlight = args[args.index('-i') + 1]
 
+		if '--target-errors' in args:
+			if OBJECTIVE_FUNCTION != 'group-targets':
+				print("OBJECTIVE_FUNCTION != 'group-targets'")
+				print("You might want to change that.")
+
+			start_idx = args.index('--target-errors') + 1
+
+			global DEFAULT_TARGET
+			DEFAULT_TARGET = float(args[start_idx])
+
+			global SUBGROUP_TARGETS
+			for i in range(start_idx + 1, len(args)):
+				arg = args[i]
+				name, target = arg.split(':')
+				SUBGROUP_TARGETS[name] = float(target)
+
+
+
 		if '--n-threads' in args:
 			os.environ["OMP_NUM_THREADS"] = str(args[args.index('--n-threads') + 1])
 			os.environ["MKL_NUM_THREADS"] = str(args[args.index('--n-threads') + 1])
