@@ -23,8 +23,6 @@ from   Util import log, log_indent, log_unindent, ProgressBar
 from   Help import help_str
 from   time import time
 
-# TEST, PLEASE IGNORE 
-
 def ComputeStructureParameters():
 	log("Beginning Structural Parameter Computation")
 	log_indent()
@@ -1145,8 +1143,9 @@ def SetupOutputPath(output_path):
 		for p in spl:
 			current += p
 
-			if not os.path.exists(current):
-				os.mkdir(current)
+			if current != '':
+				if not os.path.exists(current):
+					os.mkdir(current)
 
 			current += '/'
 
