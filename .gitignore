@@ -6,3 +6,6 @@
 *.pyc
 */output/*
 /PYFIT-FF-1.0/images/*
+/PYFIT-FF-1.0/log.txt
+/PYFIT-FF-1.0/output_*/
+/PYFIT-FF-1.0/slurm.sh

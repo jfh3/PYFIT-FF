@@ -105,7 +105,7 @@ class ProgressBar:
 		self.prefix_width  = prefix_width
 		self.update_every  = update_every
 		if UNSUPERVISED_MODE:
-			self.update_every = self.update_every * 4
+			self.update_every = self.update_every * 200
 		self.total         = total
 		self.current       = 0.0
 		self.fill_char     = fill_char
