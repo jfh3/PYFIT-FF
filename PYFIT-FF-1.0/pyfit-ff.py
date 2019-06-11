@@ -1143,8 +1143,9 @@ def SetupOutputPath(output_path):
 		for p in spl:
 			current += p
 
-			if not os.path.exists(current):
-				os.mkdir(current)
+			if current != '':
+				if not os.path.exists(current):
+					os.mkdir(current)
 
 			current += '/'
 
