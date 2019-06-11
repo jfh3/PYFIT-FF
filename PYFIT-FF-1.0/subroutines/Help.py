@@ -90,7 +90,8 @@ Notes:
 	   datset of about 2,000 structures with a total of 14,000 atoms.
 	3) You can use the control-c interrupt during the training process to quit 
 	   early. The program will save the network in its current state and write 
-	   log information.
+	   log information. The program needs to have reached the training part
+	   of the code for this to work though.
 
 Examples:
 	python3 pyfit-ff.py -gtev
@@ -99,5 +100,5 @@ Examples:
 	python3 pyfit-ff.py -t
 	python3 pyfit-ff.py --compare train01.dat train02.dat
 	python3 pyfit-ff.py -s -i Si_B17
-	Python3 pyfit-ff.py -t -q 0.020 Si_B17:0.001
+	Python3 pyfit-ff.py -t -q 0.020 Si_B17:0.001 Si_B31:0.003
 """

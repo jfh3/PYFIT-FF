@@ -22,14 +22,14 @@ NEURAL_NETWORK_FILE                = 'input/EOS/nn1-60-gi-shifted.dat'
 # Structural Parameter Calculation Configuration
 # --------------------------------------------------
 
-POSCAR_DATA_FILE = 'input/EOS/EOS-POSCAR-E-clean-no-clusters.dat'
+POSCAR_DATA_FILE = 'input/EOS/EOS-POSCAR-E-full.dat'
 
 # The parameter file to output. This is what gets used for neural network
 # training during the next step (usually). If you want the program to train
 # on this file immediately after generating it, specify the same file for
 # the TRAINING_SET_FILE parameter and pass the --run-training flag to the
 # program.
-LSPARAM_FILE     = 'output/generated-lsparam.dat'
+LSPARAM_FILE     = 'input/EOS/EOS-E-full-lsparam.dat'
 
 # The file to store training data and neighbors lists in. If you don't specify this
 # it won't get written.
@@ -117,7 +117,7 @@ PROGRESS_INTERVAL = 2
 
 # The structure file that contains POSCAR structures
 # and DFT energies.
-TRAINING_SET_FILE                  = 'input/EOS/EOS-E-lsparam.dat'
+TRAINING_SET_FILE                  = 'input/EOS/EOS-E-full-lsparam.dat'
 
 # Where to save the neural network when done training it.
 NEURAL_NETWORK_SAVE_FILE           = 'output/nn1.dat'
@@ -178,7 +178,7 @@ SUBGROUP_TARGETS = {}
 # This is multiplied by the subgroup error at the end. This effectively
 # makes the parabola that defines the error for each group steaper
 # or more shallow.
-SUBGROUP_ERROR_COEFFICIENT = 4.0
+SUBGROUP_ERROR_COEFFICIENT = 1.0
 
 # Standard NN learning rate.
 LEARNING_RATE = 0.07
@@ -191,4 +191,4 @@ OPTIMIZATION_ALGORITHM = 'LBFGS'
 MAX_LBFGS_ITERATIONS = 10
 
 # Maximum number of epochs to run through for training.
-MAXIMUM_TRAINING_ITERATIONS = 100
+MAXIMUM_TRAINING_ITERATIONS = 1000
