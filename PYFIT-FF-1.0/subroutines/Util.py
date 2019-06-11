@@ -75,7 +75,10 @@ def init(log=None):
 # in the event of a crash. (hopefully)
 @atexit.register
 def cleanup():
-	log_file.close()
+	try:
+		log_file.close()
+	except:
+		pass
 
 def log(string, endl = '\n'):
 	if '\n' in string.rstrip():
