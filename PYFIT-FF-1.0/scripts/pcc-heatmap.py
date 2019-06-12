@@ -134,7 +134,7 @@ if __name__ == '__main__':
 		if label_values:
 			for m in range(data_slice.shape[0]):
 				for n in range(data_slice.shape[1]):
-					ax.text(m, n, '%i'%(int(round(100*data_slice[m][n]))), ha="center", va="center", color="black", fontsize=8)
+					ax.text(n, m, '%i'%(int(round(100*data_slice[m][n]))), ha="center", va="center", color="black", fontsize=8)
 		
 		def format_display(**kwargs):
 			i = kwargs['i']
@@ -142,10 +142,7 @@ if __name__ == '__main__':
 			formatted =  ''
 			formatted += "X Parameter: %s\n"%x_labels[j]
 			formatted += "Y Parameter: %s\n"%y_labels[i]
-			formatted += r"$\rho_{X,\;Y} = $" + '%1.3f'%(data_slice[j][i])
-			print("x = %i"%j)
-			print("y = %i"%i)
-			print("v = %f"%data_slice[j][i])
+			formatted += r"$\rho_{X,\;Y} = $" + '%1.3f'%(data_slice[i][j])
 			return formatted
 
 		datacursor(formatter=format_display)
