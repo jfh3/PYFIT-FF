@@ -63,7 +63,7 @@ if __name__ == '__main__':
 	axis_labels = []
 	for l in results["legendre_polynomials"]:
 		for r in results["r_0_values"]:
-			label = "$P_" + str(l) + r"\;r = " + str(r) + "$"
+			label = "$P_" + str(l) + r"\;\;r = " + str(r) + "$"
 			axis_labels.append(label)
 
 	# Construct an easy to graph matrix.
@@ -135,6 +135,20 @@ if __name__ == '__main__':
 			for m in range(data_slice.shape[0]):
 				for n in range(data_slice.shape[1]):
 					ax.text(m, n, '%i'%(int(round(100*data_slice[m][n]))), ha="center", va="center", color="black", fontsize=8)
+		
+		def format_display(**kwargs):
+			i = kwargs['i']
+			j = kwargs['j']
+			formatted =  ''
+			formatted += "X Parameter: %s\n"%x_labels[j]
+			formatted += "Y Parameter: %s\n"%y_labels[i]
+			formatted += r"$\rho_{X,\;Y} = $" + '%1.3f'%(data_slice[j][i])
+			print("x = %i"%j)
+			print("y = %i"%i)
+			print("v = %f"%data_slice[j][i])
+			return formatted
+
+		datacursor(formatter=format_display)
 	else:
 		pl = ax.imshow(color_matrix, interpolation='none')
 		ax.set_xticks(list(range(n_params_per_atom)))
@@ -148,7 +162,9 @@ if __name__ == '__main__':
 	for tick in ax.yaxis.get_major_ticks():
 		tick.label.set_fontsize(8)
 	
-	datacursor(display='single')
+	
+
+	
 	plt.setp(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor")
 	fig.tight_layout()
 
