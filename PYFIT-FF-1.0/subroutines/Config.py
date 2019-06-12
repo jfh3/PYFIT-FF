@@ -97,14 +97,14 @@ NETWORK_BACKUP_INTERVAL            = 10000
 KEEP_BACKUP_HISTORY                = False
 
 # Network Loss Log File Path
-LOSS_LOG_PATH                      = 'loss_log.txt'
+LOSS_LOG_PATH                      = 'output_enki_GPU_8_core_2500_iter_run_2/out/loss_log.txt'
 
 # The file to log the validation loss in.
-VALIDATION_LOG_PATH                = 'validation_loss_log.txt'
+VALIDATION_LOG_PATH                = 'output_enki_GPU_8_core_2500_iter_run_2/out/validation_loss_log.txt'
 
 # Interval on which validation error should be calculated and
 # logged in the corresponding file.
-VALIDATION_INTERVAL = 10000
+VALIDATION_INTERVAL = 5
 
 # Whether or not to ensure that the validation set is sampled
 # equally for every structural group. This prevents the random
