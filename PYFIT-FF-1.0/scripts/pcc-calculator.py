@@ -102,13 +102,13 @@ if __name__ == '__main__':
 	# we calculate the pearson correlation coefficient. Don't ask me
 	# how this works, I don't really understand it. I have tested it
 	# to ensure that it does what is expected though.
-	grid         = np.mgrid[0:5, 0:5].swapaxes(0, 2).swapaxes(0, 1)
+	grid         = np.mgrid[0:n_params_per_atom, 0:n_params_per_atom].swapaxes(0, 2).swapaxes(0, 1)
 	m            = grid.shape[0]
 	r, c         = np.triu_indices(m, 1)
 	combinations = grid[r, c]
 
-	left  = combinations[:,0]
-	right = combinations[:,1]
+	left  = combinations[:,0].astype(np.int32)
+	right = combinations[:,1].astype(np.int32)
 
 	# Now that we have all of the means, all of the standard deviations and
 	# all of the indices, we can perform the actual correlation coefficient
@@ -122,13 +122,13 @@ if __name__ == '__main__':
 		# This is added into results["coefficients"] at the end.
 		current_result = {
 			'param0' : {
-				'idx' : l,
-				'r0'  : r_0_values[l % len(r_0_values)]
+				'idx' : int(l),
+				'r0'  : r_0_values[l % len(r_0_values)],
 				'l'   : legendre_polynomials[l // len(r_0_values)]
 			},
 			'param1' : {
-				'idx' : l,
-				'r0'  : r_0_values[r % len(r_0_values)]
+				'idx' : int(r),
+				'r0'  : r_0_values[r % len(r_0_values)],
 				'l'   : legendre_polynomials[r // len(r_0_values)]
 			},
 			'pcc' : None
