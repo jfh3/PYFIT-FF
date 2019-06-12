@@ -7,7 +7,7 @@ import subprocess
 from   time import time
 
 from sys import path
-path.append("subroutines")
+path.append("../subroutines")
 
 # This is used to load a list of available structures.
 from TrainingSet import TrainingSetFile
