@@ -4,110 +4,113 @@ import Util
 # and LSParam files. 
 class TrainingFileConfig:
 
-	def __init__(self, lines, path):
-		self.path = path
-		# First, convert the lines into arrays
-		# of space separated values and remove any
-		# preceeding '#' characters
+	def __init__(self, lines=None, path=None):
+		if path != None and lines != None:
+			self.path = path
+			# First, convert the lines into arrays
+			# of space separated values and remove any
+			# preceeding '#' characters
 
-		def remove_comment(line):
-			return [c for c in Util.GetLineCells(line) if c != '#']
+			def remove_comment(line):
+				return [c for c in Util.GetLineCells(line) if c != '#']
 
-		line1 = remove_comment(lines[0])
-		line2 = remove_comment(lines[1])
-		line3 = remove_comment(lines[2])
-		line4 = remove_comment(lines[3])
-		line5 = remove_comment(lines[4])
-		line6 = remove_comment(lines[5])
-		line7 = remove_comment(lines[6])
-		line8 = remove_comment(lines[7])
+			line1 = remove_comment(lines[0])
+			line2 = remove_comment(lines[1])
+			line3 = remove_comment(lines[2])
+			line4 = remove_comment(lines[3])
+			line5 = remove_comment(lines[4])
+			line6 = remove_comment(lines[5])
+			line7 = remove_comment(lines[6])
+			line8 = remove_comment(lines[7])
 
-		self.gi_mode = int(line1[0])
+			self.gi_mode = int(line1[0])
 
-		if self.gi_mode not in [0, 1]:
-			raise ValueError("Invalid value specified for Gi mode on line 1 of %s"%(self.path))
+			if self.gi_mode not in [0, 1]:
+				raise ValueError("Invalid value specified for Gi mode on line 1 of %s"%(self.path))
 
-		self.gi_shift = float(line1[1])
-		if self.gi_shift not in [0.0, 0.5]:
-			raise ValueError("Invalid value specified for reference Gi (shift) on line 1 of %s"%(self.path))
+			self.gi_shift = float(line1[1])
+			if self.gi_shift not in [0.0, 0.5]:
+				raise ValueError("Invalid value specified for reference Gi (shift) on line 1 of %s"%(self.path))
 
-		self.activation_function = int(line1[2])
-		if self.activation_function not in [0, 1]:
-			raise ValueError("Invalid value specified for activation function on line 1 of %s"%(self.path))
+			self.activation_function = int(line1[2])
+			if self.activation_function not in [0, 1]:
+				raise ValueError("Invalid value specified for activation function on line 1 of %s"%(self.path))
 
-		try:
-			self.n_species = int(line2[0])
-			self.element   = line3[0]
-			self.mass      = float(line3[1])
-		except ValueError as ex:
-			raise ValueError("Unable to parse value on line 2 or 3 of %s"%(self.path)) from ex
+			try:
+				self.n_species = int(line2[0])
+				self.element   = line3[0]
+				self.mass      = float(line3[1])
+			except ValueError as ex:
+				raise ValueError("Unable to parse value on line 2 or 3 of %s"%(self.path)) from ex
 
-		self.randomize = int(line4[0])
-		if self.randomize not in [0, 1]:
-			raise ValueError("Invalid value specified for randomization on line 4 of %s"%(self.path))
+			self.randomize = int(line4[0])
+			if self.randomize not in [0, 1]:
+				raise ValueError("Invalid value specified for randomization on line 4 of %s"%(self.path))
 
-		self.randomize = self.randomize == 1
+			self.randomize = self.randomize == 1
 
-		try:
-			self.max_random          = float(line4[1])
-			self.cutoff_distance     = float(line4[2])
-			self.truncation_distance = float(line4[3])
-			self.gi_sigma            = float(line4[4])
-		except ValueError as ex:
-			raise ValueError("Unable to parse value on line 4 of %s"%(self.path)) from ex
+			try:
+				self.max_random          = float(line4[1])
+				self.cutoff_distance     = float(line4[2])
+				self.truncation_distance = float(line4[3])
+				self.gi_sigma            = float(line4[4])
+			except ValueError as ex:
+				raise ValueError("Unable to parse value on line 4 of %s"%(self.path)) from ex
 
-		# As per the new spec, line 5 contains the orders of legendre polynomials in use.
-		try:
-			self.n_legendre_polynomials = int(line5[0])
-			self.legendre_orders        = [int(c) for c in line5[1:]]
-		except ValueError as ex:
-			raise ValueError("Unable to parse value on line 5 of %s"%(self.path)) from ex
+			# As per the new spec, line 5 contains the orders of legendre polynomials in use.
+			try:
+				self.n_legendre_polynomials = int(line5[0])
+				self.legendre_orders        = [int(c) for c in line5[1:]]
+			except ValueError as ex:
+				raise ValueError("Unable to parse value on line 5 of %s"%(self.path)) from ex
 
-		if len(self.legendre_orders) != self.n_legendre_polynomials:
-			error  = "Number of specified legendre polynomials does not match expected value."
-			error += "%i were supposed to be given, but %i were specified."%(self.n_legendre_polynomials, len(self.legendre_orders)) 
-			raise ValueError(error)
+			if len(self.legendre_orders) != self.n_legendre_polynomials:
+				error  = "Number of specified legendre polynomials does not match expected value."
+				error += "%i were supposed to be given, but %i were specified."%(self.n_legendre_polynomials, len(self.legendre_orders)) 
+				raise ValueError(error)
 
-		try:
-			self.n_r0 = int(line6[0])
-			self.r0   = [float(c) for c in line6[1:]]
-		except ValueError as ex:
-			raise ValueError("Unable to parse value on line 6 of %s"%(self.path)) from ex
+			try:
+				self.n_r0 = int(line6[0])
+				self.r0   = [float(c) for c in line6[1:]]
+			except ValueError as ex:
+				raise ValueError("Unable to parse value on line 6 of %s"%(self.path)) from ex
 
-		if len(self.r0) != self.n_r0:
-			error  = "The number of r0 values declared does not match the actual number present in the file."
-			error += "(Line 6 of %s)"%self.path
-			raise ValueError(error)
+			if len(self.r0) != self.n_r0:
+				error  = "The number of r0 values declared does not match the actual number present in the file."
+				error += "(Line 6 of %s)"%self.path
+				raise ValueError(error)
 
-		# Load the BOP parameters from line 7, even though we don't know what to 
-		# do with them. They should be compared between the two files to make
-		# sure that everything makes sense.
+			# Load the BOP parameters from line 7, even though we don't know what to 
+			# do with them. They should be compared between the two files to make
+			# sure that everything makes sense.
 
-		try:
-			self.BOP_param0     = int(line7[0])
-			self.BOP_parameters = [float(c) for c in line7[1:]]
-		except ValueError as ex:
-			raise ValueError("Unable to parse value on line 7 of %s"%(self.path)) from ex
+			try:
+				self.BOP_param0     = int(line7[0])
+				self.BOP_parameters = [float(c) for c in line7[1:]]
+			except ValueError as ex:
+				raise ValueError("Unable to parse value on line 7 of %s"%(self.path)) from ex
 
-		# Parse the network structure.
-		try:
-			self.n_layers    = int(line8[0])
-			self.layer_sizes = [int(c) for c in line8[1:]]
+			# Parse the network structure.
+			try:
+				self.n_layers    = int(line8[0])
+				self.layer_sizes = [int(c) for c in line8[1:]]
 
 
-		except ValueError as ex:
-			raise ValueError("Unable to parse value on line 8 of %s"%(self.path)) from ex
+			except ValueError as ex:
+				raise ValueError("Unable to parse value on line 8 of %s"%(self.path)) from ex
 
-		if self.n_layers != len(line8[1:]):
-			err  = "It appears as though more layers were specified than the first "
-			err += "number on line 8 would indicate."
-			raise ValueError(err) 
+			if self.n_layers != len(line8[1:]):
+				err  = "It appears as though more layers were specified than the first "
+				err += "number on line 8 would indicate."
+				raise ValueError(err) 
 
-		# Make sure that the network structure actaully matches the number of 
-		# structure parameters that will be supplied to it.
+			# Make sure that the network structure actaully matches the number of 
+			# structure parameters that will be supplied to it.
 
-		if self.layer_sizes[0] != self.n_r0 * self.n_legendre_polynomials:
-			raise ValueError("The input layer dimensions of the neural network do not match the structural parameter dimensions.")
+			if self.layer_sizes[0] != self.n_r0 * self.n_legendre_polynomials:
+				raise ValueError("The input layer dimensions of the neural network do not match the structural parameter dimensions.")
+
+	
 
 	# This converts the configuration parameters into a string suitable for writing
 	# into a file. If prepend_comment = True, '#' will go at the beginning of each line.

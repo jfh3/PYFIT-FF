@@ -58,6 +58,7 @@ def LogConfiguration():
 	log('\n'.join(new_lines)) 
 
 	log("----------- End Configuration -----------\n")
+	f.close()
 
 # -------------------------------------
 # Initialization and Logging
