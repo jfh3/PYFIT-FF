@@ -13,7 +13,7 @@ CONFIG_FNAME                       = __file__
 FILE_BUFFERING                     = 1
 
 # File to use for writing log information.
-LOG_PATH                           = 'log.txt'
+LOG_PATH                           = 'out/log.txt'
 
 # The neural network file to load.
 NEURAL_NETWORK_FILE                = 'input/AB/nn1-60-gi-shifted.dat'
@@ -29,7 +29,7 @@ POSCAR_DATA_FILE = 'input/AB/AB-POSCAR-E-full-NO-B00-B01-B02.dat'
 # on this file immediately after generating it, specify the same file for
 # the TRAINING_SET_FILE parameter and pass the --run-training flag to the
 # program.
-LSPARAM_FILE     = ''
+LSPARAM_FILE     = 'input/AB/AB-LSPARAM-E-full-NO-B00-B01-B02.dat'
 
 # The file to store training data and neighbors lists in. If you don't specify this
 # it won't get written.
@@ -97,10 +97,10 @@ NETWORK_BACKUP_INTERVAL            = 10000
 KEEP_BACKUP_HISTORY                = False
 
 # Network Loss Log File Path
-LOSS_LOG_PATH                      = 'output_enki_GPU_1_core_7500_iter/out/loss_log.txt'
+LOSS_LOG_PATH                      = 'output_1_r0_larger_network/out/loss_log.txt'
 
 # The file to log the validation loss in.
-VALIDATION_LOG_PATH                = 'output_enki_GPU_1_core_7500_iter/out/validation_loss_log.txt'
+VALIDATION_LOG_PATH                = 'output_1_r0_larger_network/out/validation_loss_log.txt'
 
 # Interval on which validation error should be calculated and
 # logged in the corresponding file.
