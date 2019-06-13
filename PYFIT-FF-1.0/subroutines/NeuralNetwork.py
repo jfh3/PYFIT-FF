@@ -43,7 +43,7 @@ class NeuralNetwork:
 
 		# Now that we have some values, load them into 
 		# and appropriate structure.
-		self.loadNetwork()
+		self.loadNetwork(just_randomize)
 		self.config.randomize = False
 
 		if not just_randomize:
@@ -63,10 +63,10 @@ class NeuralNetwork:
 	#          0 = The weights of the node, in order, corresponding to the
 	#              node in the previous layer that they connect from
 	#          1 = The bias of the node.
-	def loadNetwork(self):
+	def loadNetwork(self, just_randomize=False):
 		# This array stores the raw network values
 		# in a flat array.
-		if not self.config.randomize:
+		if not self.config.randomize and not just_randomize:
 			# We weren't supposed to randomize the network,
 			# so load it from the file.
 			self.network_values = []
