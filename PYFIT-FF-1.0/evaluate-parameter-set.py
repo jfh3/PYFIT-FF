@@ -138,7 +138,7 @@ def run_pyfit_with_config(config, params, run_dir, config_file_path=None):
 	# the run_dir.
 
 	pyfit_path       = run_dir + "pyfit-ff.py"
-	subroutines_path = run_dir + "subroutines/"
+	subroutines_path = run_dir
 	config_path      = run_dir + "subroutines/Config.py"
 
 	if config_file_path != None:
@@ -149,7 +149,7 @@ def run_pyfit_with_config(config, params, run_dir, config_file_path=None):
 	if not os.path.isdir(subroutines_path):
 		os.mkdir(subroutines_path)
 
-	run("cp -r pyfit-ff.py  %s"%(pyfit_path))
+	run("cp pyfit-ff.py %s"%(pyfit_path))
 	run("cp -r subroutines/ %s"%(subroutines_path))
 
 	# Now we load and parse the config file into a dictionary.
@@ -211,8 +211,8 @@ if __name__ == '__main__':
 	lsparam_gen_output_dir = out_dir + 'initial-lsparam-gen/'
 	lsparam_gen_config = {
 		'NEURAL_NETWORK_FILE'      : '\'%s\''%os.path.abspath(neural_network_path),
-		'POSCAR_DATA_FILE'         : os.path.abspath(config["poscar_data_file"]),
-		'LSPARAM_FILE'             : 'lsparam-generated.dat'
+		'POSCAR_DATA_FILE'         : '\'%s\''%os.path.abspath(config["poscar_data_file"]),
+		'LSPARAM_FILE'             : '\'%s\''%'lsparam-generated.dat'
 	}
 
 	# Run the program.
@@ -253,11 +253,21 @@ if __name__ == '__main__':
 
 	run("python3 scripts/FFHeatmap.py %s %s %s %s"%(
 		correlations,
-		output_file,
+		heatmap_path,
 		resolution,
-		abs_display
+		abs_string
 	))
 
 	# Now that we have a heatmap, we want to run FFScatterPlots.py to
 	# generate a list of scatterplot png files.
-	
+
+	ratio              = config["feature_feature_correlation"]["scatterplot_ratio"]
+	scatter_plots_path = ff_correlation_dir + 'scatterplots/'
+	if not os.path.isdir(scatter_plots_path):
+		os.mkdir(scatter_plots_path)
+
+	run("python3 scripts/FFScatterPlots.py %s %s %s"%(
+		correlations,
+		scatter_plots_path,
+		str(ratio)
+	))

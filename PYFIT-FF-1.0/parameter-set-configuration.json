@@ -3,18 +3,18 @@
 
 	"parameter-set" : {
 		"comment"    : "These parameters will be used to create neural network files and LSPARAM files that will then be used to generate all relevant information and metrics regarding the parameter set.",
-		"r_0_values"           : [1.5, 1.7727, 2.0455, 2.3182, 2.5909, 2.8636, 3.1364, 3.4091, 3.6818, 3.9545, 4.2273, 4.5],
+		"r_0_values"           : [2.3182, 3.1364, 3.4091, 4.2273, 4.5],
 		"legendre_polynomials" : [0, 1, 2, 4, 6],
-		"gi_sigma"                : 1.0,
+		"gi_sigma"             : 1.0,
 		"truncation_distance"  : 0.5,
 		"cutoff_distance"      : 5.0,
-		"gi_mode"              : 1,
-		"gi_shift"             : 0.5,
+		"gi_mode"              : 0,
+		"gi_shift"             : 0.0,
 		"activation_function"  : 1,
 		"network_layers"       : [16, 16, 1]
 	},
 
-	"poscar_data_file" : "input/AB/AB-POSCAR-E-full-NO-B00-B01-B02.dat",
+	"poscar_data_file" : "input/EOS/EOS-POSCAR-E-full.dat",
 
 	"comment2"         : "This file will be used as the Config.py for the duration of the program.",
 	"default_config"   : "parameter-eval-config-default.py",
@@ -22,10 +22,10 @@
 	"feature_feature_correlation" : {
 		"comment"           : "This section contains information about how to compute feature-feature correlations and how to export the resulting data. Currently, only the pearson metric is implemented.",
 		"feature_metric"    : "pearson",
-		"comment_2"         : "This is the ratio of data points in each scatterplot to total datapoints.",
-		"scatterplot_ratio" : 0.08,
+		"comment2"         : "This is the ratio of data points in each scatterplot to total datapoints.",
+		"scatterplot_ratio" : 1.0,
 		"matrix_resolution" : "2048x2048",
-		"comment2"          : "If this is true, the correlation matrix will display only the absolute value of the correlation coefficients.",
+		"comment3"          : "If this is true, the correlation matrix will display only the absolute value of the correlation coefficients.",
 		"matrix_abs"        : true
 	},
 

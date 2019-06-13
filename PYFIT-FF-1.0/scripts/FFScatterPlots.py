@@ -30,24 +30,27 @@ if __name__ == '__main__':
 
 	for correlation in results["coefficients"]:
 
+		fig, ax = plt.subplots()
+
 		current_file = output_dir + '%i_vs_%i.png'%(correlation["param0"]["idx"], correlation["param1"]["idx"])
 
-		horizontal_axis_label  = '$G_%i$  '%correlation["param0"]["idx"]
-		horizontal_axis_label += '$P_%i$  '%correlation["param0"]["l"]
+		horizontal_axis_label  = '$G_{%i}$  '%correlation["param0"]["idx"]
+		horizontal_axis_label += '$P_{%i}$  '%correlation["param0"]["l"]
 		horizontal_axis_label += '$r_0 = %f$'%correlation["param0"]["r0"]
 
-		vertical_axis_label  = '$G_%i$  '%correlation["param1"]["idx"]
-		vertical_axis_label += '$P_%i$  '%correlation["param1"]["l"]
+		vertical_axis_label  = '$G_{%i}$  '%correlation["param1"]["idx"]
+		vertical_axis_label += '$P_{%i}$  '%correlation["param1"]["l"]
 		vertical_axis_label += '$r_0 = %f$'%correlation["param1"]["r0"]
 
-		title = '$G_%i$ vs. '%correlation["param0"]["idx"] + '$G_%i$'%correlation["param1"]["idx"]
+		title = '$G_{%i}$ vs. $G_{%i}$'%(correlation["param0"]["idx"], correlation["param1"]["idx"])
 
-		points   = np.random.choice(correlation["data"], int(round(graph_ratio*len(correlation["data"]))))
-		x_points = [p[0] for p in points]
-		y_points = [p[1] for p in points]
+		x_points = np.random.choice([p[0] for p in correlation["data"]], int(round(graph_ratio*len(correlation["data"]))))
+		y_points = np.random.choice([p[1] for p in correlation["data"]], int(round(graph_ratio*len(correlation["data"]))))
 
-		plt.scatter(x_points, y_points, s=4)
+		ax.scatter(x_points, y_points, s=4)
 		plt.title(title)
 		plt.xlabel(horizontal_axis_label)
 		plt.ylabel(vertical_axis_label)
 		plt.savefig(current_file)
+
+		plt.close(fig)

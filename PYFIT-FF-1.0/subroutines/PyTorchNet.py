@@ -11,7 +11,7 @@ import copy
 # evaluate the network. It also contains functionality for dumping the
 # values back out into a format that can be written into a file again.
 class TorchNet(nn.Module):
-	def __init__(self, network_data, reduction_matrix):
+	def __init__(self, network_data, reduction_matrix=None):
 		super(TorchNet, self).__init__()
 
 		# Here we need to instantiate and instance of a linear
@@ -25,7 +25,11 @@ class TorchNet(nn.Module):
 		self.layers           = []
 		self.params           = nn.ParameterList()
 		self.activation_mode  = network_data.config.activation_function
-		self.reduction_matrix = reduction_matrix
+		if reduction_matrix != None:
+			self.reduction_matrix = reduction_matrix
+			self.eval_only = False
+		else:
+			self.eval_only = True
 		self.offset           = torch.tensor(0.5)
 
 		# Create a set of linear transforms.
@@ -115,7 +119,8 @@ class TorchNet(nn.Module):
 			for layer in self.layers[1:-1]:
 				x0 = torch.sigmoid(layer(x0)) - self.offset
 
-		x0 = self.reduction_matrix.mm(self.layers[-1](x0))
+		if not self.eval_only:
+			x0 = self.reduction_matrix.mm(self.layers[-1](x0))
 		return x0
 
 	def num_flat_features(self, x):

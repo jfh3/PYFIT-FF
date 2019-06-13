@@ -84,18 +84,17 @@ if __name__ == '__main__':
 			color_matrix[m][n][2] = b
 
 	# Now that we have a color matric, graph it.
-	fig, ax = plt.subplots(figsize=(x_res / y_res, 1))
-	if sliced:
-		pl = ax.imshow(color_matrix, interpolation='none')
+	fig, ax = plt.subplots()
+	pl = ax.imshow(color_matrix, interpolation='none')
 
-		ax.set_xticks(list(range(len(axis_labels))))
-		ax.set_yticks(list(range(len(axis_labels))))
-		ax.set_xticklabels(axis_labels)
-		ax.set_yticklabels(axis_labels)
+	ax.set_xticks(list(range(len(axis_labels))))
+	ax.set_yticks(list(range(len(axis_labels))))
+	ax.set_xticklabels(axis_labels)
+	ax.set_yticklabels(axis_labels)
 
-		for m in range(correlation_matrix.shape[0]):
-			for n in range(correlation_matrix.shape[1]):
-				ax.text(n, m, '%i'%(int(round(100*correlation_matrix[m][n]))), ha="center", va="center", color="black", fontsize=6)
+	# for m in range(correlation_matrix.shape[0]):
+	# 	for n in range(correlation_matrix.shape[1]):
+	# 		ax.text(n, m, '%i'%(int(round(100*correlation_matrix[m][n]))), ha="center", va="center", color="black", fontsize=6)
 
 	for tick in ax.xaxis.get_major_ticks():
 		tick.label.set_fontsize(8)
@@ -107,7 +106,6 @@ if __name__ == '__main__':
 
 	
 	plt.setp(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor")
-	fig.tight_layout()
 
 	if abs_display:
 		title = "Correlation Matrix (absolute correlation)"
@@ -116,4 +114,4 @@ if __name__ == '__main__':
 
 	plt.title(title)
 
-	plt.savefig(output_file, dpi=y_res)
+	plt.savefig(output_file)
