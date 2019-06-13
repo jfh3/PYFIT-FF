@@ -43,8 +43,6 @@ def parse_and_validate_args():
 		eprint("The file specified does not exist or isn't a file.")
 		sys.exit(1)
 
-	
-
 	try:
 		file = open(configuration_file)
 		raw = file.read()
@@ -134,7 +132,7 @@ def run(cmdline):
 # config_file_path is set, Config.py will be loaded from there.
 def run_pyfit_with_config(config, params, run_dir, config_file_path=None):
 	if not os.path.isdir(run_dir):
-		os.mkdir(output_directory)
+		os.mkdir(run_dir)
 
 	# First, copy pyfit-ff.py and subroutines/ to 
 	# the run_dir.
@@ -195,6 +193,8 @@ def run_pyfit_with_config(config, params, run_dir, config_file_path=None):
 if __name__ == '__main__':
 	config, out_dir = parse_and_validate_args()
 
+	general_log = out_dir + 'garbage.txt'
+
 	# Step One: Generate a neural network file and run pyfit-ff.py to generate
 	#           a corresponding LSPARAM file.
 
@@ -207,4 +207,57 @@ if __name__ == '__main__':
 	nn_file.close()
 
 	# Now we run pyfit-ff.py with the new neural network file and
-	# instruct it to generate and LSPARAM file.
+	# instruct it to generate an LSPARAM file.
+	lsparam_gen_output_dir = out_dir + 'initial-lsparam-gen/'
+	lsparam_gen_config = {
+		'NEURAL_NETWORK_FILE'      : '\'%s\''%os.path.abspath(neural_network_path),
+		'POSCAR_DATA_FILE'         : os.path.abspath(config["poscar_data_file"]),
+		'LSPARAM_FILE'             : 'lsparam-generated.dat'
+	}
+
+	# Run the program.
+	run_pyfit_with_config(
+		lsparam_gen_config,
+		'-g -u',
+		lsparam_gen_output_dir,
+		config_file_path=config["default_config"]
+	)
+
+	# Now we have an LSPARAM file ready. We can use the data in it to
+	# generate a feature-feature correlation matrix and to export 
+	# scatter plot images for human analysis.
+
+	lsparam_path = os.path.abspath(lsparam_gen_output_dir + 'lsparam-generated.dat')
+
+	# Now we run FFCorrelationCalc.py to compute the correlation coefficients
+	# and export them, as well as convenient arrays of datapoints for plotting.
+
+	ff_correlation_dir  = out_dir + 'feature_feature_correlation/'
+	ff_correlation_file = ff_correlation_dir + 'correlation.json'
+
+	if not os.path.isdir(ff_correlation_dir):
+		os.mkdir(ff_correlation_dir)
+
+	# This will generate a correlation file for us.
+	run("python3 scripts/FFCorrelationCalc.py %s %s %s"%(
+		lsparam_path,
+		ff_correlation_file,
+		os.path.abspath(general_log)
+	))
+
+	# Run FFHeatmap.py to generate a heatmap image file.
+	heatmap_path = os.path.abspath(ff_correlation_dir + 'ff-heatmap.png')
+	correlations = os.path.abspath(ff_correlation_file)
+	resolution   = config["feature_feature_correlation"]["matrix_resolution"]
+	abs_string   = 'y' if config["feature_feature_correlation"]["matrix_abs"] else 'n'
+
+	run("python3 scripts/FFHeatmap.py %s %s %s %s"%(
+		correlations,
+		output_file,
+		resolution,
+		abs_display
+	))
+
+	# Now that we have a heatmap, we want to run FFScatterPlots.py to
+	# generate a list of scatterplot png files.
+	

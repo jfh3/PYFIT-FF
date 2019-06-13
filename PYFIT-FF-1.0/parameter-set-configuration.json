@@ -24,6 +24,9 @@
 		"feature_metric"    : "pearson",
 		"comment_2"         : "This is the ratio of data points in each scatterplot to total datapoints.",
 		"scatterplot_ratio" : 0.08,
+		"matrix_resolution" : "2048x2048",
+		"comment2"          : "If this is true, the correlation matrix will display only the absolute value of the correlation coefficients.",
+		"matrix_abs"        : true
 	},
 
 	"feature_output_correlation" : {
