@@ -1,41 +1,27 @@
 from sys import path
-path.append("../subroutines")
+path.append("subroutines")
 
-from   Config                 import *
-from   PoscarLoader           import PoscarDataFile
-from   NeighborList           import generateNeighborList
-from   TrainingSet            import TrainingSetFile, WriteTrainingSet
-from   NeuralNetwork          import NeuralNetwork
-from   PyTorchNet             import TorchNet
-from   ConfigurationParser    import TrainingFileConfig
-from   StructuralParameters   import GenerateStructuralParameters
+from   TrainingSet   import TrainingSetFile
+from   NeuralNetwork import NeuralNetwork
+from   PyTorchNet    import TorchNet
+import numpy as np
 import torch
-import torch.nn            as nn
-import torch.nn.functional as F
-import torch.optim         as optim
-import matplotlib.pyplot   as plt
-import numpy               as np
 import Util
 import sys
 import os
 import copy
-from   Util import log, log_indent, log_unindent, ProgressBar
-from   Help import help_str
-from   time import time
+import json
 
-def TrainNetwork(force_cpu, randomize_nn):
+def RunNetwork(nn_file, train_file):
 
 	# The primary steps for loading are as follows:
 	#     1) Load the neural network weights and biases.
 	#     2) Load the LSParam file that contains Gi's and
 	#        DFT energies for each structure.
 
-	neural_network_data = NeuralNetwork(NEURAL_NETWORK_FILE) 
-	training_set        = TrainingSetFile(TRAINING_SET_FILE)
+	neural_network_data = NeuralNetwork(nn_file) 
+	training_set        = TrainingSetFile(train_file)
 
-	
-	
-	
 	# Randomly select a set of structure IDs to use as the training set
 	# and use the rest as a validation set.
 	all_indices          = np.array(range(training_set.n_structures))
@@ -84,7 +70,7 @@ def TrainNetwork(force_cpu, randomize_nn):
 	# PyTorch neural network objects as well as the optimizer
 	# and any closure functions necessary for it.
 
-	torch_net = TorchNet(neural_network_data, reduction_matrix=None)
+	torch_net = TorchNet(neural_network_data, reduction_matrix=None, only_eval=True)
 
 	# Used to track the loss as a function of the iteration,
 	# which will be dumped to a log at the end.
@@ -95,12 +81,29 @@ def TrainNetwork(force_cpu, randomize_nn):
 	results = {}
 
 	results["input"]  = structure_params
-	results["output"] = torch_net(t_structure_params)
+	results["output"] = [i[0] for i in torch_net(t_structure_params).tolist()]
 
 	return results
 
 
 if __name__ == '__main__':
+	# This program takes three arguments.
+	#     1) The neural network file to use.
+	#     2) The LSPARAM file to use.
+	#     3) Where to write the output to.
 
-		Util.init(LOG_PATH)
-		
+	if len(sys.argv) != 4:
+		eprint("This program takes 3 arguments.")
+		sys.exit(1)
+
+	nn_file      = sys.argv[1]
+	lsparam_file = sys.argv[2]
+	output_path  = sys.argv[3]
+
+	Util.init('garbage.txt')
+
+	results = RunNetwork(nn_file, lsparam_file)
+
+	f = open(output_path, 'w')
+	f.write(json.dumps(results))
+	f.close()

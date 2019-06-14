@@ -1,6 +1,8 @@
 {
 	"comment" : "This file defines the set of parameters for evaluate-parameter-set.py to perform a full evaluation of. It also contains options pertaining to what output files are generated along the way, how many neural network intial conditions to try against and many other things.",
 
+	"cleanup_large_files" : false,
+
 	"parameter-set" : {
 		"comment"    : "These parameters will be used to create neural network files and LSPARAM files that will then be used to generate all relevant information and metrics regarding the parameter set.",
 		"r_0_values"           : [2.3182, 3.1364, 3.4091, 4.2273, 4.5],
@@ -8,8 +10,8 @@
 		"gi_sigma"             : 1.0,
 		"truncation_distance"  : 0.5,
 		"cutoff_distance"      : 5.0,
-		"gi_mode"              : 0,
-		"gi_shift"             : 0.0,
+		"gi_mode"              : 1,
+		"gi_shift"             : 0.5,
 		"activation_function"  : 1,
 		"network_layers"       : [16, 16, 1]
 	},
@@ -22,20 +24,21 @@
 	"feature_feature_correlation" : {
 		"comment"           : "This section contains information about how to compute feature-feature correlations and how to export the resulting data. Currently, only the pearson metric is implemented.",
 		"feature_metric"    : "pearson",
-		"comment2"         : "This is the ratio of data points in each scatterplot to total datapoints.",
+		"comment2"          : "This is the ratio of data points in each scatterplot to total datapoints.",
 		"scatterplot_ratio" : 1.0,
 		"matrix_resolution" : "2048x2048",
+		"export_scatter"    : false,
 		"comment3"          : "If this is true, the correlation matrix will display only the absolute value of the correlation coefficients.",
-		"matrix_abs"        : true
+		"matrix_abs"        : false
 	},
 
 	"feature_output_correlation" : {
 		"comment" : "This section contains information about how to perform feature-output correlation calculations and what information to store when done.",
-		"number_of_networks"   : 10,
-		"number_of_iterations" : 2500,
+		"number_of_networks"   : 2,
+		"number_of_iterations" : 10,
 		"number_of_backups"    : 5,
 		"learning_rate"        : 0.05,
-		"scatterplot_ratio"    : 0.08,
+		"scatterplot_ratio"    : 1.0,
 		"feature_metric"       : "pearson" 
 	}
 

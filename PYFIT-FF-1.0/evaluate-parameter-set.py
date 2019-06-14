@@ -17,8 +17,10 @@ import json
 import numpy as np
 import matplotlib.pyplot
 import datetime
+import time
 import os
 import sys
+import copy
 import subprocess
 
 # Print to stderr.
@@ -118,19 +120,39 @@ def setup_config_structure(json_config):
 
 	return network_config
 
-def run(cmdline):
-	process = subprocess.Popen(cmdline.split(' '), stdout=subprocess.PIPE)
-	output, error = process.communicate()
+def run(cmdline, async=False, wd=None):
+	if wd != None:
+		process = subprocess.Popen(cmdline.split(' '), stdout=subprocess.PIPE, cwd=wd)
+	else:
+		process = subprocess.Popen(cmdline.split(' '), stdout=subprocess.PIPE)
 
-	if error != '' and error != None:
-		eprint("ERROR: %s"%error)
-		sys.exit(1)
+	if not async:
+		output, error = process.communicate()
+
+		if error != '' and error != None:
+			eprint("ERROR: %s"%error)
+			sys.exit(1)
+	else:
+		return process
+
+def wait_for_processes(process_list, poll_interval=0.05):
+	while True:
+		all_done = True
+		for process in process_list:
+			if process.poll() == None:
+				all_done = False
+
+		if all_done:
+			return
+		else:
+			time.sleep(poll_interval)
+
 
 # This will copy pyfit-ff and all of its code into run_dir
 # replace all values in Config.py with those in config and
 # will run pyfit-ff with the specified parameters. If
 # config_file_path is set, Config.py will be loaded from there.
-def run_pyfit_with_config(config, params, run_dir, config_file_path=None):
+def run_pyfit_with_config(config, params, run_dir, config_file_path=None, async=False):
 	if not os.path.isdir(run_dir):
 		os.mkdir(run_dir)
 
@@ -186,9 +208,14 @@ def run_pyfit_with_config(config, params, run_dir, config_file_path=None):
 
 	# Now that pyfit is copied and the config file is ready,
 	# run pyfit with the specified parameters.
-	os.chdir(run_dir)
-	run("python3 pyfit-ff.py %s"%(params))
-	os.chdir(current_dir)
+	if not async:
+		os.chdir(run_dir)
+		run("python3 pyfit-ff.py %s"%(params))
+		os.chdir(current_dir)
+	else:
+		return run("python3 pyfit-ff.py %s"%(params), async=True, wd=run_dir)
+
+
 
 if __name__ == '__main__':
 	config, out_dir = parse_and_validate_args()
@@ -232,7 +259,7 @@ if __name__ == '__main__':
 	# Now we run FFCorrelationCalc.py to compute the correlation coefficients
 	# and export them, as well as convenient arrays of datapoints for plotting.
 
-	ff_correlation_dir  = out_dir + 'feature_feature_correlation/'
+	ff_correlation_dir  = out_dir + 'feature-feature-correlation/'
 	ff_correlation_file = ff_correlation_dir + 'correlation.json'
 
 	if not os.path.isdir(ff_correlation_dir):
@@ -266,8 +293,171 @@ if __name__ == '__main__':
 	if not os.path.isdir(scatter_plots_path):
 		os.mkdir(scatter_plots_path)
 
-	run("python3 scripts/FFScatterPlots.py %s %s %s"%(
-		correlations,
-		scatter_plots_path,
-		str(ratio)
-	))
+	if config["feature_feature_correlation"]["export_scatter"]:
+		run("python3 scripts/FFScatterPlots.py %s %s %s"%(
+			correlations,
+			scatter_plots_path,
+			str(ratio)
+		))
+
+	# Now we need to generate a number of neural network randomizations
+	# specified by the user in the config file and train them to the 
+	# number of iterations that they specified. We then use these networks
+	# to generate feature-output correlation heatmaps and scatterplots.
+	n_networks   = config["feature_output_correlation"]["number_of_networks"]
+	n_iterations = config["feature_output_correlation"]["number_of_iterations"]
+	n_backups    = config["feature_output_correlation"]["number_of_backups"]
+	learn_rate   = config["feature_output_correlation"]["learning_rate"]
+
+	backup_interval = int(np.floor(n_iterations / n_backups))
+
+	training_output_dir     = out_dir + 'trained-networks/'
+
+	if not os.path.isdir(training_output_dir):
+		os.mkdir(training_output_dir)
+
+	training_output_subdirs = []
+	training_config = {
+		'NEURAL_NETWORK_FILE'         : '\'%s\''%os.path.abspath(neural_network_path),
+		'POSCAR_DATA_FILE'            : '\'%s\''%os.path.abspath(config["poscar_data_file"]),
+		'LSPARAM_FILE'                : '\'%s\''%'lsparam-generated.dat',
+		'TRAINING_SET_FILE'           : '\'%s\''%lsparam_path,
+		'NETWORK_BACKUP_INTERVAL'     : str(backup_interval),
+		'LEARNING_RATE'               : str(learn_rate),
+		'MAXIMUM_TRAINING_ITERATIONS' : str(n_iterations)
+	}
+
+	processes_to_wait = []
+
+	for initial_condition in range(n_networks):
+		this_dir = training_output_dir + 'IC-%02i/'%initial_condition
+		bk_dir   = os.path.abspath(this_dir + 'nn_backup/') + '/'
+
+		training_output_subdirs.append(this_dir)
+
+		this_config = copy.deepcopy(training_config)
+		this_config["NEURAL_NETWORK_SAVE_FILE"] = '\'%s\''%os.path.abspath(this_dir + 'saved_nn.dat')
+		this_config["NETWORK_BACKUP_DIR"]       = '\'%s\''%bk_dir
+
+		if not os.path.isdir(this_dir):
+			os.mkdir(this_dir)
+
+		if not os.path.isdir(bk_dir):
+			os.mkdir(bk_dir)
+
+		# Run the program.
+		proc = run_pyfit_with_config(
+			this_config,
+			'-t -u -r',
+			this_dir,
+			config_file_path=config["default_config"],
+			async=True
+		)
+
+		processes_to_wait.append(proc)
+
+	# By this point, all of the training processes are running.
+	# Wait for them to all finish.
+	wait_for_processes(processes_to_wait)
+
+	# Now that the training is complete, we need to determine the
+	# feature-output correlations and create heatmaps and scatterplots.
+
+	# We need to start with the final network for each initial condition.
+	# After that, we should generate more heatmaps using each of the backups.
+	# Before we generate any heatmaps, we need to evaluate the neural networks.
+
+	files_to_delete = []
+
+	for initial_condition in range(n_networks):
+		this_dir  = training_output_dir + 'IC-%02i/'%initial_condition
+		bk_dir    = os.path.abspath(this_dir + 'nn_backup/') + '/'
+		nn_path   = os.path.abspath(this_dir + 'saved_nn.dat')
+		eval_file = os.path.abspath(this_dir + 'nn_evaluated.json')
+
+		files_to_delete.append(eval_file)
+
+		run("python3 scripts/EvalNN.py %s %s %s"%(
+			nn_path,
+			lsparam_path,
+			eval_file
+		))
+
+		# Now we also produce an evaluation for each backup.
+		for bk_idx in range(n_backups):
+			current_backup = os.path.abspath(bk_dir + 'nn_bk_%i.dat'%bk_idx)
+			eval_file      = os.path.abspath(this_dir + 'nn_evaluated_bk_%i.json'%bk_idx)
+			run("python3 scripts/EvalNN.py %s %s %s"%(
+				current_backup,
+				lsparam_path,
+				eval_file
+			))
+
+			files_to_delete.append(eval_file)
+
+
+	# Now we have all of the data that we need to generate correlation
+	# coefficients, heatmaps and scatterplots.
+
+	# First, generate a correlation file for each neural network and
+	# all backups.
+
+	for initial_condition in range(n_networks):
+		this_dir  = training_output_dir + 'IC-%02i/'%initial_condition
+		bk_dir    = os.path.abspath(this_dir + 'nn_backup/') + '/'
+		nn_path   = os.path.abspath(this_dir + 'saved_nn.dat')
+		eval_file = os.path.abspath(this_dir + 'nn_evaluated.json')
+		correlation_file = os.path.abspath(this_dir + 'correlation.json')
+
+		files_to_delete.append(correlation_file)
+
+		run("python3 scripts/CFCorrelationCalc.py.py %s %s %s"%(
+			eval_file,
+			nn_path,
+			correlation_file
+		))
+
+		# Now we also produce correlation data for each backup.
+		for bk_idx in range(n_backups):
+			current_backup = os.path.abspath(bk_dir + 'nn_bk_%i.dat'%bk_idx)
+			eval_file      = os.path.abspath(this_dir + 'nn_evaluated_bk_%i.json'%bk_idx)
+			correlation_file = os.path.abspath(this_dir + 'nn_correlation_bk_%i.json'%bk_idx)
+
+			files_to_delete.append(correlation_file)
+
+			run("python3 scripts/EvalNN.py %s %s %s"%(
+				eval_file,
+				current_backup,
+				correlation_file
+			))
+
+	# Now that we have all of the correlation data that we need,
+	# we invoke the script that creates heatmaps, passing it lists
+	# of correlation data that we want compared.
+
+	# Create a list of files.
+	# Each list needs to have one file per initial condition.
+	# We will create one list for each backup plus the full
+	# training file.
+	file_sets = []
+	for idx in range(n_backups + 1):
+		if idx == 0:
+			file_name = 'correlation.json'
+		else:
+			file_name = 'nn_correlation_bk_%i.json'%(idx - 1)
+
+		file_list = []
+		for initial_condition in range(n_networks):
+			this_dir         = training_output_dir + 'IC-%02i/'%initial_condition
+			correlation_file = os.path.abspath(this_dir + file_name)
+			file_list.append(correlation_file)
+
+		file_sets.append(file_list)
+
+
+	# Now that we have all sets of files that we want a heatmap for,
+	# we invoke CFHeatmap.py for each set of files.
+
+			
+
+

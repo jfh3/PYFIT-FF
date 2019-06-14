@@ -5,6 +5,8 @@ import os
 import json
 from   time          import time
 from   datetime      import datetime
+import warnings
+warnings.filterwarnings("ignore")
 
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)

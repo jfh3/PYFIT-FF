@@ -5,6 +5,8 @@ import os
 import json
 from   time          import time
 from   datetime      import datetime
+import warnings
+warnings.filterwarnings("ignore")
 
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
@@ -111,6 +113,8 @@ if __name__ == '__main__':
 		title = "Correlation Matrix (absolute correlation)"
 	else:
 		title = "Correlation Matrix"
+
+	fig.subplots_adjust(bottom=0.2)
 
 	plt.title(title)
 
