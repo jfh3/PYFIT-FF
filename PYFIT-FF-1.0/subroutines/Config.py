@@ -97,7 +97,7 @@ NETWORK_BACKUP_INTERVAL            = 10000
 KEEP_BACKUP_HISTORY                = False
 
 # Network Loss Log File Path
-LOSS_LOG_PATH                      = 'average-error-and-rcf-consistency-study/results/IC-10/out/loss_log.txt'
+LOSS_LOG_PATH                      = 'average-error-and-rcf-consistency-study/results/IC-01/out/loss_log.txt'
 
 # The file to log the validation loss in.
 VALIDATION_LOG_PATH                = 'average-error-and-rcf-consistency-study/results/IC-02/out/validation_loss_log.txt'

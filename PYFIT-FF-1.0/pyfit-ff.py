@@ -236,6 +236,11 @@ def TrainNetwork(force_cpu, randomize_nn):
 	#        into a list of total energies, one for each structure.
 
 	
+	# DEBUG
+	# This should ensure that all validation/training splits
+	# come out the same way.
+	np.random.seed(1)
+
 
 	# It is infinitely faster to shuffle the array and then pick the first n_pick
 	# indices rather than using np.random.choice. If we do the latter, determining

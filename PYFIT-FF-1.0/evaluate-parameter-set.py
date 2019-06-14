@@ -411,7 +411,7 @@ if __name__ == '__main__':
 
 		files_to_delete.append(correlation_file)
 
-		run("python3 scripts/CFCorrelationCalc.py.py %s %s %s"%(
+		run("python3 scripts/CFCorrelationCalc.py %s %s %s"%(
 			eval_file,
 			nn_path,
 			correlation_file
@@ -425,11 +425,13 @@ if __name__ == '__main__':
 
 			files_to_delete.append(correlation_file)
 
-			run("python3 scripts/EvalNN.py %s %s %s"%(
+			run("python3 scripts/CFCorrelationCalc.py %s %s %s"%(
 				eval_file,
 				current_backup,
 				correlation_file
 			))
+
+
 
 	# Now that we have all of the correlation data that we need,
 	# we invoke the script that creates heatmaps, passing it lists
@@ -455,9 +457,133 @@ if __name__ == '__main__':
 		file_sets.append(file_list)
 
 
+	abs_string = 'y' if config["feature_output_correlation"]["matrix_abs"] else 'n'
+
 	# Now that we have all sets of files that we want a heatmap for,
 	# we invoke CFHeatmap.py for each set of files.
+	for idx, fset in enumerate(file_sets):
+		png_path = training_output_dir + 'correlation-plots/'
 
-			
+		if not os.path.isdir(png_path):
+			os.mkdir(png_path)
+
+		if idx == 0:
+			png_path += 'correlation-final.png'
+		else:
+			png_path += 'correlation-%02i.png'%idx
+
+		full_paths = []
+		for path in fset:
+			full_paths.append(os.path.abspath(path))
+
+		path_string = ' '.join(full_paths)
+
+		run("python3 scripts/CFHeatmap.py %s %s %s"%(
+			png_path,
+			abs_string,
+			path_string
+		))
 
 
+	scatter_plots_path = os.path.abspath(training_output_dir + 'correlation-scatter-plots/')
+	if not os.path.isdir(scatter_plots_path):
+		os.mkdir(scatter_plots_path)
+
+	if scatter_plots_path[-1] != '/':
+		scatter_plots_path += '/'
+
+	# Now that we have the heatmap written, we need to produce a set
+	# of scatterplots for all combinations of parameters and energies.
+	# We will only do this for the first initial condition.
+	if config["feature_output_correlation"]["export_scatter"]:
+		this_dir         = training_output_dir + 'IC-00/'
+		correlation_file = os.path.abspath(this_dir + 'correlation.json')
+
+		run("python3 scripts/CFScatterPlots.py %s %s %s"%(
+			correlation_file,
+			scatter_plots_path,
+			'1.0'
+		))
+
+
+	# Now that all graphics are generated, we need to determine the
+	# following scoring factors.
+	#     1) average feature - feature pcc
+	#     2) average feature - output  pcc
+	#     3) figure of merit
+	#     4) average rmse across networks
+	#     5) standard deviation of rmse across networks
+	#     6) minimum rmse across networks
+	#     7) maximum rmse across networks
+
+	# ff_correlation_file
+	# this_dir         = training_output_dir + 'IC-00/'
+	# correlation_file = os.path.abspath(this_dir + 'correlation.json')
+	# for initial_condition in range(n_networks):
+	# 	this_dir  = training_output_dir + 'IC-%02i/'%initial_condition
+
+	# First we load the feature-feature correlation file and
+	# compute the average.
+
+	def load_json(file):
+		f = open(file, 'r')
+		j = json.loads(f.read())
+		f.close()
+		return j
+
+	ff_correlations  = load_json(ff_correlation_file)
+	all_coefficients = np.array([c["pcc"] for c in ff_correlations["coefficients"]])
+
+	mean_ff_correlation = all_coefficients.mean()
+
+
+	all_rmse         = []
+	all_coefficients = []
+
+	for initial_condition in range(n_networks):
+		correlation_file = training_output_dir + 'IC-%02i/correlation.json'%initial_condition
+		error_file       = training_output_dir + 'IC-%02i/loss_log.txt'%initial_condition
+
+		f   = open(error_file, 'r')
+		raw = f.read()
+		f.close()
+		final_rmse = float([n for n in raw.split('\n') if n != ''][-1])
+
+		all_rmse.append(final_rmse)
+
+		correlation_data = load_json(correlation_file)
+		all_coefficients_this_nn = [res['pcc'] for res in correlation_data["data"]]
+
+		all_coefficients.extend(all_coefficients_this_nn)
+
+	mean_fc_correlation = np.array(all_coefficients).mean()
+	all_rmse            = np.array(all_rmse)
+	mean_rmse           = all_rmse.mean()
+	std_rmse            = all_rmse.std()
+	min_rmse            = all_rmse.min()
+	max_rmse            = all_rmse.max()
+
+	k = len(config["parameter-set"]["r_0_values"]) * len(config["parameter-set"]["legendre_polynomials"])
+
+	figure_of_merit = (k * mean_fc_correlation) / np.sqrt(k + k*(k - 1)*mean_ff_correlation)
+
+	master_results = {}
+	master_results["parameter_set"]   = config["parameter-set"]
+	master_results["training_params"] = config["feature_output_correlation"]
+	master_results["scores"]          = {
+		"figure_of_merit"     : figure_of_merit,
+		"mean_ff_correlation" : mean_ff_correlation,
+		"mean_fc_correlation" : mean_fc_correlation,
+		"mean_rmse"           : mean_rmse,
+		"std_rmse"            : std_rmse,
+		"min_rmse"            : min_rmse,
+		"max_rmse"            : max_rmse
+	}
+
+	f = open(out_dir + 'master_results.json', 'w')
+	f.write(json.dumps(master_results))
+	f.close()
+
+	if config["cleanup_large_files"]:
+		for file in files_to_delete:
+			run("rm %s"%file)

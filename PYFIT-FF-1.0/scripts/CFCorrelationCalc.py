@@ -11,6 +11,7 @@ path.append("subroutines")
 
 from TrainingSet         import TrainingSetFile
 from ConfigurationParser import TrainingFileConfig
+from NeuralNetwork       import NeuralNetwork
 import Util
 
 # Print to stderr.
