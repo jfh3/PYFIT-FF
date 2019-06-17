@@ -18,29 +18,9 @@ import Util
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
-if __name__ == '__main__':
-	# This takes three parameters:
-	#     1) The neural network evaluation data file.
-	#     2) The neural network file to get parameters from.
-	#     3) The file to write results to.
-
-	if len(sys.argv) != 4:
-		eprint("This program takes 3 arguments.")
-		sys.exit(1)
-
-	
-	nn_eval_file   = sys.argv[1]
-	nn_config_file = sys.argv[2]
-	output_file    = sys.argv[3]
-
+def CFCorrelationCalc(eval_data, nn_config_file):
 	Util.init("garbage.txt")
 	Util.set_mode(unsupervised=True)
-
-	f = open(nn_eval_file, 'r')
-	eval_data = json.loads(f.read())
-	f.close()
-
-	# Load whichever training set is specified above.
 
 	nn_config = NeuralNetwork(nn_config_file).config
 	legendre_polynomials = nn_config.legendre_orders
@@ -79,6 +59,35 @@ if __name__ == '__main__':
 
 		current_result['pcc'] = numerator / denominator
 		results["data"].append(current_result)
+
+	Util.cleanup()
+
+	return results
+
+if __name__ == '__main__':
+	# This takes three parameters:
+	#     1) The neural network evaluation data file.
+	#     2) The neural network file to get parameters from.
+	#     3) The file to write results to.
+
+	if len(sys.argv) != 4:
+		eprint("This program takes 3 arguments.")
+		sys.exit(1)
+
+	
+	nn_eval_file   = sys.argv[1]
+	nn_config_file = sys.argv[2]
+	output_file    = sys.argv[3]
+
+	
+
+	f = open(nn_eval_file, 'r')
+	eval_data = json.loads(f.read())
+	f.close()
+
+	# Load whichever training set is specified above.
+
+	results = CFCorrelationCalc(eval_data, nn_config_file)
 
 	
 

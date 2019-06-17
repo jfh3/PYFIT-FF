@@ -12,15 +12,20 @@ import os
 import copy
 import json
 
-def RunNetwork(nn_file, train_file):
+def GetTrainingSetInstance(file):
+	Util.init('garbage.txt')
+	f = TrainingSetFile(file)
+	Util.cleanup()
+	return f
 
+def RunNetwork(nn_file, training_set):
+	Util.init('garbage.txt')
 	# The primary steps for loading are as follows:
 	#     1) Load the neural network weights and biases.
 	#     2) Load the LSParam file that contains Gi's and
 	#        DFT energies for each structure.
 
 	neural_network_data = NeuralNetwork(nn_file) 
-	training_set        = TrainingSetFile(train_file)
 
 	# Randomly select a set of structure IDs to use as the training set
 	# and use the rest as a validation set.
@@ -83,6 +88,8 @@ def RunNetwork(nn_file, train_file):
 	results["input"]  = structure_params
 	results["output"] = [i[0] for i in torch_net(t_structure_params).tolist()]
 
+	Util.cleanup()
+
 	return results
 
 
@@ -100,8 +107,10 @@ if __name__ == '__main__':
 	lsparam_file = sys.argv[2]
 	output_path  = sys.argv[3]
 
-	Util.init('garbage.txt')
+	
 
+
+	lsparam_file = GetTrainingSetInstance(lsparam_file)
 	results = RunNetwork(nn_file, lsparam_file)
 
 	f = open(output_path, 'w')

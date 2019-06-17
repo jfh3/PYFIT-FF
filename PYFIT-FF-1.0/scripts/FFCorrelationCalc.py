@@ -17,20 +17,7 @@ import Util
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
-if __name__ == '__main__':
-	# This takes three parameters:
-	#     1) The lsparam file to use for calculations.
-	#     2) The file to write the resulting correlations into.
-	#     3) The log file to use.
-
-	if len(sys.argv) != 4:
-		eprint("This program takes 3 arguments.")
-		sys.exit(1)
-
-	training_set_file = sys.argv[1]
-	results_file      = sys.argv[2]
-	log_file          = sys.argv[3]
-
+def FFCorrelationCalc(training_set_file, log_file):
 	Util.init(log_file)
 	Util.set_mode(unsupervised=True)
 
@@ -162,6 +149,26 @@ if __name__ == '__main__':
 		n_processed += 1
 
 	bar.finish()
+
+	Util.cleanup()
+
+	return results
+
+if __name__ == '__main__':
+	# This takes three parameters:
+	#     1) The lsparam file to use for calculations.
+	#     2) The file to write the resulting correlations into.
+	#     3) The log file to use.
+
+	if len(sys.argv) != 4:
+		eprint("This program takes 3 arguments.")
+		sys.exit(1)
+
+	training_set_file = sys.argv[1]
+	results_file      = sys.argv[2]
+	log_file          = sys.argv[3]
+
+	results = FFCorrelationCalc(training_set_file, log_file)
 
 	f = open(results_file, 'w')
 	f.write(json.dumps(results))

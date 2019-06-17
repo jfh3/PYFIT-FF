@@ -1,8 +1,8 @@
 Loading Neural Network
-	Path = /home/arobinson/research/PYFIT-FF/PYFIT-FF-1.0/small-test/trained-networks/IC-04/nn_backup/nn_bk_4.dat
+	Path = /home/arobinson/research/PYFIT-FF/PYFIT-FF-1.0/work_01/trained-networks/IC-01/nn_backup/nn_bk_1.dat
 	File Configuration: 
-		Gi Mode             = Normal
-		Gi Shift            = 0.000000
+		Gi Mode             = Shifted
+		Gi Shift            = 0.500000
 		Activation Function = Shifted Sigmoid
 		# of Species        = 1
 		Element             = Si
@@ -14,8 +14,8 @@ Loading Neural Network
 		Gi Sigma            = 1.000000
 		# Legendre Poly.    = 5
 		Legendre Orders     = 0 1 2 4 6
-		R0 Values           = 1.5 3.0 4.5
+		R0 Values           = 1.5 2.0
 		BOP Parameter 0     = 1
 		BOP Paramters       = 10.78701 5.23771 4.04092 1.365 0.104528 0.979074 0.891061 0.803526
-		Layer Dimensions    = 15 16 16 1
+		Layer Dimensions    = 10 16 16 1
 		

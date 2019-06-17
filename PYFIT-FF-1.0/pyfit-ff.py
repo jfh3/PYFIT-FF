@@ -176,11 +176,11 @@ def CompareStructureParameters(first, second):
 	plt.ylabel("Second File")
 	plt.show()
 
-def TrainNetwork(force_cpu, randomize_nn):
+def TrainNetwork(force_cpu, randomize_nn, gpu_affinity=0):
 	log("Beginning Training Process")
 	log_indent()
 
-	device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+	device = torch.device("cuda:%i"%(gpu_affinity) if torch.cuda.is_available() else "cpu")
 	if force_cpu:
 		device = 'cpu'
 		
@@ -277,14 +277,25 @@ def TrainNetwork(force_cpu, randomize_nn):
 		training_indices   = []
 		validation_indices = []
 
+		n_iter = 0
+
 		for group in training_group_dict:
 			n_pick      = int(TRAIN_TO_TOTAL_RATIO * len(training_group_dict[group]))
 			all_indices = np.array(training_group_dict[group])
+
+			indices_and_volumes = [(struct, training_set.training_structures[struct][0].structure_volume) for struct in training_group_dict[group]]
+			sorted_by_volume    = sorted(indices_and_volumes, key=lambda x: x[1])
+			indices_ordered     = np.array([i[0] for i in sorted_by_volume])
+			all_indices         = indices_ordered[1:-1]
+
 			np.random.shuffle(all_indices)
+
 			all_indices = list(all_indices)
 
 			training_indices.extend(list(all_indices[:n_pick]))
 			validation_indices.extend(list(all_indices[n_pick:]))
+
+			training_indices.extend([indices_ordered[0], indices_ordered[-1]])
 
 		n_training_indices   = len(training_indices)
 		n_validation_indices = len(validation_indices)
@@ -1263,8 +1274,10 @@ if __name__ == '__main__':
 				name, target = arg.split(':')
 				SUBGROUP_TARGETS[name] = float(target)
 
-
-
+		gpu_affinity = 0
+		if '--gpu-affinity' in args:
+			gpu_affinity = int(args[args.index('--gpu-affinity') + 1])
+			log("GPU Affinity: %i"%gpu_affinity)
 		if '--n-threads' in args:
 			os.environ["OMP_NUM_THREADS"] = str(args[args.index('--n-threads') + 1])
 			os.environ["MKL_NUM_THREADS"] = str(args[args.index('--n-threads') + 1])
@@ -1301,7 +1314,7 @@ if __name__ == '__main__':
 		ComputeStructureParameters()
 
 	if run_training:
-		plateau_annealing_iterations = TrainNetwork(force_cpu, randomize_nn)
+		plateau_annealing_iterations = TrainNetwork(force_cpu, randomize_nn, gpu_affinity)
 
 	if graph_error:
 		import matplotlib.pyplot as plt

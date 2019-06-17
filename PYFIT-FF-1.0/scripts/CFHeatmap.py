@@ -11,30 +11,8 @@ warnings.filterwarnings("ignore")
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
-if __name__ == '__main__':
-	# This program takes a variable number of arguments.
-	#     1) The path to write the png file to.
-	#     2) y or n, whether or not to display abs(correlation)
-	#     *) The correlation files to load data from.
-
-	if len(sys.argv) < 4:
-		eprint("This program takes at least 4 arguments.")
-		sys.exit(1)
-
-	output_file = sys.argv[1]
-	abs_display = sys.argv[2] == 'y'
-	
-	correlation_files = sys.argv[3:]
-	
-	
-	correlation_results = []
-	
-	for file in correlation_files:
-		f = open(file, 'r')
-		correlation_results.append(json.loads(f.read()))
-		f.close()
-
-	correlation_matrix = np.zeros((len(correlation_files), len(correlation_results[0]["data"])))
+def GenCFHeatmap(correlation_results, abs_display, output_file):
+	correlation_matrix = np.zeros((len(correlation_results), len(correlation_results[0]["data"])))
 
 	horizontal_axis_labels = []
 	for param in correlation_results[0]["data"]:
@@ -47,7 +25,7 @@ if __name__ == '__main__':
 	vertical_axis_labels = ["IC-%02i"%i for i in range(len(correlation_results))]
 
 	
-	for row in range(len(correlation_files)):
+	for row in range(len(correlation_results)):
 		result = correlation_results[row]
 		# Construct an easy to graph matrix.
 		for idx, coeff in zip(range(len(result["data"])), result["data"]):
@@ -111,4 +89,30 @@ if __name__ == '__main__':
 
 	plt.title(title)
 
-	plt.savefig(output_file)
+	plt.savefig(output_file, dpi=250)
+
+if __name__ == '__main__':
+	# This program takes a variable number of arguments.
+	#     1) The path to write the png file to.
+	#     2) y or n, whether or not to display abs(correlation)
+	#     *) The correlation files to load data from.
+
+	if len(sys.argv) < 4:
+		eprint("This program takes at least 4 arguments.")
+		sys.exit(1)
+
+	output_file = sys.argv[1]
+	abs_display = sys.argv[2] == 'y'
+	
+	correlation_files = sys.argv[3:]
+	
+	
+	correlation_results = []
+	
+	for file in correlation_files:
+		f = open(file, 'r')
+		correlation_results.append(json.loads(f.read()))
+		f.close()
+
+	GenCFHeatmap(correlation_results, abs_display, output_file)
+	

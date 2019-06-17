@@ -11,6 +11,34 @@ warnings.filterwarnings("ignore")
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
+def GenFFScatterPlots(correlation_data, output_dir, graph_ratio):
+	for correlation in correlation_data["coefficients"]:
+
+		fig, ax = plt.subplots()
+
+		current_file = output_dir + '%i_vs_%i.png'%(correlation["param0"]["idx"], correlation["param1"]["idx"])
+
+		horizontal_axis_label  = '$G_{%i}$  '%correlation["param0"]["idx"]
+		horizontal_axis_label += '$P_{%i}$  '%correlation["param0"]["l"]
+		horizontal_axis_label += '$r_0 = %f$'%correlation["param0"]["r0"]
+
+		vertical_axis_label  = '$G_{%i}$  '%correlation["param1"]["idx"]
+		vertical_axis_label += '$P_{%i}$  '%correlation["param1"]["l"]
+		vertical_axis_label += '$r_0 = %f$'%correlation["param1"]["r0"]
+
+		title = '$G_{%i}$ vs. $G_{%i}$ ($\\rho_{X, Y} = \\;$%1.2f)'%(correlation["param0"]["idx"], correlation["param1"]["idx"], correlation["pcc"])
+
+		x_points = np.random.choice([p[0] for p in correlation["data"]], int(round(graph_ratio*len(correlation["data"]))))
+		y_points = np.random.choice([p[1] for p in correlation["data"]], int(round(graph_ratio*len(correlation["data"]))))
+
+		ax.scatter(x_points, y_points, s=0.1, alpha=0.25)
+		plt.title(title)
+		plt.xlabel(horizontal_axis_label)
+		plt.ylabel(vertical_axis_label)
+		plt.savefig(current_file, dpi=250)
+
+		plt.close(fig)
+
 if __name__ == '__main__':
 	# This program takes 3 arguments.
 	#     1) The json file containins the correlations.
@@ -30,29 +58,6 @@ if __name__ == '__main__':
 	results = json.loads(f.read())
 	f.close()
 
-	for correlation in results["coefficients"]:
+	GenFFScatterPlots(results, output_dir, graph_ratio)
 
-		fig, ax = plt.subplots()
-
-		current_file = output_dir + '%i_vs_%i.png'%(correlation["param0"]["idx"], correlation["param1"]["idx"])
-
-		horizontal_axis_label  = '$G_{%i}$  '%correlation["param0"]["idx"]
-		horizontal_axis_label += '$P_{%i}$  '%correlation["param0"]["l"]
-		horizontal_axis_label += '$r_0 = %f$'%correlation["param0"]["r0"]
-
-		vertical_axis_label  = '$G_{%i}$  '%correlation["param1"]["idx"]
-		vertical_axis_label += '$P_{%i}$  '%correlation["param1"]["l"]
-		vertical_axis_label += '$r_0 = %f$'%correlation["param1"]["r0"]
-
-		title = '$G_{%i}$ vs. $G_{%i}$ ($\\rho_{X, Y} = \\;$%1.2f)'%(correlation["param0"]["idx"], correlation["param1"]["idx"], correlation["pcc"])
-
-		x_points = np.random.choice([p[0] for p in correlation["data"]], int(round(graph_ratio*len(correlation["data"]))))
-		y_points = np.random.choice([p[1] for p in correlation["data"]], int(round(graph_ratio*len(correlation["data"]))))
-
-		ax.scatter(x_points, y_points, s=0.1)
-		plt.title(title)
-		plt.xlabel(horizontal_axis_label)
-		plt.ylabel(vertical_axis_label)
-		plt.savefig(current_file, dpi=250)
-
-		plt.close(fig)
+	
