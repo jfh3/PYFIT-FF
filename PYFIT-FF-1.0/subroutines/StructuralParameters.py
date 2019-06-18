@@ -46,7 +46,7 @@ def GenerateStructuralParameters(poscar_data, nl, nn):
 		for atom in struct:
 			processed += len(atom)**2
 			# Iterate over each atom in the structure and compute the (usually 60)
-			# paramters for it.
+			# parameters for it.
 			parameters_for_structure.append(compute_parameters(
 				np.array(atom), 
 				nn.config.r0, 

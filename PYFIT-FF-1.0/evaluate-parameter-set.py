@@ -76,7 +76,7 @@ def parse_and_validate_args():
 		sys.exit(1)
 	else:
 		try:
-			if os.path.isdir(work_directory):
+			if not os.path.isdir(work_directory):
 				os.mkdir(work_directory)
 		except Exception as ex:
 			eprint(str(ex))
@@ -240,6 +240,12 @@ def run_pyfit_with_config(config, params, run_dir, config_file_path=None, async=
 
 
 if __name__ == '__main__':
+
+
+	# --------------------------------------------------
+	# Setup
+	# --------------------------------------------------
+
 	config, wrk_dir, final_dir = parse_and_validate_args()
 
 
@@ -255,6 +261,10 @@ if __name__ == '__main__':
 	nn_file = open(neural_network_path, 'w')
 	nn_file.write(nn_config.toFileString())
 	nn_file.close()
+
+	# --------------------------------------------------
+	# Training Set Generation
+	# --------------------------------------------------
 
 	# Now we run pyfit-ff.py with the new neural network file and
 	# instruct it to generate an LSPARAM file.
@@ -272,6 +282,7 @@ if __name__ == '__main__':
 			os.mkdir(lsparam_gen_output_dir)
 		run("cp %s %s"%(config['lsparam_file'], lsparam_path))
 	else:
+		subroutines_dirs.append(lsparam_gen_output_dir + 'subroutines/')
 		# Run the program.
 		run_pyfit_with_config(
 			lsparam_gen_config,
@@ -289,6 +300,10 @@ if __name__ == '__main__':
 	# Now we run FFCorrelationCalc.py to compute the correlation coefficients
 	# and export them, as well as convenient arrays of datapoints for plotting.
 
+	# --------------------------------------------------
+	# Feature Feature Correlation
+	# --------------------------------------------------
+
 	ff_correlation_dir  = wrk_dir + 'feature-feature-correlation/'
 	ff_correlation_file = ff_correlation_dir + 'correlation.json'
 
@@ -297,28 +312,12 @@ if __name__ == '__main__':
 
 	ff_correlation_data = FFCorrelationCalc(lsparam_path, general_log)
 
-	# # This will generate a correlation file for us.
-	# run("python3 scripts/FFCorrelationCalc.py %s %s %s"%(
-	# 	lsparam_path,
-	# 	ff_correlation_file,
-	# 	os.path.abspath(general_log)
-	# ))
-
-
 	# Run FFHeatmap.py to generate a heatmap image file.
 	heatmap_path = os.path.abspath(ff_correlation_dir + 'ff-heatmap.png')
 	correlations = os.path.abspath(ff_correlation_file)
 	resolution   = config["feature_feature_correlation"]["matrix_resolution"]
 
 	GenHeatmap(ff_correlation_data, heatmap_path, config["feature_feature_correlation"]["matrix_abs"])
-
-	# run("python3 scripts/FFHeatmap.py %s %s %s %s"%(
-	# 	correlations,
-	# 	heatmap_path,
-	# 	resolution,
-	# 	abs_string
-	# ))
-
 
 	# Now that we have a heatmap, we want to run FFScatterPlots.py to
 	# generate a list of scatterplot png files.
@@ -331,11 +330,6 @@ if __name__ == '__main__':
 	# TODO: Put this in a separate process.
 	if config["feature_feature_correlation"]["export_scatter"]:
 		GenFFScatterPlots(ff_correlation_data, scatter_plots_path, ratio)
-		# run("python3 scripts/FFScatterPlots.py %s %s %s"%(
-		# 	correlations,
-		# 	scatter_plots_path,
-		# 	str(ratio)
-		# ))
 
 
 	# Now we need to generate a number of neural network randomizations
@@ -369,6 +363,8 @@ if __name__ == '__main__':
 
 	gpu_idx = 0
 
+	subroutines_dirs = []
+
 	for initial_condition in range(n_networks):
 		this_dir = training_output_dir + 'IC-%02i/'%initial_condition
 		bk_dir   = os.path.abspath(this_dir + 'nn_backup/') + '/'
@@ -386,22 +382,16 @@ if __name__ == '__main__':
 		if not os.path.isdir(bk_dir):
 			os.mkdir(bk_dir)
 
+
+		subroutines_dirs.append(this_dir + 'subroutines/')
 		# Run the program.
-		proc = run_pyfit_with_config(
+		run_pyfit_with_config(
 			this_config,
-			'-t -u -r --gpu-affinity %i'%gpu_idx,
+			'-t -u -r',
 			this_dir,
 			config_file_path=config["default_config"],
-			async=True
+			async=False
 		)
-
-		gpu_idx += 1
-
-		processes_to_wait.append(proc)
-
-	# By this point, all of the training processes are running.
-	# Wait for them to all finish.
-	wait_for_processes(processes_to_wait)
 
 	# Now that the training is complete, we need to determine the
 	# feature-output correlations and create heatmaps and scatterplots.
@@ -554,5 +544,15 @@ if __name__ == '__main__':
 	f = open(wrk_dir + 'master_results.json', 'w')
 	f.write(json.dumps(master_results))
 	f.close()
+
+	run("rm %s"%(lsparam_path))
+	
+	for sub in subroutines_dirs:
+		try:
+			run("rm -rf %s"%sub)
+		except:
+			print("Failed to remove subroutines directory.")
+			print("Please remove manually.")
+			break
 
 	run("cp -r %s %s"%(wrk_dir, final_dir))

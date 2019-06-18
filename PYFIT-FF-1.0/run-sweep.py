@@ -1,6 +1,5 @@
 import json
 import numpy as np
-import matplotlib.pyplot
 import datetime
 import time
 import os
@@ -36,11 +35,26 @@ if __name__ == '__main__':
 	]
 
 	sigma_sets = [
-		0.1, 0.25, 0.5, 1.0, 1.5, 2
+		0.1, 
+		0.25,
+		0.5, 
+		1.0, 
+		1.5, 
+		2
 	]
 
 	r0_counts = [
-		2, 3, 4, 5, 6, 8, 9, 10, 12, 14, 16
+		2, 
+		3, 
+		4, 
+		5, 
+		6, 
+		8, 
+		9, 
+		10, 
+		12, 
+		14, 
+		16
 	]
 
 	mode_sets = [
@@ -61,11 +75,7 @@ if __name__ == '__main__':
 		for sigma in sigma_sets:
 			for nr0 in r0_counts:
 				for mode in mode_sets:
-					dir_name = 'eval-data/l_%i_r_%i_s_%f_m_%i_idx_%i'%(
-						len(lset),
-						nr0,
-						sigma,
-						mode[0],
+					dir_name = '/home/ajr6/2019-06-17/feature-set-02/idx_%i'%(
 						idx
 					)
 					idx += 1
@@ -82,16 +92,24 @@ if __name__ == '__main__':
 
 	print("Configurations: %i"%len(configurations))
 
+	if not os.path.isdir('config'):
+		os.mkdir('config')
+
 	config_names = []
-	
+	print(len(configurations))
 	for i in range(len(configurations)):
-		fname = 'config_%i.json'%i
+		fname = 'config/config_%i.json'%i
 		
 		f = open(fname, 'w')
 		f.write(json.dumps(configurations[i]))
 		f.close()
 		config_names.append(fname)
 
+	runfile = open('run_evals.sh', 'w')
+
 	for name, _dir in zip(config_names, config_dirs):
-		run("./run_eval_enki_generic.sh 4 %s %s"%(name, _dir))
+		runfile.write("./run_eval_enki_generic.sh 1 %s %s\n"%(name, _dir))
+		runfile.write("sleep 1\n")
+
+	runfile.close()
 

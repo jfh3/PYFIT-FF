@@ -6,7 +6,7 @@ current_path=${PWD}
 
 cat > slurm.sh <<!
 #!/bin/sh
-#SBATCH --gres=gpu:4
+#SBATCH --gres=gpu:1
 #SBATCH -c $1
 #SBATCH --partition=gpu
 #SBATCH --time=1:30:00
@@ -19,7 +19,7 @@ cd $current_path
 module purge
 module load powerAI/pytorch-1.5.4
 source /opt/DL/pytorch/bin/pytorch-activate
-python3 evaluate-parameter-set.py ${@:2}
+time python3 evaluate-parameter-set.py $2 /scratch/\${SLURM_JOB_ID}/ $3
 
 !
 

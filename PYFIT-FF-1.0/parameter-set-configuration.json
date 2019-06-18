@@ -27,19 +27,19 @@
 		"comment2"          : "This is the ratio of data points in each scatterplot to total datapoints.",
 		"scatterplot_ratio" : 1.0,
 		"matrix_resolution" : "2048x2048",
-		"export_scatter"    : true,
+		"export_scatter"    : false,
 		"comment3"          : "If this is true, the correlation matrix will display only the absolute value of the correlation coefficients.",
 		"matrix_abs"        : true
 	},
 
 	"feature_output_correlation" : {
 		"comment" : "This section contains information about how to perform feature-output correlation calculations and what information to store when done.",
-		"number_of_networks"   : 4,
-		"number_of_iterations" : 100,
-		"number_of_backups"    : 4,
-		"learning_rate"        : 0.05,
+		"number_of_networks"   : 1,
+		"number_of_iterations" : 250,
+		"number_of_backups"    : 5,
+		"learning_rate"        : 0.04,
 		"scatterplot_ratio"    : 1.0,
-		"export_scatter"       : true,
+		"export_scatter"       : false,
 		"feature_metric"       : "pearson",
 		"matrix_abs"           : true
 	}

@@ -1,3 +1,5 @@
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy             as np
 import sys
@@ -18,7 +20,7 @@ def GenHeatmap(results, output_file, abs_display):
 	axis_labels = []
 	for l in results["legendre_polynomials"]:
 		for r in results["r_0_values"]:
-			label = "$P_" + str(l) + r"\;\;r = " + str(r) + "$"
+			label = "$P_" + str(l) + r"\;\;r = " + '%1.2f'%r + "$"
 			axis_labels.append(label)
 
 	
@@ -77,16 +79,14 @@ def GenHeatmap(results, output_file, abs_display):
 	# 	for n in range(correlation_matrix.shape[1]):
 	# 		ax.text(n, m, '%i'%(int(round(100*correlation_matrix[m][n]))), ha="center", va="center", color="black", fontsize=6)
 
-	for tick in ax.xaxis.get_major_ticks():
-		tick.label.set_fontsize(6.5)
-
-	for tick in ax.yaxis.get_major_ticks():
-		tick.label.set_fontsize(6.5)
-	
-	
-
 	
 	plt.setp(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor")
+
+	for tick in ax.xaxis.get_major_ticks():
+		tick.label.set_fontsize(4.0)
+
+	for tick in ax.yaxis.get_major_ticks():
+		tick.label.set_fontsize(4.0)
 
 	if abs_display:
 		title = "Correlation Matrix (absolute correlation)"
