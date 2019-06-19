@@ -16,20 +16,20 @@ FILE_BUFFERING                     = 1
 LOG_PATH                           = 'input/log.txt'
 
 # The neural network file to load.
-NEURAL_NETWORK_FILE                = 'input/AB/nn1-60-gi-shifted.dat'
+NEURAL_NETWORK_FILE                = 'input/convergence-run-networks/705.nn.dat'
 
 # --------------------------------------------------
 # Structural Parameter Calculation Configuration
 # --------------------------------------------------
 
-POSCAR_DATA_FILE = 'input/AB/AB-POSCAR-E-full-NO-B00-B01-B02.dat'
+POSCAR_DATA_FILE = 'input/Feature_Selection/SET-ADAM-RM-BAD-CLUSTERS-06-14-19-POSCAR-E-full.dat'
 
 # The parameter file to output. This is what gets used for neural network
 # training during the next step (usually). If you want the program to train
 # on this file immediately after generating it, specify the same file for
 # the TRAINING_SET_FILE parameter and pass the --run-training flag to the
 # program.
-LSPARAM_FILE     = 'input/AB/AB-LSPARAM-E-full-NO-B00-B01-B02.dat'
+LSPARAM_FILE     = 'input/Feature_Selection/SET-ADAM-RM-BAD-CLUSTERS-06-14-19-LSPARAM-E-full.dat'
 
 # The file to store training data and neighbors lists in. If you don't specify this
 # it won't get written.
@@ -58,11 +58,11 @@ FLAT_ERROR_ITERATIONS = 10
 # perform an annealing step. In this context, that means adding a small random
 # number to all weights in order to temporarily increase error, but potentially
 # break out of a local minima. 
-PLATEAU_ANNEALING_MAX_ITERATIONS = 0
+PLATEAU_ANNEALING_MAX_ITERATIONS = 10
 
 # This is the amount to reduce the learning rate by each time a 
 # plateau in the error is reached.
-PLATEAU_ANNEALING_LR_DECREMENT = 0.01
+PLATEAU_ANNEALING_LR_DECREMENT = 0.005
 
 # This is the standard deviation of the normally distributed random values to add.
 # The program will generate numbers normally distributed around zero and add
@@ -70,7 +70,7 @@ PLATEAU_ANNEALING_LR_DECREMENT = 0.01
 # network parameter to determine the actually STD to use. 
 # Example: if PLATEAU_ANNEALING_RAND_STD = 0.25,
 #          numbers will be np.random.normal(0.0, 0.25 * np.abs(nn_parameters[i]))
-PLATEAU_ANNEALING_RAND_STD = 0.09
+PLATEAU_ANNEALING_RAND_STD = 0.01
 
 # The number of iterations after which the system should start checking
 # for a significant difference between training error and validation error.
@@ -97,14 +97,14 @@ NETWORK_BACKUP_INTERVAL            = 10000
 KEEP_BACKUP_HISTORY                = False
 
 # Network Loss Log File Path
-LOSS_LOG_PATH                      = 'average-error-and-rcf-consistency-study/results/IC-01/out/loss_log.txt'
+LOSS_LOG_PATH                      = 'input/convergence-run-networks/702.loss.txt'
 
 # The file to log the validation loss in.
-VALIDATION_LOG_PATH                = 'average-error-and-rcf-consistency-study/results/IC-02/out/validation_loss_log.txt'
+VALIDATION_LOG_PATH                = 'input/convergence-run-networks/702.val.txt'
 
 # Interval on which validation error should be calculated and
 # logged in the corresponding file.
-VALIDATION_INTERVAL = 5
+VALIDATION_INTERVAL = 25
 
 # Whether or not to ensure that the validation set is sampled
 # equally for every structural group. This prevents the random
@@ -117,10 +117,10 @@ PROGRESS_INTERVAL = 1
 
 # The structure file that contains POSCAR structures
 # and DFT energies.
-TRAINING_SET_FILE                  = 'input/AB/AB-LSPARAM-E-full-NO-B00-B01-B02.dat'
+TRAINING_SET_FILE                  = 'input/Feature_Selection/SET-ADAM-RM-BAD-CLUSTERS-06-14-19-LSPARAM-E-full.dat'
 
 # Where to save the neural network when done training it.
-NEURAL_NETWORK_SAVE_FILE           = 'nn1.dat'
+NEURAL_NETWORK_SAVE_FILE           = 'input/saved_nn1.dat'
 
 # The file to store the E_VS_V data in.
 # Each line will be all volumes in order followed
@@ -131,7 +131,7 @@ E_VS_V_FILE                        = 'E_vs_V.txt'
 E_VS_V_INTERVAL = 10000000
 
 # The ratio of training data to overall amount of data.
-TRAIN_TO_TOTAL_RATIO = 1.0
+TRAIN_TO_TOTAL_RATIO = 0.9
 
 
 # The weight to assign to any group not explicitely enumerated
@@ -188,4 +188,4 @@ OPTIMIZATION_ALGORITHM = 'LBFGS'
 MAX_LBFGS_ITERATIONS = 10
 
 # Maximum number of epochs to run through for training.
-MAXIMUM_TRAINING_ITERATIONS = 500
+MAXIMUM_TRAINING_ITERATIONS = 150

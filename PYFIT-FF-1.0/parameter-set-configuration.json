@@ -5,8 +5,8 @@
 
 	"parameter-set" : {
 		"comment"    : "These parameters will be used to create neural network files and LSPARAM files that will then be used to generate all relevant information and metrics regarding the parameter set.",
-		"r_0_values"           : [1.5, 1.7727, 2.0455, 2.3182, 2.5909, 2.8636, 3.1364, 3.4091, 3.6818, 3.9545, 4.2273, 4.5],
-		"legendre_polynomials" : [0, 1, 2, 4, 6],
+		"r_0_values"           : [],
+		"legendre_polynomials" : [],
 		"gi_sigma"             : 1.0,
 		"truncation_distance"  : 1.0,
 		"cutoff_distance"      : 5.0,
@@ -35,9 +35,9 @@
 	"feature_output_correlation" : {
 		"comment" : "This section contains information about how to perform feature-output correlation calculations and what information to store when done.",
 		"number_of_networks"   : 1,
-		"number_of_iterations" : 250,
-		"number_of_backups"    : 5,
-		"learning_rate"        : 0.04,
+		"number_of_iterations" : 500,
+		"number_of_backups"    : 50,
+		"learning_rate"        : 0.05,
 		"scatterplot_ratio"    : 1.0,
 		"export_scatter"       : false,
 		"feature_metric"       : "pearson",

@@ -7,7 +7,7 @@ VALIDATION_LOG_PATH                = 'validation_loss_log.txt'
 E_VS_V_FILE                        = 'E_vs_V.txt'
 OPTIMIZATION_ALGORITHM             = 'LBFGS'
 MAX_LBFGS_ITERATIONS               = 10
-E_VS_V_INTERVAL                    = 10000000
+E_VS_V_INTERVAL                    = 10
 
 
 NEURAL_NETWORK_FILE      = ''

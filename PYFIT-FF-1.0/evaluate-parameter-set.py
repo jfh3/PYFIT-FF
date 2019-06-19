@@ -6,6 +6,9 @@
 # networks, feature-output correlations, more scatterplot pngs and more 
 # heatmaps, as well as actually calculating a final figure of merit score.
 
+import matplotlib
+matplotlib.use('Agg')
+
 from sys import path
 path.append("subroutines")
 path.append("scripts")
@@ -21,6 +24,7 @@ from CFCorrelationCalc   import CFCorrelationCalc
 from CFHeatmap           import GenCFHeatmap
 from CFScatterPlots      import GenCFScatterPlots
 
+import matplotlib.pyplot as plt
 import json
 import numpy as np
 import matplotlib.pyplot
@@ -248,8 +252,10 @@ if __name__ == '__main__':
 
 	config, wrk_dir, final_dir = parse_and_validate_args()
 
+	subroutines_dirs = []
 
 	general_log = wrk_dir + 'garbage.txt'
+	final_data  = {}
 
 	# Step One: Generate a neural network file and run pyfit-ff.py to generate
 	#           a corresponding LSPARAM file.
@@ -312,6 +318,17 @@ if __name__ == '__main__':
 
 	ff_correlation_data = FFCorrelationCalc(lsparam_path, general_log)
 
+	# We want to take param0, param1 and pcc from this structure and save it for a final
+	# output data file.
+
+	final_data['feature-feature-correlations'] = []
+	for pcc in ff_correlation_data["coefficients"]:
+		final_data['feature-feature-correlations'].append({
+			'parameters'  : [pcc['param0'], pcc['param1']],
+			'coefficient' :	pcc['pcc']
+		})
+
+
 	# Run FFHeatmap.py to generate a heatmap image file.
 	heatmap_path = os.path.abspath(ff_correlation_dir + 'ff-heatmap.png')
 	correlations = os.path.abspath(ff_correlation_file)
@@ -336,6 +353,7 @@ if __name__ == '__main__':
 	# specified by the user in the config file and train them to the 
 	# number of iterations that they specified. We then use these networks
 	# to generate feature-output correlation heatmaps and scatterplots.
+	#n_networks   = config["feature_output_correlation"]["number_of_networks"]
 	n_networks   = config["feature_output_correlation"]["number_of_networks"]
 	n_iterations = config["feature_output_correlation"]["number_of_iterations"]
 	n_backups    = config["feature_output_correlation"]["number_of_backups"]
@@ -363,8 +381,8 @@ if __name__ == '__main__':
 
 	gpu_idx = 0
 
-	subroutines_dirs = []
-
+	
+	to_wait = []
 	for initial_condition in range(n_networks):
 		this_dir = training_output_dir + 'IC-%02i/'%initial_condition
 		bk_dir   = os.path.abspath(this_dir + 'nn_backup/') + '/'
@@ -372,8 +390,8 @@ if __name__ == '__main__':
 		training_output_subdirs.append(this_dir)
 
 		this_config = copy.deepcopy(training_config)
-		this_config["NEURAL_NETWORK_SAVE_FILE"] = '\'%s\''%os.path.abspath(this_dir + 'saved_nn.dat')
-		this_config["NETWORK_BACKUP_DIR"]       = '\'%s\''%bk_dir
+		this_config["NEURAL_NETWORK_SAVE_FILE"]    = '\'%s\''%os.path.abspath(this_dir + 'saved_nn.dat')
+		this_config["NETWORK_BACKUP_DIR"]          = '\'%s\''%bk_dir
 
 
 		if not os.path.isdir(this_dir):
@@ -385,14 +403,17 @@ if __name__ == '__main__':
 
 		subroutines_dirs.append(this_dir + 'subroutines/')
 		# Run the program.
-		run_pyfit_with_config(
+		p = run_pyfit_with_config(
 			this_config,
-			'-t -u -r',
+			'-t -u -r --gpu-affinity %i'%gpu_idx,
 			this_dir,
 			config_file_path=config["default_config"],
-			async=False
+			async=True
 		)
+		gpu_idx += 1
+		to_wait.append(p)
 
+	wait_for_processes(to_wait)
 	# Now that the training is complete, we need to determine the
 	# feature-output correlations and create heatmaps and scatterplots.
 
@@ -404,14 +425,16 @@ if __name__ == '__main__':
 	correlation_sets = [] 
 
 	for initial_condition in range(n_networks):
+		network_correlations = []
+
 		this_dir  = training_output_dir + 'IC-%02i/'%initial_condition
 		bk_dir    = os.path.abspath(this_dir + 'nn_backup/') + '/'
 		nn_path   = os.path.abspath(this_dir + 'saved_nn.dat')
 		eval_file = os.path.abspath(this_dir + 'nn_evaluated.json')
 
 		eval_data        = RunNetwork(nn_path, training_set)
-		correlation_data = CFCorrelationCalc(eval_data, nn_path)
-		correlation_sets.append(correlation_data)
+		correlation_data_main = CFCorrelationCalc(eval_data, nn_path)
+		
 
 		# Now we also produce an evaluation for each backup.
 		for bk_idx in range(n_backups):
@@ -420,8 +443,53 @@ if __name__ == '__main__':
 			
 			eval_data        = RunNetwork(current_backup, training_set)
 			correlation_data = CFCorrelationCalc(eval_data, current_backup)
-			correlation_sets.append(correlation_data)
-			
+			network_correlations.append(correlation_data)
+
+		network_correlations.append(correlation_data_main)
+		correlation_sets.append(network_correlations)
+
+
+
+	feature_output_convergence_plot = training_output_dir + 'feature-output-convergence.png'
+	tmp_correlation = correlation_sets[0]
+
+	n_params   = len(tmp_correlation[0]['data'])
+	param_sets = []
+	for param in range(n_params):
+		param_data = []
+		for step in tmp_correlation:
+			param_data.append(step['data'][param]['pcc'])
+		param_sets.append(param_data)
+
+	fig, axes = plt.subplots(1, 1)
+	for set_ in param_sets:
+		axes.plot(range(len(tmp_correlation)), set_)
+
+	axes.set_xlabel('Training Iteration')
+	axes.set_xticklabels(np.array(range(n_backups)) * backup_interval)
+	axes.set_ylabel('Feature - Output Correlation')
+	axes.set_title("Feature Output Correlation Convergence")
+	plt.savefig(feature_output_convergence_plot, dpi=250)
+
+
+	# We want to store Feature Classification Correlations in the final file as well.
+	final_data['feature-output-correlations'] = {}
+	for idx, network in enumerate(correlation_sets):
+		network_corr = {'final': None, 'backups': {}}
+		for idx_bk, stage in enumerate(network):
+			data = []
+			for parameter in stage['data']:
+				data.append({
+					'parameter'   : parameter['param'],
+					'coefficient' : parameter['pcc']
+				})
+
+			if idx_bk != len(network) - 1:
+				network_corr['backups']["backup-%03i"%bk_idx] = data
+			else:
+				network_corr['final'] = data
+
+		final_data['feature-output-correlations']['network-%03i'%idx] = network_corr
 
 	# Now that we have all of the correlation data that we need,
 	# we invoke the script that creates heatmaps, passing it lists

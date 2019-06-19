@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 import numpy             as np
 import sys
 import json
@@ -224,82 +225,122 @@ if __name__ == '__main__':
 	sorted_by_fm = sorted(properties_for_sorting, key=lambda x: x['figure_of_merit'])
 
 
-	all_r0 = np.unique([p['n_r0'] for p in sorted_by_fm])
-	all_l  = np.unique([p['n_l'] for p in sorted_by_fm])
-	all_s  = np.unique([p['sigma'] for p in sorted_by_fm])
+	
+
+	sorted_by_rmse = sorted(properties_for_sorting, key=lambda x: -x['rmse'])
+
+	def gen_bar(vals):
+		locations = np.unique(vals).tolist()
+		vals      = np.array(vals)
+		counts    = []
+
+		for location in locations:
+			counts.append(len(vals[(vals == location)]))
+
+		return locations, counts
 
 	def show_histograms(dataset, name):
+
 		fig, axes = plt.subplots(2, 3)
 
-		n_r0 = [p['n_r0'] for p in dataset]
-		bins = axes[0, 0].hist(n_r0, bins=len(all_r0), align='left', edgecolor='black', linewidth=0.5)
+		loc, count = gen_bar([p['n_r0'] for p in dataset])
+		axes[0, 0].bar(loc, count, edgecolor='black', linewidth=0.5)
 		axes[0, 0].set_xlabel("# of $r_0$ Values")
 		axes[0, 0].set_ylabel("Quantity")
-		axes[0, 0].set_xticks(bins[1])
-		axes[0, 0].set_xticklabels(all_r0)
+		axes[0, 0].set_xticks(loc)
+		axes[0, 0].set_xticklabels(loc)
 		axes[0, 0].set_title("$r_0$ (%s)"%name)
 
-		n_l  = [p['n_l'] for p in dataset]
-		bins = axes[0, 1].hist(n_l, bins=len(all_l), align='left', edgecolor='black', linewidth=0.5)
+		loc, count = gen_bar([p['n_l'] for p in dataset])
+		axes[0, 1].bar(loc, count, edgecolor='black', linewidth=0.5)
 		axes[0, 1].set_xlabel("# of Legendre Polynomials")
 		axes[0, 1].set_ylabel("Quantity")
-		axes[0, 1].set_xticks(bins[1])
-		axes[0, 1].set_xticklabels(all_l)
+		axes[0, 1].set_xticks(loc)
+		axes[0, 1].set_xticklabels(loc)
 		axes[0, 1].set_title("$P_l$ (%s)"%name)
 
-		mode = [p['mode'] for p in dataset]
-		bins = axes[0, 2].hist(mode, bins=2, align='left', edgecolor='black', linewidth=0.5)
+		loc, count = gen_bar([p['mode'] for p in dataset])
+		axes[0, 2].bar(loc, count, edgecolor='black', linewidth=0.5)
 		axes[0, 2].set_xlabel("Gi Mode")
 		axes[0, 2].set_ylabel("Quantity")
-		axes[0, 2].set_xticks(bins[1])
+		axes[0, 2].set_xticks(loc)
 		axes[0, 2].set_xticklabels(['Normal', 'Log'])
 		axes[0, 2].set_title("Mode (%s)"%name)
 
-		shift = [p['shift'] for p in dataset]
-		bins = axes[1, 0].hist(shift, bins=2, align='left', edgecolor='black', linewidth=0.5)
+		loc, count = gen_bar([p['shift'] for p in dataset])
+		axes[1, 0].bar(loc, count, edgecolor='black', linewidth=0.5, width=0.2)
 		axes[1, 0].set_xlabel("Gi Shift")
 		axes[1, 0].set_ylabel("Quantity")
-		axes[1, 0].set_xticks(bins[1])
-		axes[1, 0].set_xticklabels([0, 0.5])
+		axes[1, 0].set_xticks(loc)
+		axes[1, 0].set_xticklabels(loc)
 		axes[1, 0].set_title("Shift (%s)"%name)
 
-		activation = [p['activation'] for p in dataset]
-		bins = axes[1, 1].hist(activation, bins=2, align='left', edgecolor='black', linewidth=0.5)
+		loc, count = gen_bar([p['activation'] for p in dataset])
+		axes[1, 1].bar(loc, count, edgecolor='black', linewidth=0.5)
 		axes[1, 1].set_xlabel("Activation Function")
 		axes[1, 1].set_ylabel("Quantity")
-		axes[1, 1].set_xticks(bins[1])
+		axes[1, 1].set_xticks(loc)
 		axes[1, 1].set_xticklabels(['Sigmoid', 'Shifted Sigmoid'])
 		axes[1, 1].set_title("Activation Function (%s)"%name)
 
-		sigma = [p['sigma'] for p in dataset]
-		bins = axes[1, 2].hist(sigma, bins=len(all_s), align='left', edgecolor='black', linewidth=0.5)
+		loc, count = gen_bar([p['sigma'] for p in dataset])
+		axes[1, 2].bar(loc, count, edgecolor='black', linewidth=0.5, width=0.12)
 		axes[1, 2].set_xlabel("$\\sigma$")
 		axes[1, 2].set_ylabel("Quantity")
-		axes[1, 2].set_xticks(bins[1])
-		axes[1, 2].set_xticklabels(all_s)
+		axes[1, 2].set_xticks(loc)
+		axes[1, 2].set_xticklabels(loc)
 		axes[1, 2].set_title("Sigma (%s)"%name)
 
 		plt.show()
 
 	
 	top_2_5_percent_n = int(round(0.025 * len(sorted_by_fm)))
-	top_2_5_percent   = sorted_by_fm[-top_2_5_percent_n:]
+	fm_top_2_5_percent   = sorted_by_fm[-top_2_5_percent_n:]
 
 	top_5_percent_n = int(round(0.05 * len(sorted_by_fm)))
-	top_5_percent   = sorted_by_fm[-top_5_percent_n:]
+	fm_top_5_percent   = sorted_by_fm[-top_5_percent_n:]
 
-	top_10_percent_n = int(round(0.1 * len(sorted_by_fm)))
-	top_10_percent   = sorted_by_fm[-top_10_percent_n:]
+	show_histograms(fm_top_5_percent,    "Top 5 Percent by Figure of Merit")
+	
+	top_2_5_percent_n = int(round(0.025 * len(sorted_by_rmse)))
+	top_2_5_percent   = sorted_by_rmse[-top_2_5_percent_n:]
 
-	top_25_percent_n = int(round(0.25 * len(sorted_by_fm)))
-	top_25_percent   = sorted_by_fm[-top_25_percent_n:]
+	top_5_percent_n = int(round(0.05 * len(sorted_by_rmse)))
+	top_5_percent   = sorted_by_rmse[-top_5_percent_n:]
 
-	bottom_10_percent = sorted_by_fm[:top_10_percent_n]
-	bottom_25_percent = sorted_by_fm[:top_25_percent_n]
+	show_histograms(top_5_percent,    "Top 5 Percent by Mean RMSE")
 
-	show_histograms(top_2_5_percent,    "Top 2.5 Percent")
-	show_histograms(top_5_percent,    "Top 5 Percent")
-	show_histograms(top_10_percent,    "Top 10 Percent")
-	# show_histograms(top_25_percent,    "Top 25 Percent")
-	# show_histograms(bottom_25_percent, "Bottom 25 Percent")
-	#show_histograms(bottom_10_percent, "Bottom 10 Percent")
+	# ============================================================
+	# 3D Plots
+	# ============================================================
+
+	# We want to start by plotting sigma vs n_r0 vs figure of merit, with
+	# one separate graph for each set of legendre polynomials used.
+
+	# First we separate the data into sets, one for each unique legendre
+	# polynomial set.
+	all_l    = [p['n_l'] for p in fm_top_5_percent]
+	unique_l = np.unique(all_l).tolist()
+
+	l_sets = []
+	l_vals = []
+	for l in unique_l:
+		this_set = []
+		for point in properties_for_sorting:
+			if point['n_l'] == l:
+				this_set.append(point)
+		l_sets.append(this_set)
+		l_vals.append(l)
+
+	for l, _set in zip(l_vals, l_sets):
+		fig    = plt.figure()
+		ax     = fig.add_subplot(111, projection='3d')
+		r0     = [s['n_r0'] for s in _set]
+		sigma  = [s['sigma'] for s in _set]
+		fm     = [s['figure_of_merit'] for s in _set]
+		ax.scatter(r0, sigma, fm)
+		ax.set_xlabel('# of $r_0$ values')
+		ax.set_ylabel('sigma')
+		ax.set_zlabel('Figure of Merit')
+		ax.set_title('# $r_0$ vs sigma vs Figure of Merit (# of Legendre Poly. = %i)'%(l))
+		plt.show()

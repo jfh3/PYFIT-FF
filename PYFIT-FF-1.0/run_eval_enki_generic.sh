@@ -6,12 +6,10 @@ current_path=${PWD}
 
 cat > slurm.sh <<!
 #!/bin/sh
-#SBATCH --gres=gpu:1
+#SBATCH --gres=gpu:2
 #SBATCH -c $1
 #SBATCH --partition=gpu
-#SBATCH --time=1:30:00
-#SBATCH --mail-type=END,FAIL
-#SBATCH --mail-user=adam.robinson@nist.gov    
+#SBATCH --time=2:30:00  
 #SBATCH -D $current_path
 
 cd $current_path
