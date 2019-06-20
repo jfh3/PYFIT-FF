@@ -30,12 +30,10 @@
     "activation_function": 1,
     "network_layers": [
       16,
-      16,
       1
     ]
   },
   "poscar_data_file": "input/AB/AB-POSCAR-E-full-NO-B00-B01-B02.dat",
-  "lsparam_file" : "input/lsparam-generated.dat",
   "comment2": "This file will be used as the Config.py for the duration of the program.",
   "default_config": "parameter-eval-config-default.py",
   "feature_feature_correlation": {
@@ -52,11 +50,11 @@
     "comment": "This section contains information about how to perform feature-output correlation calculations and what information to store when done.",
     "train_sequential": true,
     "number_of_networks": 5,
-    "verify_last_n_convergence"           : 2,
-    "std_threshold"                       : 0.05,
-    "cross_network_convergence_threshold" : 0.05,
-    "number_of_iterations": 20,
-    "number_of_backups": 5,
+    "verify_last_n_convergence"           : 4,
+    "std_threshold"                       : 0.02,
+    "cross_network_convergence_threshold" : 0.02,
+    "number_of_iterations": 100,
+    "number_of_backups": 10,
     "learning_rate": 0.05,
     "scatterplot_ratio": 1.0,
     "export_scatter": true,

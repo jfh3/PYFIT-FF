@@ -32,6 +32,7 @@ if __name__ == '__main__':
 						process = psutil.Process(pid)
 						mem     = process.memory_info().data / 1024 / 1024
 						if mem >= config['max-memory']:
+							print(mem)
 							print("Killing Process %i . . . "%(pid))
 							process.kill()
 							print("Done . . . ")

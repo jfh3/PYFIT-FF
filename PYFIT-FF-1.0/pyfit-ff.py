@@ -776,7 +776,7 @@ def TrainNetwork(force_cpu, randomize_nn, gpu_affinity=0):
 		f.write('\n')
 		f.close()
 
-	def partial_randomize(network):
+	def partial_randomize(network, complete_reset=False):
 		# Here we copy the network to the CPU,
 		# have it modify itself based on the 
 		# parameter given by the user and then
@@ -784,7 +784,10 @@ def TrainNetwork(force_cpu, randomize_nn, gpu_affinity=0):
 		# are training on.
 		with torch.no_grad():
 			net_cpu = network.cpu()
-			net_cpu.randomize_self(PLATEAU_ANNEALING_RAND_STD)
+			if complete_reset:
+				net_cpu.randomize_self(std, True)
+			else:
+				net_cpu.randomize_self(PLATEAU_ANNEALING_RAND_STD)
 			torch_net = net_cpu.to(device)
 
 		global LEARNING_RATE
@@ -858,12 +861,22 @@ def TrainNetwork(force_cpu, randomize_nn, gpu_affinity=0):
 	
 	bar = ProgressBar("Training", 30, MAXIMUM_TRAINING_ITERATIONS + 1, update_every = PROGRESS_INTERVAL)
 
+	n_complete_re_randomizations = 0
+
 	while current_iteration < MAXIMUM_TRAINING_ITERATIONS:
 		try:
 			# Most of this code actually just handles stopping conditions and
 			# error logging.
 
 			loss_values[current_iteration] = last_loss
+
+			if loss_values[current_iteration] > 10.0:
+				if n_complete_re_randomizations > 5:
+					print("NETWORK IS UNSTABLE")
+					log("Network error went to infinity too many times, giving up.")
+				else:
+					n_complete_re_randomizations += 1
+					torch_net, optimizer = partial_randomize(torch_net, complete_reset=True)
 
 			bar.update(current_iteration + 1)
 

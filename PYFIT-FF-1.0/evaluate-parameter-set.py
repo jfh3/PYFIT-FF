@@ -638,6 +638,11 @@ if __name__ == '__main__':
 	ff_correlations  = ff_correlation_data
 	all_coefficients = np.array([c["pcc"] for c in ff_correlations["coefficients"]])
 
+	for c in all_coefficients:
+		if c >= 1.0:
+			print("PCC invalid")
+			exit()
+
 	mean_ff_correlation = np.abs(all_coefficients).mean()
 
 
@@ -683,7 +688,7 @@ if __name__ == '__main__':
 		"max_rmse"            : max_rmse
 	}
 
-	master_results['all_params_converged'] = all_params_converged
+	master_results['all_params_converged'] = network_converged_indicators
 	master_results['all_params_converged_between_networks'] = params_converged_between_networks
 
 	f = open(wrk_dir + 'master_results.json', 'w')
@@ -692,7 +697,7 @@ if __name__ == '__main__':
 
 
 	final_data['between_network_convergences'] = between_network_convergences
-	final_data['parameter_convergences'] = parameter_convergences
+	final_data['parameter_convergences'] = in_network_convergence_data
 	f = open(wrk_dir + 'final_data.json', 'w')
 	f.write(json.dumps(final_data))
 	f.close()

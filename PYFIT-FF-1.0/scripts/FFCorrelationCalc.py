@@ -137,6 +137,7 @@ def FFCorrelationCalc(training_set_file, log_file):
 		numerator   = (left_diff * right_diff).mean()
 		denominator = std_vals[l] * std_vals[r]
 
+
 		# We want export the data points that were used for this
 		# process so that the next script can generate scatterplots.
 

@@ -62,7 +62,7 @@ class TorchNet(nn.Module):
 		print("Offset: %s"%str(self.offset.device))
 
 
-	def randomize_self(self, relative_standard_deviation):
+	def randomize_self(self, relative_standard_deviation, complete_reset = False):
 		# For each parameter in self.params, we need to add a
 		# normal distributed random number with a standard deviation
 		# equal to PLATEAU_ANNEALING_RAND_STD times its absolute value.
@@ -74,7 +74,10 @@ class TorchNet(nn.Module):
 					for weight_idx in range(len(param.data[node_idx])):
 
 						value = np.abs(relative_standard_deviation*param.data[node_idx][weight_idx])
-						param.data[node_idx][weight_idx] += np.random.normal(0.0, value)
+						if complete_reset:
+							param.data[node_idx][weight_idx] = np.random.uniform(-0.5, 0.5)
+						else:
+							param.data[node_idx][weight_idx] += np.random.normal(0.0, value)
 
 			elif len(param.data.shape) == 1:
 				# This is a one dimensional parameter and therefore
@@ -82,7 +85,11 @@ class TorchNet(nn.Module):
 				for node_idx in range(len(param.data)):
 
 					value = np.abs(relative_standard_deviation*param.data[node_idx])
-					param.data[node_idx] += np.random.normal(0.0, value)
+					if complete_reset:
+						param.data[node_idx] = np.random.uniform(-0.5, 0.5)
+					else:
+						param.data[node_idx] += np.random.normal(0.0, value)
+					
 
 	def set_reduction_matrix(self, mat):
 		self.reduction_matrix = mat
