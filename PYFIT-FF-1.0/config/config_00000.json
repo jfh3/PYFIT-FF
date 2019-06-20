@@ -34,7 +34,8 @@
       1
     ]
   },
-  "poscar_data_file": "input/Feature_Selection/SET-ADAM-ALL-CLUSTERS-06-14-19-POSCAR-E-full.dat",
+  "poscar_data_file": "input/AB/AB-POSCAR-E-full-NO-B00-B01-B02.dat",
+  "lsparam_file" : "input/lsparam-generated.dat",
   "comment2": "This file will be used as the Config.py for the duration of the program.",
   "default_config": "parameter-eval-config-default.py",
   "feature_feature_correlation": {
@@ -45,17 +46,19 @@
     "matrix_resolution": "2048x2048",
     "export_scatter": false,
     "comment3": "If this is true, the correlation matrix will display only the absolute value of the correlation coefficients.",
-    "matrix_abs": true
+    "matrix_abs": false
   },
   "feature_output_correlation": {
     "comment": "This section contains information about how to perform feature-output correlation calculations and what information to store when done.",
     "number_of_networks": 1,
+    "verify_last_n_convergence" : 20,
+    "std_threshold"             : 0.05,
     "number_of_iterations": 100,
-    "number_of_backups": 50,
+    "number_of_backups": 25,
     "learning_rate": 0.05,
     "scatterplot_ratio": 1.0,
-    "export_scatter": false,
+    "export_scatter": true,
     "feature_metric": "pearson",
-    "matrix_abs": true
+    "matrix_abs": false
   }
 }

@@ -13,8 +13,8 @@ warnings.filterwarnings("ignore")
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
-def GenCFScatterPlots(results, output_dir):
-	for correlation in results["data"]:
+def GenCFScatterPlots(all_params, results, output_values, output_dir):
+	for idx, correlation in enumerate(results["data"]):
 
 		fig, ax = plt.subplots()
 
@@ -28,8 +28,8 @@ def GenCFScatterPlots(results, output_dir):
 
 		title = '$G_{%i}$ vs. $E$ ($\\rho_{X, Y} = \\;$%1.2f)'%(correlation["param"]["idx"], correlation["pcc"])
 
-		x_points = correlation["inputs"]
-		y_points = correlation["outputs"]
+		x_points = all_params[idx]
+		y_points = output_values
 
 		ax.scatter(x_points, y_points, s=0.1, alpha=0.25)
 		plt.title(title)

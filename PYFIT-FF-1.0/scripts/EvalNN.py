@@ -18,7 +18,7 @@ def GetTrainingSetInstance(file):
 	Util.cleanup()
 	return f
 
-def RunNetwork(nn_file, training_set):
+def RunNetwork(nn_file, training_set, all_params):
 	Util.init('garbage.txt')
 	# The primary steps for loading are as follows:
 	#     1) Load the neural network weights and biases.
@@ -26,67 +26,24 @@ def RunNetwork(nn_file, training_set):
 	#        DFT energies for each structure.
 
 	neural_network_data = NeuralNetwork(nn_file) 
-
-	# Randomly select a set of structure IDs to use as the training set
-	# and use the rest as a validation set.
-	all_indices          = np.array(range(training_set.n_structures))
-	all_indices          = list(all_indices)
-	training_indices     = list(all_indices)
-	n_training_indices   = len(training_indices)
-	
-
-	# We need to know how many atoms are part of the training set and 
-	# how many are part of the validation set.
-	n_train_atoms = 0
-	for index in training_indices:
-		n_train_atoms += len(training_set.training_structures[index])
-
-	# The following code assumes that the values in the LSParam file are
-	# ordered sequentially, first by structure, then by atom.
-
-	
-
-	# This reduction matrix will be multiplied by the output column vector
-	# to reduce the energy of each atom to the energy of each structure.
-	energies         = []
-	structure_params = []
-
-	struct_idx        = 0
-	current_struct_id = -1
-
-
-	for struct_id in training_indices:
-
-		current_structure = training_set.training_structures[struct_id]
-
-		energies.append(current_structure[0].structure_energy)
-
-
-		for atom in current_structure:
-			structure_params.append(atom.structure_params)
-
-	# Now we should have all of the training data ready, just not in PyTorch tensor format
-	# quite yet.
-
-	t_energies         = torch.tensor(np.transpose([energies])).type(torch.FloatTensor)
-	t_structure_params = torch.tensor(structure_params).type(torch.FloatTensor)
+	t_structure_params  = torch.tensor(np.transpose(all_params), requires_grad=False).type(torch.FloatTensor)
+	#t_structure_params = torch.tensor(structure_params).type(torch.FloatTensor)
 
 	# During this phase of startup, we create the actual
 	# PyTorch neural network objects as well as the optimizer
 	# and any closure functions necessary for it.
+	with torch.no_grad():
+		torch_net = TorchNet(neural_network_data, reduction_matrix=None, only_eval=True)
 
-	torch_net = TorchNet(neural_network_data, reduction_matrix=None, only_eval=True)
+		# Used to track the loss as a function of the iteration,
+		# which will be dumped to a log at the end.
+		
 
-	# Used to track the loss as a function of the iteration,
-	# which will be dumped to a log at the end.
-	
+		# Now that the network and its inputs are setup, we produce a json file
+		# with the inputs, and the outputs for that set of inputs.
+		results = {}
 
-	# Now that the network and its inputs are setup, we produce a json file
-	# with the inputs, and the outputs for that set of inputs.
-	results = {}
-
-	results["input"]  = structure_params
-	results["output"] = [i[0] for i in torch_net(t_structure_params).tolist()]
+		results["output"] = np.transpose(torch_net(t_structure_params).numpy())[0].tolist()
 
 	Util.cleanup()
 

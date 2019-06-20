@@ -316,7 +316,9 @@ if __name__ == '__main__':
 	if not os.path.isdir(ff_correlation_dir):
 		os.mkdir(ff_correlation_dir)
 
-	ff_correlation_data = FFCorrelationCalc(lsparam_path, general_log)
+	print("START FFCorrelationCalc")
+	ff_correlation_data, all_params = FFCorrelationCalc(lsparam_path, general_log)
+	print("END   FFCorrelationCalc")
 
 	# We want to take param0, param1 and pcc from this structure and save it for a final
 	# output data file.
@@ -345,8 +347,8 @@ if __name__ == '__main__':
 		os.mkdir(scatter_plots_path)
 
 	# TODO: Put this in a separate process.
-	if config["feature_feature_correlation"]["export_scatter"]:
-		GenFFScatterPlots(ff_correlation_data, scatter_plots_path, ratio)
+	# if config["feature_feature_correlation"]["export_scatter"]:
+	# 	GenFFScatterPlots(ff_correlation_data, scatter_plots_path, ratio)
 
 
 	# Now we need to generate a number of neural network randomizations
@@ -359,7 +361,7 @@ if __name__ == '__main__':
 	n_backups    = config["feature_output_correlation"]["number_of_backups"]
 	learn_rate   = config["feature_output_correlation"]["learning_rate"]
 
-	backup_interval = int(np.floor(n_iterations / n_backups))
+	backup_interval = int(np.round(n_iterations / n_backups))
 
 	training_output_dir     = wrk_dir + 'trained-networks/'
 
@@ -402,6 +404,7 @@ if __name__ == '__main__':
 
 
 		subroutines_dirs.append(this_dir + 'subroutines/')
+		print("START Training")
 		# Run the program.
 		p = run_pyfit_with_config(
 			this_config,
@@ -414,6 +417,7 @@ if __name__ == '__main__':
 		to_wait.append(p)
 
 	wait_for_processes(to_wait)
+	print("END  Training")
 	# Now that the training is complete, we need to determine the
 	# feature-output correlations and create heatmaps and scatterplots.
 
@@ -421,9 +425,12 @@ if __name__ == '__main__':
 	# After that, we should generate more heatmaps using each of the backups.
 	# Before we generate any heatmaps, we need to evaluate the neural networks.
 
+	print("START load training set")
 	training_set     = GetTrainingSetInstance(lsparam_path)
+	print("END load training set")
 	correlation_sets = [] 
 
+	first_nn_results = None
 	for initial_condition in range(n_networks):
 		network_correlations = []
 
@@ -432,8 +439,11 @@ if __name__ == '__main__':
 		nn_path   = os.path.abspath(this_dir + 'saved_nn.dat')
 		eval_file = os.path.abspath(this_dir + 'nn_evaluated.json')
 
-		eval_data        = RunNetwork(nn_path, training_set)
-		correlation_data_main = CFCorrelationCalc(eval_data, nn_path)
+		eval_data             = RunNetwork(nn_path, training_set, all_params)
+		correlation_data_main = CFCorrelationCalc(all_params, eval_data, nn_path)
+
+		if initial_condition == 0:
+			first_nn_results = eval_data
 		
 
 		# Now we also produce an evaluation for each backup.
@@ -441,8 +451,8 @@ if __name__ == '__main__':
 			current_backup = os.path.abspath(bk_dir + 'nn_bk_%i.dat'%bk_idx)
 			eval_file      = os.path.abspath(this_dir + 'nn_evaluated_bk_%i.json'%bk_idx)
 			
-			eval_data        = RunNetwork(current_backup, training_set)
-			correlation_data = CFCorrelationCalc(eval_data, current_backup)
+			eval_data        = RunNetwork(current_backup, training_set, all_params)
+			correlation_data = CFCorrelationCalc(all_params, eval_data, current_backup)
 			network_correlations.append(correlation_data)
 
 		network_correlations.append(correlation_data_main)
@@ -453,7 +463,12 @@ if __name__ == '__main__':
 	feature_output_convergence_plot = training_output_dir + 'feature-output-convergence.png'
 	tmp_correlation = correlation_sets[0]
 
+
+
 	n_params   = len(tmp_correlation[0]['data'])
+	print("%i parameters"%n_params)
+	print("%i = n_backups"%n_backups)
+	print("%i backups"%len(tmp_correlation))
 	param_sets = []
 	for param in range(n_params):
 		param_data = []
@@ -463,14 +478,32 @@ if __name__ == '__main__':
 
 	fig, axes = plt.subplots(1, 1)
 	for set_ in param_sets:
-		axes.plot(range(len(tmp_correlation)), set_)
+		axes.scatter(range(len(tmp_correlation)), set_, s=2)
+
+	x_ticks = range(len(tmp_correlation))[::4]
 
 	axes.set_xlabel('Training Iteration')
-	axes.set_xticklabels(np.array(range(n_backups)) * backup_interval)
+	axes.set_xticks(x_ticks)
+	axes.set_xticklabels(np.array(x_ticks) * backup_interval)
 	axes.set_ylabel('Feature - Output Correlation')
 	axes.set_title("Feature Output Correlation Convergence")
 	plt.savefig(feature_output_convergence_plot, dpi=250)
 
+	# Here we verify the convergence of the feature-output correlations.
+	last_n_to_verify = config['feature_output_correlation']['verify_last_n_convergence']
+	std_threshold    = config['feature_output_correlation']['std_threshold']
+
+	parameter_convergences   = []
+	all_params_converged     = True
+
+	# Get the last last_n_to_verify elements of each set of coefficients.
+	end_coefficient_sets = [a[-last_n_to_verify:] for a in param_sets]
+	standard_deviations  = [np.array(a).std() for a in end_coefficient_sets]
+
+	for idx, std in enumerate(standard_deviations):
+		parameter_convergences.append({'idx': idx, 'std': std})
+		if std > std_threshold:
+			all_params_converged = False
 
 	# We want to store Feature Classification Correlations in the final file as well.
 	final_data['feature-output-correlations'] = {}
@@ -485,7 +518,7 @@ if __name__ == '__main__':
 				})
 
 			if idx_bk != len(network) - 1:
-				network_corr['backups']["backup-%03i"%bk_idx] = data
+				network_corr['backups']["backup-%03i"%idx_bk] = data
 			else:
 				network_corr['final'] = data
 
@@ -511,12 +544,12 @@ if __name__ == '__main__':
 		if not os.path.isdir(png_path):
 			os.mkdir(png_path)
 
-		if idx == 0:
+		if idx == n_backups:
 			png_path += 'correlation-final.png'
 		else:
 			png_path += 'correlation-%02i.png'%idx
 
-		GenCFHeatmap(correlation_sets[idx::n_backups + 1], abs_display, png_path)
+		GenCFHeatmap([c[idx] for c in correlation_sets], abs_display, png_path)
 
 
 
@@ -531,8 +564,8 @@ if __name__ == '__main__':
 	# of scatterplots for all combinations of parameters and energies.
 	# We will only do this for the first initial condition.
 	if config["feature_output_correlation"]["export_scatter"]:
-		final_network_correlations = correlation_sets[0]
-		GenCFScatterPlots(final_network_correlations, scatter_plots_path)
+		final_network_correlations = correlation_sets[0][-1]
+		GenCFScatterPlots(all_params, final_network_correlations, first_nn_results["output"], scatter_plots_path)
 
 
 
@@ -571,7 +604,7 @@ if __name__ == '__main__':
 	all_coefficients = []
 
 	for initial_condition in range(n_networks):
-		correlation_data = correlation_sets[0::n_backups + 1][initial_condition]
+		correlation_data = correlation_sets[initial_condition][-1]
 		error_file       = training_output_dir + 'IC-%02i/loss_log.txt'%initial_condition
 
 		f   = open(error_file, 'r')
@@ -609,8 +642,16 @@ if __name__ == '__main__':
 		"max_rmse"            : max_rmse
 	}
 
+	master_results['all_params_converged'] = all_params_converged
+
 	f = open(wrk_dir + 'master_results.json', 'w')
 	f.write(json.dumps(master_results))
+	f.close()
+
+
+	final_data['parameter_convergences'] = parameter_convergences
+	f = open(wrk_dir + 'final_data.json', 'w')
+	f.write(json.dumps(final_data))
 	f.close()
 
 	run("rm %s"%(lsparam_path))

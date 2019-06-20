@@ -140,8 +140,6 @@ def FFCorrelationCalc(training_set_file, log_file):
 		# We want export the data points that were used for this
 		# process so that the next script can generate scatterplots.
 
-		current_result["data"] = [[first, second] for first, second in zip(all_params[l], all_params[r])]
-
 		current_result['pcc'] = numerator / denominator
 		results["coefficients"].append(current_result)
 
@@ -152,7 +150,7 @@ def FFCorrelationCalc(training_set_file, log_file):
 
 	Util.cleanup()
 
-	return results
+	return results, all_params
 
 if __name__ == '__main__':
 	# This takes three parameters:
@@ -168,7 +166,7 @@ if __name__ == '__main__':
 	results_file      = sys.argv[2]
 	log_file          = sys.argv[3]
 
-	results = FFCorrelationCalc(training_set_file, log_file)
+	results,  = FFCorrelationCalc(training_set_file, log_file)
 
 	f = open(results_file, 'w')
 	f.write(json.dumps(results))

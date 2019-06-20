@@ -18,7 +18,7 @@ import Util
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
-def CFCorrelationCalc(eval_data, nn_config_file):
+def CFCorrelationCalc(input_data, eval_data, nn_config_file):
 	Util.init("garbage.txt")
 	Util.set_mode(unsupervised=True)
 
@@ -34,7 +34,7 @@ def CFCorrelationCalc(eval_data, nn_config_file):
 	energy_std   = energy.std()
 	energy_diffs = energy - energy_mean
 
-	for param in range(len(eval_data['input'][0])):
+	for param in range(nn_config.n_r0 * nn_config.n_legendre_polynomials):
 		# This is added into results["coefficients"] at the end.
 		current_result = {
 			'param' : {
@@ -44,7 +44,7 @@ def CFCorrelationCalc(eval_data, nn_config_file):
 			}
 		}
 
-		inputs     = np.array([i[param] for i in eval_data['input']])
+		inputs     = input_data[param]
 		input_mean = inputs.mean()
 		
 		diff        = inputs - input_mean
@@ -54,9 +54,6 @@ def CFCorrelationCalc(eval_data, nn_config_file):
 		# We want export the data points that were used for this
 		# process so that the next script can generate scatterplots.
 
-		current_result["inputs"]  = inputs.tolist()
-		current_result["outputs"] = energy.tolist()
-
 		current_result['pcc'] = numerator / denominator
 		results["data"].append(current_result)
 
@@ -64,33 +61,33 @@ def CFCorrelationCalc(eval_data, nn_config_file):
 
 	return results
 
-if __name__ == '__main__':
-	# This takes three parameters:
-	#     1) The neural network evaluation data file.
-	#     2) The neural network file to get parameters from.
-	#     3) The file to write results to.
+# if __name__ == '__main__':
+# 	# This takes three parameters:
+# 	#     1) The neural network evaluation data file.
+# 	#     2) The neural network file to get parameters from.
+# 	#     3) The file to write results to.
 
-	if len(sys.argv) != 4:
-		eprint("This program takes 3 arguments.")
-		sys.exit(1)
-
-	
-	nn_eval_file   = sys.argv[1]
-	nn_config_file = sys.argv[2]
-	output_file    = sys.argv[3]
+# 	if len(sys.argv) != 4:
+# 		eprint("This program takes 3 arguments.")
+# 		sys.exit(1)
 
 	
-
-	f = open(nn_eval_file, 'r')
-	eval_data = json.loads(f.read())
-	f.close()
-
-	# Load whichever training set is specified above.
-
-	results = CFCorrelationCalc(eval_data, nn_config_file)
+# 	nn_eval_file   = sys.argv[1]
+# 	nn_config_file = sys.argv[2]
+# 	output_file    = sys.argv[3]
 
 	
 
-	f = open(output_file, 'w')
-	f.write(json.dumps(results))
-	f.close()
+# 	f = open(nn_eval_file, 'r')
+# 	eval_data = json.loads(f.read())
+# 	f.close()
+
+# 	# Load whichever training set is specified above.
+
+# 	results = CFCorrelationCalc(eval_data, nn_config_file)
+
+	
+
+# 	f = open(output_file, 'w')
+# 	f.write(json.dumps(results))
+# 	f.close()
