@@ -700,7 +700,6 @@ def TrainNetwork(force_cpu, randomize_nn, gpu_affinity=0):
 	if OBJECTIVE_FUNCTION == 'group-targets':
 		if UNWEIGHTED_NEGATIVE_ERROR:
 			def get_loss():
-				print("UNWEIGHTED_NEGATIVE_ERROR")
 				global last_loss
 				
 				calculated_values = torch_net(structure_params)
@@ -718,7 +717,6 @@ def TrainNetwork(force_cpu, randomize_nn, gpu_affinity=0):
 				return loss
 		else:
 			def get_loss():
-				print("group-targets")
 				global last_loss
 				
 				calculated_values = torch_net(structure_params)
@@ -735,7 +733,6 @@ def TrainNetwork(force_cpu, randomize_nn, gpu_affinity=0):
 				return loss
 	else:
 		def get_loss():
-			print('regular')
 			global last_loss
 
 

@@ -34,8 +34,10 @@
 
 	"feature_output_correlation" : {
 		"comment" : "This section contains information about how to perform feature-output correlation calculations and what information to store when done.",
-		"verify_last_n_convergence" : 20,
-		"std_threshold"             : 0.05,
+		"verify_last_n_convergence"           : 20,
+		"std_threshold"                       : 0.05,
+		"cross_network_convergence_threshold" : 0.05,
+		"train_sequential"     : false,
 		"number_of_networks"   : 1,
 		"number_of_iterations" : 500,
 		"number_of_backups"    : 50,

@@ -405,18 +405,28 @@ if __name__ == '__main__':
 
 		subroutines_dirs.append(this_dir + 'subroutines/')
 		print("START Training")
-		# Run the program.
-		p = run_pyfit_with_config(
-			this_config,
-			'-t -u -r --gpu-affinity %i'%gpu_idx,
-			this_dir,
-			config_file_path=config["default_config"],
-			async=True
-		)
-		gpu_idx += 1
-		to_wait.append(p)
+		if config['feature_output_correlation']['train_sequential']:
+			run_pyfit_with_config(
+				this_config,
+				'-t -u -r',
+				this_dir,
+				config_file_path=config["default_config"],
+				async=False
+			)
+		else:
+			# Run the program.
+			p = run_pyfit_with_config(
+				this_config,
+				'-t -u -r --gpu-affinity %i'%gpu_idx,
+				this_dir,
+				config_file_path=config["default_config"],
+				async=True
+			)
+			gpu_idx += 1
+			to_wait.append(p)
 
-	wait_for_processes(to_wait)
+	if not config['feature_output_correlation']['train_sequential']:
+		wait_for_processes(to_wait)
 	print("END  Training")
 	# Now that the training is complete, we need to determine the
 	# feature-output correlations and create heatmaps and scatterplots.
@@ -461,49 +471,79 @@ if __name__ == '__main__':
 
 
 	feature_output_convergence_plot = training_output_dir + 'feature-output-convergence.png'
-	tmp_correlation = correlation_sets[0]
+	
+	in_network_convergence_data  = []
+	network_converged_indicators = []
 
+	for tmp_correlation in correlation_sets:
+		n_params   = len(tmp_correlation[0]['data'])
+		param_sets = []
+		for param in range(n_params):
+			param_data = []
+			for step in tmp_correlation:
+				param_data.append(step['data'][param]['pcc'])
+			param_sets.append(param_data)
 
+		fig, axes = plt.subplots(1, 1)
+		for set_ in param_sets:
+			axes.plot(range(len(tmp_correlation)), set_)
 
-	n_params   = len(tmp_correlation[0]['data'])
-	print("%i parameters"%n_params)
-	print("%i = n_backups"%n_backups)
-	print("%i backups"%len(tmp_correlation))
-	param_sets = []
-	for param in range(n_params):
-		param_data = []
-		for step in tmp_correlation:
-			param_data.append(step['data'][param]['pcc'])
-		param_sets.append(param_data)
+		x_ticks = range(len(tmp_correlation))[::4]
 
-	fig, axes = plt.subplots(1, 1)
-	for set_ in param_sets:
-		axes.scatter(range(len(tmp_correlation)), set_, s=2)
+		axes.set_xlabel('Training Iteration')
+		axes.set_xticks(x_ticks)
+		axes.set_xticklabels(np.array(x_ticks) * backup_interval)
+		axes.set_ylabel('Feature - Output Correlation')
+		axes.set_title("Feature Output Correlation Convergence")
+		plt.savefig(feature_output_convergence_plot, dpi=250)
 
-	x_ticks = range(len(tmp_correlation))[::4]
+		# Here we verify the convergence of the feature-output correlations.
+		last_n_to_verify = config['feature_output_correlation']['verify_last_n_convergence']
+		std_threshold    = config['feature_output_correlation']['std_threshold']
 
-	axes.set_xlabel('Training Iteration')
-	axes.set_xticks(x_ticks)
-	axes.set_xticklabels(np.array(x_ticks) * backup_interval)
-	axes.set_ylabel('Feature - Output Correlation')
-	axes.set_title("Feature Output Correlation Convergence")
-	plt.savefig(feature_output_convergence_plot, dpi=250)
+		parameter_convergences   = []
+		all_params_converged     = True
 
-	# Here we verify the convergence of the feature-output correlations.
-	last_n_to_verify = config['feature_output_correlation']['verify_last_n_convergence']
-	std_threshold    = config['feature_output_correlation']['std_threshold']
+		# Get the last last_n_to_verify elements of each set of coefficients.
+		end_coefficient_sets = [a[-last_n_to_verify:] for a in param_sets]
+		standard_deviations  = [np.array(a).std() for a in end_coefficient_sets]
 
-	parameter_convergences   = []
-	all_params_converged     = True
+		for idx, std in enumerate(standard_deviations):
+			parameter_convergences.append({'idx': idx, 'std': std})
+			if std > std_threshold:
+				all_params_converged = False
 
-	# Get the last last_n_to_verify elements of each set of coefficients.
-	end_coefficient_sets = [a[-last_n_to_verify:] for a in param_sets]
-	standard_deviations  = [np.array(a).std() for a in end_coefficient_sets]
+		in_network_convergence_data.append(parameter_convergences)
+		network_converged_indicators.append(all_params_converged)
 
-	for idx, std in enumerate(standard_deviations):
-		parameter_convergences.append({'idx': idx, 'std': std})
-		if std > std_threshold:
-			all_params_converged = False
+	# Now that we have verified that the network converged, we need to make
+	# sure that the final value of the correlation is consistent between all
+	# networks.
+	convergence_threshold                = config['feature_output_correlation']['cross_network_convergence_threshold']
+	final_coefficient_values_per_network = []
+	for tmp_correlation in correlation_sets:
+
+		n_params   = len(tmp_correlation[0]['data'])
+		param_sets = []
+		for param in range(n_params):
+			param_data = []
+			for step in tmp_correlation:
+				param_data.append(step['data'][param]['pcc'])
+			param_sets.append(param_data)
+
+		# Get the last last_n_to_verify elements of each set of coefficients.
+		final_coefficient_values = [a[-1] for a in param_sets]
+		final_coefficient_values_per_network.append(final_coefficient_values)
+		
+	between_network_convergences      = []
+	params_converged_between_networks = True
+	for idx in range(len(final_coefficient_values_per_network[0])):
+		this_param_values = [a[idx] for a in final_coefficient_values_per_network]
+		std = np.array(this_param_values).std()
+		between_network_convergences.append({'idx': idx, 'std': std})
+		if std > convergence_threshold:
+			params_converged_between_networks = False
+
 
 	# We want to store Feature Classification Correlations in the final file as well.
 	final_data['feature-output-correlations'] = {}
@@ -546,10 +586,11 @@ if __name__ == '__main__':
 
 		if idx == n_backups:
 			png_path += 'correlation-final.png'
+			GenCFHeatmap([c[idx] for c in correlation_sets], abs_display, png_path)
 		else:
 			png_path += 'correlation-%02i.png'%idx
 
-		GenCFHeatmap([c[idx] for c in correlation_sets], abs_display, png_path)
+		
 
 
 
@@ -643,12 +684,14 @@ if __name__ == '__main__':
 	}
 
 	master_results['all_params_converged'] = all_params_converged
+	master_results['all_params_converged_between_networks'] = params_converged_between_networks
 
 	f = open(wrk_dir + 'master_results.json', 'w')
 	f.write(json.dumps(master_results))
 	f.close()
 
 
+	final_data['between_network_convergences'] = between_network_convergences
 	final_data['parameter_convergences'] = parameter_convergences
 	f = open(wrk_dir + 'final_data.json', 'w')
 	f.write(json.dumps(final_data))

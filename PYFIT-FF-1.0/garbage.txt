@@ -1,5 +1,5 @@
 Loading Neural Network
-	Path = /home/arobinson/research/PYFIT-FF/PYFIT-FF-1.0/_wrk/trained-networks/IC-00/nn_backup/nn_bk_24.dat
+	Path = /home/arobinson/research/PYFIT-FF/PYFIT-FF-1.0/_wrk/trained-networks/IC-04/nn_backup/nn_bk_4.dat
 	File Configuration: 
 		Gi Mode             = Shifted
 		Gi Shift            = 0.500000
