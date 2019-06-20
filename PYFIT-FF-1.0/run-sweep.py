@@ -112,7 +112,10 @@ if __name__ == '__main__':
 		[16, 16, 16, 1],
 		[32, 32, 1],
 		[32, 1],
-		[32, 32, 32, 1]
+		[32, 32, 32, 1],
+		[8, 8, 1],
+		[8, 1],
+		[8, 8, 8, 1]
 	]
 
 	f = open('parameter-set-configuration.json', 'r')
@@ -128,7 +131,7 @@ if __name__ == '__main__':
 			for sigma in sigma_sets:
 				for r0 in r0_sets:
 					for mode in mode_sets:
-						dir_name = '/home/ajr6/2019-06-18/feature-set-03/idx_%i'%(
+						dir_name = '/home/ajr6/2019-06-20/network-arch-sweep/idx_%i'%(
 							idx
 						)
 						idx += 1

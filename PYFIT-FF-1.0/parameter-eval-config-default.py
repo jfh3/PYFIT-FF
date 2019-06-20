@@ -7,7 +7,7 @@ VALIDATION_LOG_PATH                = 'validation_loss_log.txt'
 E_VS_V_FILE                        = 'E_vs_V.txt'
 OPTIMIZATION_ALGORITHM             = 'LBFGS'
 MAX_LBFGS_ITERATIONS               = 10
-E_VS_V_INTERVAL                    = 10
+E_VS_V_INTERVAL                    = 1000000
 
 
 NEURAL_NETWORK_FILE      = ''
@@ -25,10 +25,10 @@ NETWORK_BACKUP_INTERVAL = 1000000
 NETWORK_BACKUP_DIR      = 'nn_backup/'
 KEEP_BACKUP_HISTORY     = True
 
-VALIDATION_INTERVAL         = 25
+VALIDATION_INTERVAL         = 1000
 GROUP_WISE_VALIDATION_SPLIT = True
 PROGRESS_INTERVAL           = 1
-TRAIN_TO_TOTAL_RATIO        = 0.9
+TRAIN_TO_TOTAL_RATIO        = 0.99
 LEARNING_RATE               = 0.05
 MAXIMUM_TRAINING_ITERATIONS = 500
 

@@ -785,7 +785,7 @@ def TrainNetwork(force_cpu, randomize_nn, gpu_affinity=0):
 		with torch.no_grad():
 			net_cpu = network.cpu()
 			if complete_reset:
-				net_cpu.randomize_self(std, True)
+				net_cpu.randomize_self(PLATEAU_ANNEALING_RAND_STD, True)
 			else:
 				net_cpu.randomize_self(PLATEAU_ANNEALING_RAND_STD)
 			torch_net = net_cpu.to(device)
@@ -875,6 +875,7 @@ def TrainNetwork(force_cpu, randomize_nn, gpu_affinity=0):
 					print("NETWORK IS UNSTABLE")
 					log("Network error went to infinity too many times, giving up.")
 				else:
+					log("Error exploded, randomizing")
 					n_complete_re_randomizations += 1
 					torch_net, optimizer = partial_randomize(torch_net, complete_reset=True)
 
