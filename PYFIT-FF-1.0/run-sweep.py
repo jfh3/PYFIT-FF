@@ -81,24 +81,38 @@ if __name__ == '__main__':
 
 	# r0_sets.append([2.33, 3.66])
 
-	r0_sets = [
-		[1.8, 2.088, 2.377, 2.666, 2.955, 3.244, 3.5333, 3.822, 4.111, 4.4],
-		[1.8, 2.088, 2.377, 2.666, 2.955, 3.244, 3.5333, 3.822, 4.111],
-		[2.088, 2.377, 2.666, 2.955, 3.244, 3.5333, 3.822, 4.111],
-		[2.088, 2.377, 2.666, 2.955, 3.244, 3.5333, 3.822],
-		[2.377, 2.666, 2.955, 3.244, 3.5333, 3.822]
-	]
+	r0_sets       = []
+	legendre_sets = []
 
-	legendre_sets = [
-		[0, 1, 2, 3, 4]
-	]
+	valid_legendre_poly = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+	valid_r0_range      = [2.0, 4.0]
 
 
+	r0_sets.append([3.0])
+	r0_sets.append([2.5, 3.5])
+	r0_sets.append([2.5, 3.0, 3.5])
+	for i in range(4, 21):
+		r0_sets.append(np.linspace(2.0, 4.0, i).tolist())
+
+	for i in range(30):
+		n = int(round(np.random.uniform(1, 16)))
+		r0_sets.append(np.random.normal(3.0, 0.66, n).tolist())
+
+	for i in range(80):
+		n    = int(round(np.random.uniform(2, 10)))
+		set_ = np.random.choice(valid_legendre_poly, n, replace=False)
+		set_.sort()
+		legendre_sets.append(set_.tolist())
+
+	
 	# Select 13 sets of legendre polynomials
 	# and 13 sets of r0 values.
 
 	sigma_sets = [ 
-		1.0
+		0.5,
+		1.0,
+		1.5, 
+		2.0
 	]
 
 	
@@ -125,7 +139,7 @@ if __name__ == '__main__':
 			for sigma in sigma_sets:
 				for r0 in r0_sets:
 					for mode in mode_sets:
-						dir_name = '/home/ajr6/2019-06-21/profiling-run/idx_%i'%(
+						dir_name = '/home/ajr6/2019-06-21/major-sweep-test-01/idx_%05i'%(
 							idx
 						)
 						idx += 1
@@ -159,7 +173,7 @@ if __name__ == '__main__':
 
 	for name, _dir in zip(config_names, config_dirs):
 		runfile.write("./run_eval_enki_generic.sh 1 %s %s\n"%(name, _dir))
-		runfile.write("sleep 1\n")
+		runfile.write("sleep 0.1\n")
 
 	runfile.close()
 

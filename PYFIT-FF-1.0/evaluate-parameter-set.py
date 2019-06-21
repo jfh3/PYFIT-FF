@@ -697,14 +697,17 @@ if __name__ == '__main__':
 	master_results['all_params_converged'] = network_converged_indicators
 	master_results['all_params_converged_between_networks'] = params_converged_between_networks
 
-	f = open(wrk_dir + 'master_results.json', 'w')
+	master_path = wrk_dir + 'master_results.json'
+	f = open(master_path, 'w')
 	f.write(json.dumps(master_results))
 	f.close()
 
 
 	final_data['between_network_convergences'] = between_network_convergences
 	final_data['parameter_convergences'] = in_network_convergence_data
-	f = open(wrk_dir + 'final_data.json', 'w')
+
+	data_path = wrk_dir + 'final_data.json'
+	f = open(data_path, 'w')
 	f.write(json.dumps(final_data))
 	f.close()
 
@@ -726,4 +729,8 @@ if __name__ == '__main__':
 			print("Please remove manually.")
 			break
 
-	run("cp -r %s %s"%(wrk_dir, final_dir))
+	if config['minimum_output']:
+		run("cp %s %s"%(os.path.abspath(master_path), final_dir))
+		run("cp %s %s"%(os.path.abspath(data_path),   final_dir))
+	else:
+		run("cp -r %s %s"%(wrk_dir, final_dir))

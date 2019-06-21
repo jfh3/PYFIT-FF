@@ -15,6 +15,7 @@
 
 	"poscar_data_file" : "input/Feature_Selection/SET-ADAM-ALL-CLUSTERS-06-14-19-POSCAR-E-full.dat",
 	"default_config"   : "parameter-eval-config-default.py",
+	"minimum_output"   : true,
 
 	"feature_feature_correlation" : {
 		"feature_metric"    : "pearson",
@@ -29,7 +30,7 @@
 		"std_threshold"                       : 0.025,
 		"cross_network_convergence_threshold" : 0.025,
 		"train_sequential"     : true,
-		"number_of_networks"   : 4,
+		"number_of_networks"   : 1,
 		"number_of_iterations" : 220,
 		"number_of_backups"    : 20,
 		"learning_rate"        : 0.05,
