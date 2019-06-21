@@ -189,6 +189,8 @@ def run_pyfit_with_config(config, params, run_dir, config_file_path=None, async=
 	subroutines_path = run_dir
 	config_path      = run_dir + "subroutines/Config.py"
 
+
+
 	if config_file_path != None:
 		config_to_load = config_file_path
 	else:
@@ -256,6 +258,8 @@ if __name__ == '__main__':
 
 	general_log = wrk_dir + 'garbage.txt'
 	final_data  = {}
+
+	network_backup_folders = []
 
 	# Step One: Generate a neural network file and run pyfit-ff.py to generate
 	#           a corresponding LSPARAM file.
@@ -388,6 +392,8 @@ if __name__ == '__main__':
 	for initial_condition in range(n_networks):
 		this_dir = training_output_dir + 'IC-%02i/'%initial_condition
 		bk_dir   = os.path.abspath(this_dir + 'nn_backup/') + '/'
+
+		network_backup_folders.append(bk_dir)
 
 		training_output_subdirs.append(this_dir)
 
@@ -704,6 +710,14 @@ if __name__ == '__main__':
 
 	run("rm %s"%(lsparam_path))
 	
+	for bk_dir in network_backup_folders:
+		try:
+			run("rm -rf %s"%bk_dir)
+		except:
+			print("Failed to remove a network backup directory.")
+			print("Please remove manually.")
+			break
+
 	for sub in subroutines_dirs:
 		try:
 			run("rm -rf %s"%sub)

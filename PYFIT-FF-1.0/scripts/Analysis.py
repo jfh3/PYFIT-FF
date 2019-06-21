@@ -218,6 +218,40 @@ if __name__ == '__main__':
 		# We need the feature output correlation for all features, for all networks
 		# and at all backup stages. 
 
+		network_convergences = []
+
+		for group_data in data:
+			group = group_data['feature-output-correlations']
+			for network in group:
+				net              = group[network]
+				stages           = []
+
+				# We want to form a list of backups and sort them so that they
+				# are in order.
+
+				for backup in net['backups']:
+					stages.append((backup, net['backups'][backup]))
+
+
+				# Sort them by name.
+				stages = [stg[1] for stg in sorted(stages, key=lambda x: x[0])]
+				stages.append(net['final'])
+
+				# Now we have a list of backups in order, each containing the correlation
+				# coefficient for every parameter. Now we turn this into a list where the
+				# first axis is the parameter, and the second axis is the stage in the 
+				# training process, from start to finish.
+				param_values = []
+				for stage in stages:
+					param_values.append([coeff['coefficient'] for coeff in stage])
+
+				param_values = np.array(param_values).transpose()
+				
+				# We now have a list of parameter coefficient with respect to training iteration
+				# for all parameters of this neural network.
+				# Add it to the list.
+
+				network_convergences.append(param_values)
 
 
 		# Now that we have all of the data, take each coefficient for each network and
@@ -226,4 +260,33 @@ if __name__ == '__main__':
 		# became converged during this process. This value will largely dictate how many
 		# training iterations need to be used during the large sweep.
 
-		
+		window_size   = 8
+		threshold_std = 0.02
+
+		highest_divergence_point = 0
+
+		for network in network_convergences:
+			for coefficient in range(network.shape[0]):
+				# Slide the window back until the standard deviation 
+				# within it exceeds a threshold value.
+
+				# Start at the end.
+				window_end   = network.shape[1]
+				window_start = window_end - window_size
+
+				divergence_point = 0
+
+				while window_start >= 0 and window_start >= highest_divergence_point:
+					window_std = network[coefficient][window_start:window_end].std()
+					if window_std >= threshold_std:
+						divergence_point = window_start
+						break
+
+					window_end   -= 1
+					window_start = window_end - window_size
+
+				# We have the divergence point for this coefficient, of this network.
+				if divergence_point >= highest_divergence_point:
+					highest_divergence_point = divergence_point
+
+		print("The highest point at which a network started to converge was: %i"%highest_divergence_point)

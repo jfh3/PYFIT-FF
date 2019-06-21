@@ -25,13 +25,13 @@
 	},
 
 	"feature_output_correlation" : {
-		"verify_last_n_convergence"           : 20,
-		"std_threshold"                       : 0.035,
-		"cross_network_convergence_threshold" : 0.035,
+		"verify_last_n_convergence"           : 4,
+		"std_threshold"                       : 0.025,
+		"cross_network_convergence_threshold" : 0.025,
 		"train_sequential"     : true,
 		"number_of_networks"   : 4,
-		"number_of_iterations" : 500,
-		"number_of_backups"    : 50,
+		"number_of_iterations" : 220,
+		"number_of_backups"    : 20,
 		"learning_rate"        : 0.05,
 		"scatterplot_ratio"    : 1.0,
 		"export_scatter"       : false,
