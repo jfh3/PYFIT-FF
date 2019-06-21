@@ -26,8 +26,8 @@
 
 	"feature_output_correlation" : {
 		"verify_last_n_convergence"           : 20,
-		"std_threshold"                       : 0.02,
-		"cross_network_convergence_threshold" : 0.02,
+		"std_threshold"                       : 0.035,
+		"cross_network_convergence_threshold" : 0.035,
 		"train_sequential"     : true,
 		"number_of_networks"   : 4,
 		"number_of_iterations" : 500,

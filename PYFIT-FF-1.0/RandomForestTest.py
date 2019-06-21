@@ -27,7 +27,7 @@ def delabelize(a):
 	return np.array(a).astype(float) / 10000
 
 def GetRandomForestPrediction(a, b, test):
-	cl = RandomForestClassifier(n_jobs=1, n_estimators=25)
+	cl = RandomForestClassifier(n_jobs=1, n_estimators=8)
 	a  = np.array([a]).transpose()
 	t  = np.array([test]).transpose()
 	b  = labelize(b)
@@ -39,12 +39,27 @@ def rmse(a, b):
 	sum_sqr = np.square(a - b).sum()
 	return np.sqrt(sum_sqr / len(a))
 
+def rmse_norm(a, b):
+	return rmse(a, b) / b.std()
+
+def pearson(a, b):
+	l = a - a.mean()
+	r = b - b.mean()
+	return (l*r).mean() / (a.std() * b.std())
+
+def cf(a, b):
+	return 1.0 - min(rmse_norm(a, b), 1.0)
+
 if __name__ == '__main__':
 	file   = sys.argv[1]
 	params = GetStructureParams(file)
 
-	p1 = 14
-	p2 = 10
+	p1 = 0
+	p2 = 1
+
+
+	perfect   = plt.scatter(params[p1], params[p2], s=1)
+	plt.show()
 
 	grid         = np.mgrid[0:60, 0:60].swapaxes(0, 2).swapaxes(0, 1)
 	m            = grid.shape[0]
@@ -59,30 +74,56 @@ if __name__ == '__main__':
 
 	all_rmse = []
 
+	# Test completely random data.
+	a = np.random.normal(0.0, 1.0, 4000)[::2]
+	b = np.random.normal(0.0, 2.0, 4000)[::2]
+	p = np.random.normal(0.0, 2.0, 4000)[::2]
+	prediction = GetRandomForestPrediction(a, b, p)
+
+	perfect   = plt.scatter(a, b, s=12)
+	predicted = plt.scatter(a, prediction, s=3)
+
+	plt.legend([perfect, predicted], ["Original", "Random Forest"])
+	plt.title("Random Forest Regression of Random Data (Score = %2.3f, P = %2.3f)"%(cf(b, prediction), pearson(b, prediction)))
+	plt.show()
+
+	a = np.linspace(-1.0, 1.0, 4000)
+	b = np.random.normal(0.0, 2.0, 4000) + np.linspace(-10.0, 10.0, 4000)
+	a_t = a[::2]
+	b_t = b[::2]
+	a_v = a[1::2]
+	b_v = b[1::2]
+	prediction = GetRandomForestPrediction(a_t, b_t, a_v)
+
+	perfect   = plt.scatter(a_t, b_t, s=12)
+	predicted = plt.scatter(a_v, prediction, s=3)
+
+	plt.legend([perfect, predicted], ["Original", "Random Forest"])
+	plt.title("Random Forest Regression of Semi - Random Data (Score = %2.3f, P = %2.3f)"%(cf(b_v, prediction), pearson(b_v, prediction)))
+	plt.show()
+
+
 	for l, r in zip(left, right):
 		indices = np.array(range(len(params[0])))
 
-		train = np.random.choice(indices, len(indices) // 2, replace=False)
-		test  = np.random.choice(indices, len(indices) // 2, replace=False)
+		train_left  = params[l][::2*10]
+		train_right = params[r][::2*10]
 
-		train_left  = params[l][train]
-		train_right = params[r][train]
-
-		test_left  = params[l][test]
-		test_right = params[r][test]
+		test_left  = params[l][1::2*10]
+		test_right = params[r][1::2*10]
 
 		prediction = GetRandomForestPrediction(train_left, train_right, test_left)
 
 		avg_distance = (test_right - prediction).mean()
 		prediction  += avg_distance
 
-		all_rmse.append(rmse(test_right, prediction))
+		all_rmse.append(rmse_norm(test_right, prediction))
 
 		perfect   = plt.scatter(test_left, test_right, s=12)
 		predicted = plt.scatter(test_left, prediction, s=3)
 
 		plt.legend([perfect, predicted], ["Original", "Random Forest"])
-		plt.title("Random Forest Regression of Feature vs. Feature (RMSE = %2.3f)"%rmse(test_right, prediction))
+		plt.title("Random Forest Regression of Feature vs. Feature (score = %2.3f, P = %2.3f)"%(cf(test_right, prediction), pearson(test_right, prediction)))
 		plt.show()
 
 		compare   = plt.scatter(test_right, prediction, s=3)
