@@ -71,6 +71,8 @@ if __name__ == '__main__':
 	no_histograms                  = '--no-histograms'                  in args # Don't show histograms
 	small_mode                     = '--small-mode'                     in args # Use if only .json files are available
 	small_load                     = '--small-load'                     in args # Load only the small results file
+	do_filter                      = '--filter'                         in args # Run the filter code below
+	export_indices                 = '--export-best-indices'            in args 
 
 	print("Analyzing %s"%root_dir)
 
@@ -171,6 +173,38 @@ if __name__ == '__main__':
 	results   = tmp_result
 	data      = tmp_data
 	locations = tmp_location
+
+	if do_filter:
+
+		t0 = []
+		t1 = []
+		t2 = []
+
+		# TEMPORARY FILTER
+		for r, d, l in zip(results, data, locations):
+			# Note: The below commented line was used to filter out the best for a 
+			#       set of deep runs to 6000 training iterations.
+			# if r['scores']['mean_rmse'] <= 0.040 and r['scores']['figure_of_merit'] >= 0.85:
+			if r['scores']['mean_rmse'] >= 0.100 and r['scores']['figure_of_merit'] <= 0.5:
+				t0.append(r)
+				t1.append(d)
+				t2.append(l)
+
+		results   = t0
+		data      = t1
+		locations = t2
+
+		if export_indices:
+			f = open("top_results.json", 'w')
+
+			indices = []
+			for loc in locations:
+				idx = int(loc.split('/')[-2].split('_')[1])
+				indices.append(idx)
+
+			f.write(json.dumps({'best_indices': indices}))
+			f.close()
+
 
 	# Summarize what was discovered.
 	print("General Results:")
@@ -418,9 +452,9 @@ if __name__ == '__main__':
 		# Error vs. Figure of Merit
 		# ------------------------------------------------------------
 
-		mean_ = axes[0, 0].scatter(figures_of_merit, mean_rmse, s = 2)
+		mean_ = axes[0, 0].scatter(figures_of_merit, mean_rmse, s = 5)
 
-		y_max = max([max(mean_rmse), 0.2])
+		y_max = min([max(mean_rmse), 0.2])
 
 		x_major_ticks = np.linspace(0, 1.0, 11)
 		x_minor_ticks = np.linspace(0, 1.0, 51)
@@ -449,9 +483,9 @@ if __name__ == '__main__':
 		# Error vs. Mean Feature Feature Correlation
 		# ------------------------------------------------------------
 
-		ff_mean_ = axes[0, 1].scatter(ff_correlation, mean_rmse, s = 2)
+		ff_mean_ = axes[0, 1].scatter(ff_correlation, mean_rmse, s = 5)
 
-		y_max = max([max(mean_rmse), 0.2])
+		y_max = min([max(mean_rmse), 0.2])
 
 		x_major_ticks = np.linspace(0, 1.0, 11)
 		x_minor_ticks = np.linspace(0, 1.0, 51)
@@ -480,9 +514,9 @@ if __name__ == '__main__':
 		# Error vs. Mean Feature Classification Correlation
 		# ------------------------------------------------------------
 
-		fc_mean_ = axes[1, 0].scatter(fc_correlation, mean_rmse, s = 2)
+		fc_mean_ = axes[1, 0].scatter(fc_correlation, mean_rmse, s = 5)
 
-		y_max = max([max(mean_rmse), 0.2])
+		y_max = min([max(mean_rmse), 0.2])
 
 		x_major_ticks = np.linspace(0, 1.0, 11)
 		x_minor_ticks = np.linspace(0, 1.0, 51)
@@ -511,7 +545,7 @@ if __name__ == '__main__':
 		# Figure of Merit vs. Hyperparameter Set
 		# ------------------------------------------------------------
 
-		mh = axes[1, 1].scatter(range(len(locations)), figures_of_merit, s = 2)
+		mh = axes[1, 1].scatter(range(len(locations)), figures_of_merit, s = 5)
 		axes[1, 1].set_xlabel("Hyperparameter Set Index")
 		axes[1, 1].set_ylabel("Figure of Merit")
 		axes[1, 1].set_title("Figure of Merit vs. Hyperparameter Set Index")
@@ -630,11 +664,21 @@ if __name__ == '__main__':
 			plt.show()
 
 		
+		_2_percent_n         = int(round(0.02 * len(sorted_by_fm)))
+		fm_top_2_percent    = sorted_by_fm[-_2_percent_n:]
+		fm_bottom_2_percent = sorted_by_fm[:_2_percent_n]
 
 		_10_percent_n         = int(round(0.10 * len(sorted_by_fm)))
 		fm_top_10_percent    = sorted_by_fm[-_10_percent_n:]
 		fm_bottom_10_percent = sorted_by_fm[:_10_percent_n]
 
-		show_histograms(fm_top_10_percent, "Top 10 Percent by Figure of Merit")
-		show_histograms(fm_bottom_10_percent, "Bottom 10 Percent by Figure of Merit")
+		show_histograms(fm_top_2_percent, "Top 2 Percent by Figure of Merit")
+		show_histograms(fm_bottom_2_percent, "Bottom 2 Percent by Figure of Merit")
+
+		
 	
+		rmse_top_2_percent    = sorted_by_rmse[-_2_percent_n:]
+		rmse_bottom_2_percent = sorted_by_rmse[:_2_percent_n]
+
+		show_histograms(rmse_top_2_percent, "Top 2 Percent by RMSE")
+		show_histograms(rmse_bottom_2_percent, "Bottom 2 Percent by RMSE")
