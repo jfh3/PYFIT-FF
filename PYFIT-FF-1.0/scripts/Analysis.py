@@ -183,7 +183,8 @@ if __name__ == '__main__':
 		# TEMPORARY FILTER
 		for r, d, l in zip(results, data, locations):
 			# Note: The below commented line was used to filter out the best for a 
-			#       set of deep runs to 6000 training iterations.
+			#       set of deep runs to 6000 training iterations. Filter yielded 24 
+			#       configurations.
 			# if r['scores']['mean_rmse'] <= 0.040 and r['scores']['figure_of_merit'] >= 0.85:
 			if r['scores']['mean_rmse'] >= 0.100 and r['scores']['figure_of_merit'] <= 0.5:
 				t0.append(r)
