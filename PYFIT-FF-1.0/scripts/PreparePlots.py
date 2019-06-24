@@ -45,10 +45,18 @@ def sort_by(l, k, r=False):
 	return sorted(l, key = lambda x: x[k], reverse = r)
 
 # This function takes a set of x, y and z points as its primary arguments.
-# 
-def xyz_to_img(x, y, z, sigmax=0.1, sigmay=0.1, cutoff=1.0):
-	x_rng = np.linspace(min(x), max(x), 100)
-	y_rng = np.linspace(min(y), max(y), 100)
+# It constructs a 3 dimensional array suitable for a matplotlib imshow plot.
+# It does this by generating a grid of uniform points covering the full 
+# domain of both the x an y axis. For each point in this grid, it constructs
+# an average of the z value for all points within "cutoff" of this point. 
+# It weights this average using a gaussian function of the distance that
+# each of those points is from the current point. "sigmax" and "sigmay"
+# correspond to the sigma parameters in this 2-D gaussion. 
+# In essence, this function makes an attempt at Gaussian averaging of points
+# in order to create a smooth uniform plot.
+def xyz_to_img(x, y, z, sigmax=0.1, sigmay=0.1, cutoff=1.0, grid_size=150):
+	x_rng = np.linspace(min(x), max(x), grid_size)
+	y_rng = np.linspace(min(y), max(y), grid_size)
 
 	sigmax = (x_rng[-1] - x_rng[0])*sigmax
 	sigmay = (y_rng[-1] - y_rng[0])*sigmay
@@ -81,25 +89,101 @@ def xyz_to_img(x, y, z, sigmax=0.1, sigmay=0.1, cutoff=1.0):
 	return grid
 
 
-def r_l_fm_heatmap(points):
+def triple_heatmap(x, y, z, xlabel, ylabel, title, grid_size=150, ticks=10, show_points=False):
 	fig, ax = plt.subplots(1, 1)
+	fig.set_size_inches(8, 8)
 
-	x = [p['rm'] for p in points]
-	y = [p['lm'] for p in points]
-	z = [p['fm'] for p in points]
-	values = xyz_to_img(x, y, z)
+	x = np.array(x)
+	y = np.array(y)
+	z = np.array(z)
+	values = xyz_to_img(x, y, z, grid_size=grid_size)
+
+	x_rng = max(x) - min(x)
+	y_rng = max(y) - min(y)
+
 
 	plot = ax.imshow(values, cmap='Blues', interpolation='bicubic')
-	ax.set_xticks(np.arange(0, 100, 10))
-	ax.set_yticks(np.arange(0, 100, 10))
-	ax.set_xticklabels(['%1.1f'%i for i in np.linspace(min(x), max(x), 10)])
-	ax.set_yticklabels(['%1.1f'%i for i in np.linspace(min(y), max(y), 10)])
-	ax.set_xlabel('Mean $r_0$ Value')
-	ax.set_ylabel('Mean Legendre Order')
-	ax.set_title('Figure of Merit as a Function of Mean Legendre order and Mean $r_0$ Value')
+	ax.set_xticks(np.arange(0, grid_size, grid_size // ticks))
+	ax.set_yticks(np.arange(0, grid_size, grid_size // ticks))
+	ax.set_xticklabels(['%1.1f'%i for i in np.linspace(min(x), max(x), ticks + 1)])
+	ax.set_yticklabels(['%1.1f'%i for i in np.linspace(min(y), max(y), ticks + 1)])
+	ax.set_xlabel(xlabel)
+	ax.set_ylabel(ylabel)
+	ax.set_title(title)
+
+	if show_points:
+		# We need to remap these points to match the current scaling.
+		x = (grid_size - 1) * ((x - min(x)) / x_rng)
+		y = (grid_size - 1) * ((y - min(y)) / y_rng)
+		x[x <= min(x)] += 1
+		x[x >= max(x)] -= 1
+		y[y <= min(y)] += 1
+		y[y >= max(y)] -= 1
+		ax.scatter(x, y, s=1, c='#ff8c00')
+
+	ax.set_xlim(0, grid_size - 1)
+	ax.set_ylim(0, grid_size - 1)
 	fig.colorbar(plot)
 	ax.set_aspect(aspect=1)
 	plt.show()
+
+def r_l_min_heatmap(points, show_points=False):
+	x = np.array([p['rmin'] for p in points])
+	y = np.array([p['lmin'] for p in points])
+	z = np.array([p['fm'] for p in points])
+
+	triple_heatmap(
+		x, y, z, 
+		'Minimum $r_0$ Value', 
+		'Minimum Legendre Order', 
+		'Figure of Merit as a Function of Minimum Legendre order\n and Minimum $r_0$ Value',
+		show_points=show_points
+	)
+
+def r_l_max_heatmap(points, show_points=False):
+	x = np.array([p['rmax'] for p in points])
+	y = np.array([p['lmax'] for p in points])
+	z = np.array([p['fm'] for p in points])
+
+	triple_heatmap(
+		x, y, z, 
+		'Maximum $r_0$ Value', 
+		'Maximum Legendre Order', 
+		'Figure of Merit as a Function of Maximum Legendre order\n and Maximum $r_0$ Value',
+		show_points=show_points
+	)
+
+def r_l_fm_heatmap(points, show_points=False):
+	x = np.array([p['rm'] for p in points])
+	y = np.array([p['lm'] for p in points])
+	z = np.array([p['fm'] for p in points])
+
+	triple_heatmap(
+		x, y, z, 
+		'Mean $r_0$ Value', 
+		'Mean Legendre Order', 
+		'Figure of Merit as a Function of Mean Legendre order\n and Mean $r_0$ Value',
+		show_points=show_points
+	)
+
+	# fig, ax = plt.subplots(1, 1)
+
+	# x = np.array([p['rm'] for p in points])
+	# y = np.array([p['lm'] for p in points])
+	# z = np.array([p['fm'] for p in points])**2
+	# values = xyz_to_img(x, y, z)
+
+	# plot = ax.imshow(values, cmap='Blues', interpolation='bicubic')
+	# ax.set_xticks(np.arange(0, 150, 15))
+	# ax.set_yticks(np.arange(0, 150, 15))
+	# ax.set_xticklabels(['%1.1f'%i for i in np.linspace(min(x), max(x), 10)])
+	# ax.set_yticklabels(['%1.1f'%i for i in np.linspace(min(y), max(y), 10)])
+	# ax.set_xlabel('Mean $r_0$ Value')
+	# ax.set_ylabel('Mean Legendre Order')
+	# ax.set_title('Figure of Merit as a Function of Mean Legendre order and Mean $r_0$ Value')
+	# fig.colorbar(plot)
+	# ax.set_aspect(aspect=1)
+	# plt.show()
 
 if __name__ == '__main__':
 	root_dir = sys.argv[1] # The directory that contains all of the idx_* directories
@@ -225,9 +309,13 @@ if __name__ == '__main__':
 			'r'     : res['parameter_set']['r_0_values'],
 			'r#'    : len(res['parameter_set']['r_0_values']),
 			'rm'    : np.array(res['parameter_set']['r_0_values']).mean(),
+			'rmin'  : np.array(res['parameter_set']['r_0_values']).min(),
+			'rmax'  : np.array(res['parameter_set']['r_0_values']).max(),
 			'l'     : res['parameter_set']['legendre_polynomials'],
 			'l#'    : len(res['parameter_set']['legendre_polynomials']),
 			'lm'    : np.array(res['parameter_set']['legendre_polynomials']).mean(),
+			'lmin'  : np.array(res['parameter_set']['legendre_polynomials']).min(),
+			'lmax'  : np.array(res['parameter_set']['legendre_polynomials']).max(),
 			's'     : res['parameter_set']['gi_sigma'],
 			'fm'    : res['scores']['figure_of_merit'],
 			'ff'    : res['scores']['mean_ff_correlation'],
@@ -237,4 +325,6 @@ if __name__ == '__main__':
 
 		critical_data.append(point)
 
-	r_l_fm_heatmap(critical_data)
+	r_l_fm_heatmap(critical_data, show_points=True)
+	r_l_min_heatmap(critical_data, show_points=True)
+	r_l_max_heatmap(critical_data, show_points=True)
