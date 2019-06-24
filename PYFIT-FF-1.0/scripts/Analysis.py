@@ -21,6 +21,41 @@ def print_np_as_grid(arr, tabs=0):
 
 	print(s)
 
+def load_files(path, minimal=False):
+	results_file = path + 'master_results.json'
+	data_file    = path + 'final_data.json'
+
+	f = open(results_file, 'r')
+	raw = f.read()
+	f.close()
+
+	if not minimal:
+		f = open(data_file, 'r')
+		raw2 = f.read()
+		f.close()
+
+	if 'NaN' in raw or 'Infinity' in raw:
+		to_parse = raw.replace('NaN', '0.0').replace('Infinity', '0.0')
+		div  = json.loads(to_parse)
+		file = results_file
+		del to_parse
+
+		return True, div, file, None
+	else:
+		res  = json.loads(raw)
+		file = contents_dir
+		if not minimal:
+			data = json.loads(raw2)
+		else:
+			data = None
+
+		# Too much memory is being taken up. Need to delete some keys.
+
+
+		return False, res, file, data
+
+
+
 if __name__ == '__main__':
 	root_dir = sys.argv[1] # The directory that contains all of the idx_* directories
 
@@ -34,7 +69,8 @@ if __name__ == '__main__':
 	plot_cross_network_convergence = '--plot-cross-network-convergence' in args
 	no_comparison_plots            = '--no-comparison-plots'            in args # Don't show correlation - rmse plots
 	no_histograms                  = '--no-histograms'                  in args # Don't show histograms
-	small_mode                     = '--small-mode'                     in args
+	small_mode                     = '--small-mode'                     in args # Use if only .json files are available
+	small_load                     = '--small-load'                     in args # Load only the small results file
 
 	print("Analyzing %s"%root_dir)
 
@@ -58,56 +94,30 @@ if __name__ == '__main__':
 		if small_mode:
 			contents_dir = new_dir
 			results_file = contents_dir + 'master_results.json'
-			data_file    = contents_dir + 'final_data.json'
 			if os.path.isfile(results_file):
-
-				f = open(results_file, 'r')
-				raw = f.read()
-				f.close()
-
-				f = open(data_file, 'r')
-				raw2 = f.read()
-				f.close()
-
-				if 'NaN' in raw or 'Infinity' in raw:
-					to_parse = raw.replace('NaN', '0.0').replace('Infinity', '0.0')
-					divergent_results.append(json.loads(to_parse))
-					divergent_locations.append(results_file)
-				else:
-					results.append(json.loads(raw))
-					locations.append(contents_dir)
-					data.append(json.loads(raw2))
+				is_divergent, result, location, run_data = load_files(contents_dir, small_load)
+				
 		else:
 			for subsubdir in os.listdir(new_dir):
 				contents_dir = new_dir + subsubdir + '/'
 				results_file = contents_dir + 'master_results.json'
-				data_file    = contents_dir + 'final_data.json'
 				if os.path.isfile(results_file):
+					is_divergent, result, location, run_data = load_files(contents_dir, small_load)
 
-					f = open(results_file, 'r')
-					raw = f.read()
-					f.close()
+		if is_divergent:
+			divergent_results.append(result)
+			divergent_locations.append(location)
+		else:
+			results.append(result)
+			locations.append(location)
+			data.append(run_data)
 
-					f = open(data_file, 'r')
-					raw2 = f.read()
-					f.close()
+	# composite_sort = [(a, b, c) for a, b, c in zip(results, data, locations)]
+	# composite_sort = sorted(composite_sort, key=lambda x: x[2])
 
-					if 'NaN' in raw or 'Infinity' in raw:
-						to_parse = raw.replace('NaN', '0.0').replace('Infinity', '0.0')
-						divergent_results.append(json.loads(to_parse))
-						divergent_locations.append(results_file)
-					else:
-						results.append(json.loads(raw))
-						locations.append(contents_dir)
-						data.append(json.loads(raw2))
-
-
-	composite_sort = [(a, b, c) for a, b, c in zip(results, data, locations)]
-	composite_sort = sorted(composite_sort, key=lambda x: x[2])
-
-	results   = [i[0] for i in composite_sort]
-	data      = [i[1] for i in composite_sort]
-	locations = [i[2] for i in composite_sort]
+	# results   = [i[0] for i in composite_sort]
+	# data      = [i[1] for i in composite_sort]
+	# locations = [i[2] for i in composite_sort]
 
 	# ==================================================
 	# Data Sorting and Filtering
@@ -408,7 +418,7 @@ if __name__ == '__main__':
 		# Error vs. Figure of Merit
 		# ------------------------------------------------------------
 
-		mean_ = axes[0, 0].scatter(figures_of_merit, mean_rmse, s = 6)
+		mean_ = axes[0, 0].scatter(figures_of_merit, mean_rmse, s = 2)
 
 		y_max = max([max(mean_rmse), 0.2])
 
@@ -439,7 +449,7 @@ if __name__ == '__main__':
 		# Error vs. Mean Feature Feature Correlation
 		# ------------------------------------------------------------
 
-		ff_mean_ = axes[0, 1].scatter(ff_correlation, mean_rmse, s = 6)
+		ff_mean_ = axes[0, 1].scatter(ff_correlation, mean_rmse, s = 2)
 
 		y_max = max([max(mean_rmse), 0.2])
 
@@ -470,7 +480,7 @@ if __name__ == '__main__':
 		# Error vs. Mean Feature Classification Correlation
 		# ------------------------------------------------------------
 
-		fc_mean_ = axes[1, 0].scatter(fc_correlation, mean_rmse, s = 6)
+		fc_mean_ = axes[1, 0].scatter(fc_correlation, mean_rmse, s = 2)
 
 		y_max = max([max(mean_rmse), 0.2])
 
@@ -501,16 +511,31 @@ if __name__ == '__main__':
 		# Figure of Merit vs. Hyperparameter Set
 		# ------------------------------------------------------------
 
-		mh = axes[1, 1].scatter(range(len(locations)), figures_of_merit, s = 6)
+		mh = axes[1, 1].scatter(range(len(locations)), figures_of_merit, s = 2)
 		axes[1, 1].set_xlabel("Hyperparameter Set Index")
 		axes[1, 1].set_ylabel("Figure of Merit")
 		axes[1, 1].set_title("Figure of Merit vs. Hyperparameter Set Index")
 
 		def format_display(**kwargs):
-			print(locations[kwargs['ind'][0]])
-			return None
+			index = kwargs['ind'][0]
+			print(locations[index])
+			info  = ''
+			info += "Mean RMSE:            %1.2f\n"%results[index]['scores']['mean_rmse']
+			info += "Figure of Merit:      %1.2f\n"%results[index]['scores']['figure_of_merit']
+			info += "Mean FF Correlation:  %1.2f\n"%results[index]['scores']['mean_ff_correlation']
+			info += "Mean FC Correlation:  %1.2f\n"%results[index]['scores']['mean_fc_correlation']
+			info += "Legendre Polynomials: [%s]\n"%' '.join(['%i'%p for p in results[index]['parameter_set']['legendre_polynomials']])
+			info += "r_0 Values:           [%s]\n"%' '.join(['%1.2f'%p for p in results[index]['parameter_set']['r_0_values']])
+			info += "sigma:                %1.1f\n"%results[index]['parameter_set']['gi_sigma']
+			return info
 
-		datacursor(formatter=format_display)
+		datacursor(
+			formatter=format_display, 
+			draggable=True, 
+			bbox=dict(fc='white', alpha=1, boxstyle="square"), 
+			fontfamily='monospace', 
+			ha='left'
+		)
 
 		plt.show()
 
@@ -575,7 +600,7 @@ if __name__ == '__main__':
 			axes[0, 2].set_xlabel("Gi Mode")
 			axes[0, 2].set_ylabel("Quantity")
 			axes[0, 2].set_xticks(loc)
-			axes[0, 2].set_xticklabels(['Normal', 'Log'])
+			axes[0, 2].set_xticklabels(['Log'])
 			axes[0, 2].set_title("Mode (%s)"%name)
 
 			loc, count = gen_bar([p['shift'] for p in dataset])
@@ -591,7 +616,7 @@ if __name__ == '__main__':
 			axes[1, 1].set_xlabel("Activation Function")
 			axes[1, 1].set_ylabel("Quantity")
 			axes[1, 1].set_xticks(loc)
-			axes[1, 1].set_xticklabels(['Sigmoid', 'Shifted Sigmoid'])
+			axes[1, 1].set_xticklabels(['Shifted Sigmoid'])
 			axes[1, 1].set_title("Activation Function (%s)"%name)
 
 			loc, count = gen_bar([p['sigma'] for p in dataset])

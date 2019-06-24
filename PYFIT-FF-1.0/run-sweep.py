@@ -95,10 +95,27 @@ if __name__ == '__main__':
 		r0_sets.append(np.linspace(2.0, 4.0, i).tolist())
 
 	for i in range(30):
-		n = int(round(np.random.uniform(1, 16)))
+		n = int(round(np.random.uniform(1, 8)))
 		r0_sets.append(np.random.normal(3.0, 0.66, n).tolist())
 
-	for i in range(80):
+	legendre_sets.append([0, 1])
+	legendre_sets.append([0, 1, 2])
+	legendre_sets.append([0, 1, 2, 3])
+	legendre_sets.append([0, 1, 2, 3, 4])
+	legendre_sets.append([0, 1, 2, 3, 4, 5])
+	legendre_sets.append([0, 1, 2, 3, 4, 5, 6])
+	legendre_sets.append([0, 1, 2, 3, 4, 5, 6, 7])
+	legendre_sets.append([0, 1, 2, 3, 4, 5, 6, 7, 8])
+
+	legendre_sets.append([7, 8])
+	legendre_sets.append([6, 7, 8])
+	legendre_sets.append([5, 6, 7, 8])
+	legendre_sets.append([4, 5, 6, 7, 8])
+	legendre_sets.append([3, 4, 5, 6, 7, 8])
+	legendre_sets.append([2, 3, 4, 5, 6, 7, 8])
+	legendre_sets.append([1, 2, 3, 4, 5, 6, 7, 8])
+	legendre_sets.append([0, 1, 2, 3, 4, 5, 6, 7, 8])
+	for i in range(30):
 		n    = int(round(np.random.uniform(2, 10)))
 		set_ = np.random.choice(valid_legendre_poly, n, replace=False)
 		set_.sort()
@@ -139,7 +156,7 @@ if __name__ == '__main__':
 			for sigma in sigma_sets:
 				for r0 in r0_sets:
 					for mode in mode_sets:
-						dir_name = '/home/ajr6/2019-06-21/major-sweep-test-01/idx_%05i'%(
+						dir_name = '/home/ajr6/2019-06-21/major-sweep/idx_%05i'%(
 							idx
 						)
 						idx += 1
