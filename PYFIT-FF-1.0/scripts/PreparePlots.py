@@ -54,7 +54,7 @@ def sort_by(l, k, r=False):
 # correspond to the sigma parameters in this 2-D gaussion. 
 # In essence, this function makes an attempt at Gaussian averaging of points
 # in order to create a smooth uniform plot.
-def xyz_to_img(x, y, z, sigmax=0.1, sigmay=0.1, cutoff=1.0, grid_size=150):
+def xyz_to_img(x, y, z, sigmax=0.4, sigmay=0.4, cutoff=1.0, grid_size=150):
 	x_rng = np.linspace(min(x), max(x), grid_size)
 	y_rng = np.linspace(min(y), max(y), grid_size)
 
@@ -102,7 +102,7 @@ def triple_heatmap(x, y, z, xlabel, ylabel, title, grid_size=150, ticks=10, show
 	y_rng = max(y) - min(y)
 
 
-	plot = ax.imshow(values, cmap='Blues', interpolation='bicubic')
+	plot = ax.imshow(values, cmap='seismic', interpolation='bicubic')
 	ax.set_xticks(np.arange(0, grid_size, grid_size // ticks))
 	ax.set_yticks(np.arange(0, grid_size, grid_size // ticks))
 	ax.set_xticklabels(['%1.1f'%i for i in np.linspace(min(x), max(x), ticks + 1)])
@@ -119,7 +119,7 @@ def triple_heatmap(x, y, z, xlabel, ylabel, title, grid_size=150, ticks=10, show
 		x[x >= max(x)] -= 1
 		y[y <= min(y)] += 1
 		y[y >= max(y)] -= 1
-		ax.scatter(x, y, s=1, c='#ff8c00')
+		ax.scatter(x, y, s=5, facecolor='#000000', edgecolor='#FFFFFF')
 
 	ax.set_xlim(0, grid_size - 1)
 	ax.set_ylim(0, grid_size - 1)
@@ -137,6 +137,45 @@ def r_l_min_heatmap(points, show_points=False):
 		'Minimum $r_0$ Value', 
 		'Minimum Legendre Order', 
 		'Figure of Merit as a Function of Minimum Legendre order\n and Minimum $r_0$ Value',
+		show_points=show_points
+	)
+
+def fm_vs_ff_fc(points, show_points=False):
+	x = np.array([p['fc'] for p in points])
+	y = np.array([p['ff'] for p in points])
+	z = np.array([p['fm'] for p in points])
+
+	triple_heatmap(
+		x, y, z, 
+		'Mean Feature - Classification Correlation', 
+		'Mean Feature - Feature Correlation', 
+		'Figure of Merit as a Function of the Number of Legendre orders\n and Number of $r_0$ Values',
+		show_points=show_points
+	)
+
+def rmse_vs_ff_fc(points, show_points=False):
+	x = np.array([p['fc'] for p in points])
+	y = np.array([p['ff'] for p in points])
+	z = np.array([p['mrmse'] for p in points])
+
+	triple_heatmap(
+		x, y, z, 
+		'Mean Feature - Classification Correlation', 
+		'Mean Feature - Feature Correlation', 
+		'Figure of Merit as a Function of the Number of Legendre orders\n and Number of $r_0$ Values',
+		show_points=show_points
+	)
+
+def r_l_number_heatmap(points, show_points=False):
+	x = np.array([p['r#'] for p in points])
+	y = np.array([p['l#'] for p in points])
+	z = np.array([p['fm'] for p in points])
+
+	triple_heatmap(
+		x, y, z, 
+		'Number of $r_0$ Values', 
+		'Number Legendre Orders', 
+		'Figure of Merit as a Function of the Number of Legendre orders\n and Number of $r_0$ Values',
 		show_points=show_points
 	)
 
@@ -325,6 +364,9 @@ if __name__ == '__main__':
 
 		critical_data.append(point)
 
-	r_l_fm_heatmap(critical_data, show_points=True)
-	r_l_min_heatmap(critical_data, show_points=True)
-	r_l_max_heatmap(critical_data, show_points=True)
+	fm_vs_ff_fc(critical_data, show_points=True)
+	rmse_vs_ff_fc(critical_data, show_points=True)
+	#r_l_number_heatmap(critical_data, show_points=True)
+	#r_l_fm_heatmap(critical_data, show_points=True)
+	#r_l_min_heatmap(critical_data, show_points=True)
+	#r_l_max_heatmap(critical_data, show_points=True)
