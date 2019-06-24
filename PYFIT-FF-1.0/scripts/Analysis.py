@@ -93,26 +93,27 @@ if __name__ == '__main__':
 
 	for subdir in os.listdir(root_dir):
 		new_dir = root_dir + subdir + '/'
-		if small_mode:
-			contents_dir = new_dir
-			results_file = contents_dir + 'master_results.json'
-			if os.path.isfile(results_file):
-				is_divergent, result, location, run_data = load_files(contents_dir, small_load)
-				
-		else:
-			for subsubdir in os.listdir(new_dir):
-				contents_dir = new_dir + subsubdir + '/'
+		if os.path.isdir(new_dir):
+			if small_mode:
+				contents_dir = new_dir
 				results_file = contents_dir + 'master_results.json'
 				if os.path.isfile(results_file):
 					is_divergent, result, location, run_data = load_files(contents_dir, small_load)
+					
+			else:
+				for subsubdir in os.listdir(new_dir):
+					contents_dir = new_dir + subsubdir + '/'
+					results_file = contents_dir + 'master_results.json'
+					if os.path.isfile(results_file):
+						is_divergent, result, location, run_data = load_files(contents_dir, small_load)
 
-		if is_divergent:
-			divergent_results.append(result)
-			divergent_locations.append(location)
-		else:
-			results.append(result)
-			locations.append(location)
-			data.append(run_data)
+			if is_divergent:
+				divergent_results.append(result)
+				divergent_locations.append(location)
+			else:
+				results.append(result)
+				locations.append(location)
+				data.append(run_data)
 
 	# composite_sort = [(a, b, c) for a, b, c in zip(results, data, locations)]
 	# composite_sort = sorted(composite_sort, key=lambda x: x[2])
@@ -454,7 +455,6 @@ if __name__ == '__main__':
 		# ------------------------------------------------------------
 
 		mean_ = axes[0, 0].scatter(figures_of_merit, mean_rmse, s = 5)
-
 		y_max = min([max(mean_rmse), 0.2])
 
 		x_major_ticks = np.linspace(0, 1.0, 11)
