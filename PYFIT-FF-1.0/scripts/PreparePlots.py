@@ -265,7 +265,7 @@ def histogram_plot(locations, counts, xlabel):
 	ax.set_xlabel(xlabel)
 	ax.set_ylabel("Quantity")
 	ax.set_xticks(loc)
-	ax.set_xticklabels(loc)
+	ax.set_xticklabels(['%1.2f'%l for l in loc], rotation = 45)
 	ax.set_title(_title or "Unspecified")
 
 	plt.show()
