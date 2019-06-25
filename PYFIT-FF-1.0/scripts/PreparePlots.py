@@ -33,9 +33,10 @@ from   mpl_toolkits.mplot3d import Axes3D
 import warnings
 warnings.filterwarnings("ignore")
 
-sigmax = 0.05
-sigmay = 0.05
-_title = None
+sigmax  = 0.05
+sigmay  = 0.05
+_title  = None
+_levels = None
 
 def load_files(path, minimal=False):
 	results_file = path + 'master_results.json'
@@ -232,13 +233,18 @@ def generic_3d(_x, _y, _z, points, show_points=False, colormap=None, names=None,
 		title  = 'Unspecified'
 
 	if contour:
+		levels = 10
+		if _levels is not None:
+			levels = _levels
+
 		triple_contour(
 			x, y, z, 
 			xlabel, 
 			ylabel, 
 			title,
 			show_points=show_points,
-			colormap=colormap
+			colormap=colormap,
+			levels=levels
 		)
 	else:
 		triple_heatmap(
@@ -271,6 +277,9 @@ if __name__ == '__main__':
 
 	if '--title' in args:
 		_title = sys.argv[args.index('--title') + 3]
+
+	if '--levels' in args:
+		_levels = int(sys.argv[args.index('--levels') + 3])
 
 	# Look for a heatmap argument in the form:
 	#    --heatmap:x:y:z, where x, y and z are 
@@ -406,15 +415,28 @@ if __name__ == '__main__':
 
 	critical_data = []
 	for res, loc in zip(results, locations):
+		r_density = len(res['parameter_set']['r_0_values'])
+		r_rng     = np.array(res['parameter_set']['r_0_values']).max()
+		r_rng    -= np.array(res['parameter_set']['r_0_values']).min()
+		r_density /= r_rng
+
+
+		l_density = len(res['parameter_set']['legendre_polynomials'])
+		l_rng     = np.array(res['parameter_set']['legendre_polynomials']).max()
+		l_rng    -= np.array(res['parameter_set']['legendre_polynomials']).min()
+		l_density /= l_rng
+
 		point = {
 			'loc'     : loc,
 			'r'       : res['parameter_set']['r_0_values'],
 			'r#'      : len(res['parameter_set']['r_0_values']),
+			'rd'      : r_density,
 			'rm'      : np.array(res['parameter_set']['r_0_values']).mean(),
 			'rmin'    : np.array(res['parameter_set']['r_0_values']).min(),
 			'rmax'    : np.array(res['parameter_set']['r_0_values']).max(),
 			'l'       : res['parameter_set']['legendre_polynomials'],
 			'l#'      : len(res['parameter_set']['legendre_polynomials']),
+			'ld'      : l_density,
 			'lm'      : np.array(res['parameter_set']['legendre_polynomials']).mean(),
 			'lmin'    : np.array(res['parameter_set']['legendre_polynomials']).min(),
 			'lmax'    : np.array(res['parameter_set']['legendre_polynomials']).max(),
@@ -431,6 +453,7 @@ if __name__ == '__main__':
 
 		critical_data.append(point)
 
+
 	# Evaluate the filter if there is one.
 	if criterion != None:
 		tmp = []
@@ -445,10 +468,12 @@ if __name__ == '__main__':
 	names = {
 		'r'       : "$r_0$ Values",
 		'r#'      : "Number of $r_0$ Values",
+		'rd'      : "Density of $r_0$ Values",
 		'rm'      : "Mean $r_0$ Value",
 		'rmin'    : "Minimum $r_0$ Value",
 		'rmax'    : "Maximum $r_0$ Value",
 		'l'       : "Legendre Polynomials",
+		'ld'      : "Density of Legendre Polynomial Orders",
 		'l#'      : "Number of Legendre Polynomials",
 		'lm'      : "Mean Legendre Polynomial Order",
 		'lmin'    : "Minimum Legendre Polynomial Order",
