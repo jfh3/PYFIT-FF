@@ -256,6 +256,19 @@ def generic_3d(_x, _y, _z, points, show_points=False, colormap=None, names=None,
 			colormap=colormap
 		)
 
+def histogram_plot(locations, counts, xlabel):
+	fig, ax = plt.subplots(1, 1)
+
+	width = (max(locations) - min(locations)) / (len(locations)*1.8)
+
+	ax.bar(locations, counts, edgecolor='black', linewidth=0.5, width=width)
+	ax.set_xlabel(xlabel)
+	ax.set_ylabel("Quantity")
+	ax.set_xticks(loc)
+	ax.set_xticklabels(loc)
+	ax.set_title(_title or "Unspecified")
+
+	plt.show()
 
 if __name__ == '__main__':
 	root_dir = sys.argv[1] # The directory that contains all of the idx_* directories
@@ -294,6 +307,21 @@ if __name__ == '__main__':
 		elif arg.startswith('--contour'):
 			_, x, y, z = arg.split(':')
 			heatmaps.append((x, y, z, True))
+
+	histograms = []
+
+	for arg in args:
+		if arg.startswith('--histogram'):
+			_, data, spec, ratio, sort = arg.split(':')
+
+			histogram = [
+				data, 
+				spec == 'bottom',
+				float(ratio),
+				sort
+			]
+
+			histograms.append(histogram)
 
 
 	criterion = None
@@ -509,9 +537,30 @@ if __name__ == '__main__':
 			names=names,
 			contour=h[3]
 		)
-	#fm_vs_ff_fc(critical_data, show_points=False)
-	#rmse_vs_ff_fc(critical_data, show_points=False)
-	#r_l_number_heatmap(critical_data, show_points=True)
-	#r_l_fm_heatmap(critical_data, show_points=True)
-	#r_l_min_heatmap(critical_data, show_points=True)
-	#r_l_max_heatmap(critical_data, show_points=True)
+
+	def gen_bar(vals):
+		locations = np.unique(vals).tolist()
+		vals      = np.array(vals)
+		counts    = []
+
+		for location in locations:
+			counts.append(len(vals[(vals == location)]))
+
+		return locations, counts
+
+	for [data, spec, ratio, sort] in histograms:
+		# Sort by the specified value.
+		sort_vals = sorted(critical_data, key=lambda x: x[sort])
+		n_select  = int(round(ratio * len(sort_vals)))
+
+		use = None
+		if not spec:
+			use = sort_vals[-n_select:]
+		else:
+			use = sort_vals[:n_select]
+
+		loc, count = gen_bar([p[data] for p in use])
+		xlabel = names[data]
+
+		histogram_plot(loc, count, xlabel)
+
