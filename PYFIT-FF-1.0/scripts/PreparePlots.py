@@ -1,3 +1,14 @@
+# Good ColorMaps:
+#    seismic
+#    inferno
+#    
+
+# Good Command Lines to try:
+#    --small-mode --small-load --heatmap:nf:ff:fm --colormap inferno
+#    --small-mode --small-load --heatmap:lmin:lmax:fm --colormap Accent
+#    --small-mode --small-load --heatmap:rmin:rmax:fm --colormap Accent
+#    
+
 import matplotlib.pyplot as plt
 import numpy             as np
 import sys
@@ -54,7 +65,7 @@ def sort_by(l, k, r=False):
 # correspond to the sigma parameters in this 2-D gaussion. 
 # In essence, this function makes an attempt at Gaussian averaging of points
 # in order to create a smooth uniform plot.
-def xyz_to_img(x, y, z, sigmax=0.4, sigmay=0.4, cutoff=1.0, grid_size=150):
+def xyz_to_img(x, y, z, sigmax=0.4, sigmay=0.4, cutoff=5.0, grid_size=150):
 	x_rng = np.linspace(min(x), max(x), grid_size)
 	y_rng = np.linspace(min(y), max(y), grid_size)
 
@@ -89,7 +100,7 @@ def xyz_to_img(x, y, z, sigmax=0.4, sigmay=0.4, cutoff=1.0, grid_size=150):
 	return grid
 
 
-def triple_heatmap(x, y, z, xlabel, ylabel, title, grid_size=150, ticks=10, show_points=False):
+def triple_heatmap(x, y, z, xlabel, ylabel, title, grid_size=150, ticks=10, show_points=False, colormap=None):
 	fig, ax = plt.subplots(1, 1)
 	fig.set_size_inches(8, 8)
 
@@ -101,10 +112,16 @@ def triple_heatmap(x, y, z, xlabel, ylabel, title, grid_size=150, ticks=10, show
 	x_rng = max(x) - min(x)
 	y_rng = max(y) - min(y)
 
+	if colormap is None:
+		_cmap = 'inferno'
+	else:
+		_cmap = colormap
 
-	plot = ax.imshow(values, cmap='seismic', interpolation='bicubic')
-	ax.set_xticks(np.arange(0, grid_size, grid_size // ticks))
-	ax.set_yticks(np.arange(0, grid_size, grid_size // ticks))
+	plot = ax.imshow(values, cmap=_cmap, interpolation='bicubic')
+	_ticks = np.arange(0, grid_size + 1, grid_size // ticks)
+	_ticks[_ticks > 0] -= 1
+	ax.set_xticks(_ticks)
+	ax.set_yticks(_ticks)
 	ax.set_xticklabels(['%1.1f'%i for i in np.linspace(min(x), max(x), ticks + 1)])
 	ax.set_yticklabels(['%1.1f'%i for i in np.linspace(min(y), max(y), ticks + 1)])
 	ax.set_xlabel(xlabel)
@@ -121,11 +138,37 @@ def triple_heatmap(x, y, z, xlabel, ylabel, title, grid_size=150, ticks=10, show
 		y[y >= max(y)] -= 1
 		ax.scatter(x, y, s=5, facecolor='#000000', edgecolor='#FFFFFF')
 
+
+	
 	ax.set_xlim(0, grid_size - 1)
 	ax.set_ylim(0, grid_size - 1)
 	fig.colorbar(plot)
 	ax.set_aspect(aspect=1)
 	plt.show()
+
+def generic_heatmap(_x, _y, _z, points, show_points=False, colormap=None, names=None):
+	x = np.array([p[_x] for p in points])
+	y = np.array([p[_y] for p in points])
+	z = np.array([p[_z] for p in points])
+
+
+	if names is not None:
+		xlabel = names[_x]
+		ylabel = names[_y]
+		title  = '%s\n as a Function of %s\n and %s'%(names[_z], xlabel, ylabel)
+	else:
+		xlabel = 'Unspecified'
+		ylabel = 'Unspecified'
+		title  = 'Unspecified'
+
+	triple_heatmap(
+		x, y, z, 
+		xlabel, 
+		ylabel, 
+		title,
+		show_points=show_points,
+		colormap=colormap
+	)
 
 def r_l_min_heatmap(points, show_points=False):
 	x = np.array([p['rmin'] for p in points])
@@ -149,7 +192,7 @@ def fm_vs_ff_fc(points, show_points=False):
 		x, y, z, 
 		'Mean Feature - Classification Correlation', 
 		'Mean Feature - Feature Correlation', 
-		'Figure of Merit as a Function of the Number of Legendre orders\n and Number of $r_0$ Values',
+		'Figure of Merit as a Function of the Mean Feature - Feature Correlation\n and The Mean Feature Classification Correlation',
 		show_points=show_points
 	)
 
@@ -162,7 +205,7 @@ def rmse_vs_ff_fc(points, show_points=False):
 		x, y, z, 
 		'Mean Feature - Classification Correlation', 
 		'Mean Feature - Feature Correlation', 
-		'Figure of Merit as a Function of the Number of Legendre orders\n and Number of $r_0$ Values',
+		'RMSE as a Function of the Mean Feature - Feature Correlation\n and The Mean Feature Classification Correlation',
 		show_points=show_points
 	)
 
@@ -205,33 +248,35 @@ def r_l_fm_heatmap(points, show_points=False):
 		show_points=show_points
 	)
 
-	# fig, ax = plt.subplots(1, 1)
-
-	# x = np.array([p['rm'] for p in points])
-	# y = np.array([p['lm'] for p in points])
-	# z = np.array([p['fm'] for p in points])**2
-	# values = xyz_to_img(x, y, z)
-
-	# plot = ax.imshow(values, cmap='Blues', interpolation='bicubic')
-	# ax.set_xticks(np.arange(0, 150, 15))
-	# ax.set_yticks(np.arange(0, 150, 15))
-	# ax.set_xticklabels(['%1.1f'%i for i in np.linspace(min(x), max(x), 10)])
-	# ax.set_yticklabels(['%1.1f'%i for i in np.linspace(min(y), max(y), 10)])
-	# ax.set_xlabel('Mean $r_0$ Value')
-	# ax.set_ylabel('Mean Legendre Order')
-	# ax.set_title('Figure of Merit as a Function of Mean Legendre order and Mean $r_0$ Value')
-	# fig.colorbar(plot)
-	# ax.set_aspect(aspect=1)
-	# plt.show()
 
 if __name__ == '__main__':
 	root_dir = sys.argv[1] # The directory that contains all of the idx_* directories
 
 	args = [arg.lower() for arg in sys.argv[2:]]
 
-	small_mode = '--small-mode' in args # Use if only .json files are available
-	small_load = '--small-load' in args # Load only the small results file
-	do_filter  = '--filter'     in args # Run the filter code below
+	small_mode  = '--small-mode'  in args # Use if only .json files are available
+	small_load  = '--small-load'  in args # Load only the small results file
+	do_filter   = '--filter'      in args # Run the filter code below
+	show_points = '--show-points' in args # Whether or not to show data points in 
+	                                      # heatmaps
+
+	colormap = None
+	if '--colormap' in args:
+		colormap = sys.argv[args.index('--colormap') + 3]
+
+
+	# Look for a heatmap argument in the form:
+	#    --heatmap:x:y:z, where x, y and z are 
+	#    keys in the critical data array.
+
+	heatmaps = []
+
+	for arg in args:
+		if arg.startswith('--heatmap'):
+			_, x, y, z = arg.split(':')
+			heatmaps.append((x, y, z))
+
+
 
 	print("Analyzing %s"%root_dir)
 
@@ -359,13 +404,52 @@ if __name__ == '__main__':
 			'fm'    : res['scores']['figure_of_merit'],
 			'ff'    : res['scores']['mean_ff_correlation'],
 			'fc'    : res['scores']['mean_fc_correlation'],
-			'mrmse' : res['scores']['mean_rmse']
+			'mrmse' : res['scores']['mean_rmse'],
+			'nf'    : len(res['parameter_set']['r_0_values']) * len(res['parameter_set']['legendre_polynomials'])
 		}
 
 		critical_data.append(point)
 
-	fm_vs_ff_fc(critical_data, show_points=True)
-	rmse_vs_ff_fc(critical_data, show_points=True)
+	names = {
+		'r'     : "$r_0$ Values",
+		'r#'    : "Number of $r_0$ Values",
+		'rm'    : "Mean $r_0$ Value",
+		'rmin'  : "Minimum $r_0$ Value",
+		'rmax'  : "Maximum $r_0$ Value",
+		'l'     : "Legendre Polynomials",
+		'l#'    : "Number of Legendre Polynomials",
+		'lm'    : "Mean Legendre Polynomial Order",
+		'lmin'  : "Minimum Legendre Polynomial Order",
+		'lmax'  : "Maximum Legendre Polynomial Order",
+		's'     : "Sigma",
+		'fm'    : "Figure of Merit",
+		'ff'    : "Mean Feature - Feature Correlation",
+		'fc'    : "Mean Feature - Output Correlation",
+		'mrmse' : "Mean Root Mean Squared Training Error",
+		'nf'    : "Number of Features"
+	}
+
+	if colormap is not None:
+		print("Using colormap: %s"%colormap)
+
+	if len(heatmaps) != 0:
+		print("Constructing the following heatmaps:")
+		for h in heatmaps:
+			print("\tx :: %s"%(names[h[0]]))
+			print("\ty :: %s"%(names[h[1]]))
+			print("\tz :: %s"%(names[h[2]]))
+			print('')
+
+	for h in heatmaps:
+		generic_heatmap(
+			h[0], h[1], h[2], 
+			critical_data,
+			show_points=show_points, 
+			colormap=colormap, 
+			names=names
+		)
+	#fm_vs_ff_fc(critical_data, show_points=False)
+	#rmse_vs_ff_fc(critical_data, show_points=False)
 	#r_l_number_heatmap(critical_data, show_points=True)
 	#r_l_fm_heatmap(critical_data, show_points=True)
 	#r_l_min_heatmap(critical_data, show_points=True)
