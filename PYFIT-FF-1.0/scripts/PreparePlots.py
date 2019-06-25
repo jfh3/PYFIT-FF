@@ -21,6 +21,7 @@
 #    --contour:rmax:lmax:fm --colormap cool --sigma 0.08
 #    --contour:rmin:lmin:fm --colormap cool --sigma 0.08 --show-points
 #    --contour:ff:fc:fm --colormap cool --sigma 0.08
+#    --contour:nf:fc:fm --colormap cool --sigma 0.08
 
 import matplotlib.pyplot as plt
 import numpy             as np
@@ -34,6 +35,7 @@ warnings.filterwarnings("ignore")
 
 sigmax = 0.05
 sigmay = 0.05
+_title = None
 
 def load_files(path, minimal=False):
 	results_file = path + 'master_results.json'
@@ -205,7 +207,6 @@ def triple_contour(x, y, z, xlabel, ylabel, title, grid_size=150, ticks=10, leve
 		ax.scatter(x, y, s=10, facecolor='#000000', edgecolor='#FFFFFF')
 
 
-	
 	ax.set_xlim(0, grid_size - 1)
 	ax.set_ylim(0, grid_size - 1)
 	#fig.colorbar(plot)
@@ -221,7 +222,10 @@ def generic_3d(_x, _y, _z, points, show_points=False, colormap=None, names=None,
 	if names is not None:
 		xlabel = names[_x]
 		ylabel = names[_y]
-		title  = '%s\n as a Function of %s\n and %s'%(names[_z], xlabel, ylabel)
+		if _title is None:
+			title  = '%s\n as a Function of %s\n and %s'%(names[_z], xlabel, ylabel)
+		else:
+			title = _title
 	else:
 		xlabel = 'Unspecified'
 		ylabel = 'Unspecified'
@@ -246,84 +250,6 @@ def generic_3d(_x, _y, _z, points, show_points=False, colormap=None, names=None,
 			colormap=colormap
 		)
 
-def r_l_min_heatmap(points, show_points=False):
-	x = np.array([p['rmin'] for p in points])
-	y = np.array([p['lmin'] for p in points])
-	z = np.array([p['fm'] for p in points])
-
-	triple_heatmap(
-		x, y, z, 
-		'Minimum $r_0$ Value', 
-		'Minimum Legendre Order', 
-		'Figure of Merit as a Function of Minimum Legendre order\n and Minimum $r_0$ Value',
-		show_points=show_points
-	)
-
-def fm_vs_ff_fc(points, show_points=False):
-	x = np.array([p['fc'] for p in points])
-	y = np.array([p['ff'] for p in points])
-	z = np.array([p['fm'] for p in points])
-
-	triple_heatmap(
-		x, y, z, 
-		'Mean Feature - Classification Correlation', 
-		'Mean Feature - Feature Correlation', 
-		'Figure of Merit as a Function of the Mean Feature - Feature Correlation\n and The Mean Feature Classification Correlation',
-		show_points=show_points
-	)
-
-def rmse_vs_ff_fc(points, show_points=False):
-	x = np.array([p['fc'] for p in points])
-	y = np.array([p['ff'] for p in points])
-	z = np.array([p['mrmse'] for p in points])
-
-	triple_heatmap(
-		x, y, z, 
-		'Mean Feature - Classification Correlation', 
-		'Mean Feature - Feature Correlation', 
-		'RMSE as a Function of the Mean Feature - Feature Correlation\n and The Mean Feature Classification Correlation',
-		show_points=show_points
-	)
-
-def r_l_number_heatmap(points, show_points=False):
-	x = np.array([p['r#'] for p in points])
-	y = np.array([p['l#'] for p in points])
-	z = np.array([p['fm'] for p in points])
-
-	triple_heatmap(
-		x, y, z, 
-		'Number of $r_0$ Values', 
-		'Number Legendre Orders', 
-		'Figure of Merit as a Function of the Number of Legendre orders\n and Number of $r_0$ Values',
-		show_points=show_points
-	)
-
-def r_l_max_heatmap(points, show_points=False):
-	x = np.array([p['rmax'] for p in points])
-	y = np.array([p['lmax'] for p in points])
-	z = np.array([p['fm'] for p in points])
-
-	triple_heatmap(
-		x, y, z, 
-		'Maximum $r_0$ Value', 
-		'Maximum Legendre Order', 
-		'Figure of Merit as a Function of Maximum Legendre order\n and Maximum $r_0$ Value',
-		show_points=show_points
-	)
-
-def r_l_fm_heatmap(points, show_points=False):
-	x = np.array([p['rm'] for p in points])
-	y = np.array([p['lm'] for p in points])
-	z = np.array([p['fm'] for p in points])
-
-	triple_heatmap(
-		x, y, z, 
-		'Mean $r_0$ Value', 
-		'Mean Legendre Order', 
-		'Figure of Merit as a Function of Mean Legendre order\n and Mean $r_0$ Value',
-		show_points=show_points
-	)
-
 
 if __name__ == '__main__':
 	root_dir = sys.argv[1] # The directory that contains all of the idx_* directories
@@ -343,6 +269,9 @@ if __name__ == '__main__':
 	if '--sigma' in args:
 		sigmax = sigmay = float(sys.argv[args.index('--sigma') + 3])
 
+	if '--title' in args:
+		_title = sys.argv[args.index('--title') + 3]
+
 	# Look for a heatmap argument in the form:
 	#    --heatmap:x:y:z, where x, y and z are 
 	#    keys in the critical data array.
@@ -357,6 +286,14 @@ if __name__ == '__main__':
 			_, x, y, z = arg.split(':')
 			heatmaps.append((x, y, z, True))
 
+
+	criterion = None
+
+	for arg in args:
+		if arg.startswith('--filter'):
+			_, expr = arg.split(':')
+			expr = expr.replace('%', 'values')
+			criterion = expr
 
 
 	print("Analyzing %s"%root_dir)
@@ -470,44 +407,61 @@ if __name__ == '__main__':
 	critical_data = []
 	for res, loc in zip(results, locations):
 		point = {
-			'loc'   : loc,
-			'r'     : res['parameter_set']['r_0_values'],
-			'r#'    : len(res['parameter_set']['r_0_values']),
-			'rm'    : np.array(res['parameter_set']['r_0_values']).mean(),
-			'rmin'  : np.array(res['parameter_set']['r_0_values']).min(),
-			'rmax'  : np.array(res['parameter_set']['r_0_values']).max(),
-			'l'     : res['parameter_set']['legendre_polynomials'],
-			'l#'    : len(res['parameter_set']['legendre_polynomials']),
-			'lm'    : np.array(res['parameter_set']['legendre_polynomials']).mean(),
-			'lmin'  : np.array(res['parameter_set']['legendre_polynomials']).min(),
-			'lmax'  : np.array(res['parameter_set']['legendre_polynomials']).max(),
-			's'     : res['parameter_set']['gi_sigma'],
-			'fm'    : res['scores']['figure_of_merit'],
-			'ff'    : res['scores']['mean_ff_correlation'],
-			'fc'    : res['scores']['mean_fc_correlation'],
-			'mrmse' : res['scores']['mean_rmse'],
-			'nf'    : len(res['parameter_set']['r_0_values']) * len(res['parameter_set']['legendre_polynomials'])
+			'loc'     : loc,
+			'r'       : res['parameter_set']['r_0_values'],
+			'r#'      : len(res['parameter_set']['r_0_values']),
+			'rm'      : np.array(res['parameter_set']['r_0_values']).mean(),
+			'rmin'    : np.array(res['parameter_set']['r_0_values']).min(),
+			'rmax'    : np.array(res['parameter_set']['r_0_values']).max(),
+			'l'       : res['parameter_set']['legendre_polynomials'],
+			'l#'      : len(res['parameter_set']['legendre_polynomials']),
+			'lm'      : np.array(res['parameter_set']['legendre_polynomials']).mean(),
+			'lmin'    : np.array(res['parameter_set']['legendre_polynomials']).min(),
+			'lmax'    : np.array(res['parameter_set']['legendre_polynomials']).max(),
+			's'       : res['parameter_set']['gi_sigma'],
+			'fm'      : res['scores']['figure_of_merit'],
+			'ff'      : res['scores']['mean_ff_correlation'],
+			'fc'      : res['scores']['mean_fc_correlation'],
+			'mrmse'   : res['scores']['mean_rmse'],
+			'nf'      : len(res['parameter_set']['r_0_values']) * len(res['parameter_set']['legendre_polynomials']),
+			'minrmse' : res['scores']['min_rmse'],
+			'maxrmse' : res['scores']['max_rmse'],
+			'stdrmse' : res['scores']['std_rmse']
 		}
 
 		critical_data.append(point)
 
+	# Evaluate the filter if there is one.
+	if criterion != None:
+		tmp = []
+		for values in critical_data:
+			if eval(criterion):
+				tmp.append(values)
+		print("Filter eliminated %i points"%(len(critical_data) - len(tmp)))
+		critical_data = tmp
+	
+
+
 	names = {
-		'r'     : "$r_0$ Values",
-		'r#'    : "Number of $r_0$ Values",
-		'rm'    : "Mean $r_0$ Value",
-		'rmin'  : "Minimum $r_0$ Value",
-		'rmax'  : "Maximum $r_0$ Value",
-		'l'     : "Legendre Polynomials",
-		'l#'    : "Number of Legendre Polynomials",
-		'lm'    : "Mean Legendre Polynomial Order",
-		'lmin'  : "Minimum Legendre Polynomial Order",
-		'lmax'  : "Maximum Legendre Polynomial Order",
-		's'     : "Sigma",
-		'fm'    : "Figure of Merit",
-		'ff'    : "Mean Feature - Feature Correlation",
-		'fc'    : "Mean Feature - Output Correlation",
-		'mrmse' : "Mean Root Mean Squared Training Error",
-		'nf'    : "Number of Features"
+		'r'       : "$r_0$ Values",
+		'r#'      : "Number of $r_0$ Values",
+		'rm'      : "Mean $r_0$ Value",
+		'rmin'    : "Minimum $r_0$ Value",
+		'rmax'    : "Maximum $r_0$ Value",
+		'l'       : "Legendre Polynomials",
+		'l#'      : "Number of Legendre Polynomials",
+		'lm'      : "Mean Legendre Polynomial Order",
+		'lmin'    : "Minimum Legendre Polynomial Order",
+		'lmax'    : "Maximum Legendre Polynomial Order",
+		's'       : "Sigma",
+		'fm'      : "Figure of Merit",
+		'ff'      : "Mean Feature - Feature Correlation",
+		'fc'      : "Mean Feature - Output Correlation",
+		'mrmse'   : "Mean Root Mean Squared Training Error",
+		'nf'      : "Number of Features",
+		'minrmse' : "Minimum Root Mean Squared Training Error",
+		'maxrmse' : "Maximum Root Mean Squared Training Error",
+		'stdrmse' : "Root Mean Squared Training Error Standard Deviation"
 	}
 
 	if colormap is not None:
