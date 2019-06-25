@@ -2,12 +2,25 @@
 #    seismic
 #    inferno
 #    
-
+# --small-mode --small-load 
 # Good Command Lines to try:
-#    --small-mode --small-load --heatmap:nf:ff:fm --colormap inferno
-#    --small-mode --small-load --heatmap:lmin:lmax:fm --colormap Accent
-#    --small-mode --small-load --heatmap:rmin:rmax:fm --colormap Accent
-#    
+#    --heatmap:nf:ff:fm --colormap inferno
+#    --heatmap:lmin:lmax:fm --colormap Accent
+#    --heatmap:rmin:rmax:fm --colormap Accent
+#    --heatmap:ff:fc:fm --colormap Accent
+#    --heatmap:ff:fc:mrmse --colormap Accent
+#    --heatmap:s:nf:fm --colormap gnuplot
+#    --heatmap:nf:fc:fm --colormap gnuplot
+#    --heatmap:nf:fc:fm --colormap Accent --show-points
+#    --contour:ff:fc:fm --colormap cool
+#    --contour:lmax:lmin:fm --colormap cool
+#    --contour:rmax:rmin:fm --colormap cool
+#    --contour:ff:fc:mrmse --colormap cool --show-points
+#    --contour:nf:fc:fm --colormap cool --sigma 0.13
+#    --contour:r#:l#:fm --colormap cool --sigma 0.08 --show-points
+#    --contour:rmax:lmax:fm --colormap cool --sigma 0.08
+#    --contour:rmin:lmin:fm --colormap cool --sigma 0.08 --show-points
+#    --contour:ff:fc:fm --colormap cool --sigma 0.08
 
 import matplotlib.pyplot as plt
 import numpy             as np
@@ -18,6 +31,9 @@ from   mpldatacursor        import datacursor
 from   mpl_toolkits.mplot3d import Axes3D
 import warnings
 warnings.filterwarnings("ignore")
+
+sigmax = 0.05
+sigmay = 0.05
 
 def load_files(path, minimal=False):
 	results_file = path + 'master_results.json'
@@ -65,7 +81,10 @@ def sort_by(l, k, r=False):
 # correspond to the sigma parameters in this 2-D gaussion. 
 # In essence, this function makes an attempt at Gaussian averaging of points
 # in order to create a smooth uniform plot.
-def xyz_to_img(x, y, z, sigmax=0.4, sigmay=0.4, cutoff=5.0, grid_size=150):
+def xyz_to_img(x, y, z, cutoff=50.0, grid_size=150):
+	global sigmax
+	global sigmay
+
 	x_rng = np.linspace(min(x), max(x), grid_size)
 	y_rng = np.linspace(min(y), max(y), grid_size)
 
@@ -122,8 +141,8 @@ def triple_heatmap(x, y, z, xlabel, ylabel, title, grid_size=150, ticks=10, show
 	_ticks[_ticks > 0] -= 1
 	ax.set_xticks(_ticks)
 	ax.set_yticks(_ticks)
-	ax.set_xticklabels(['%1.1f'%i for i in np.linspace(min(x), max(x), ticks + 1)])
-	ax.set_yticklabels(['%1.1f'%i for i in np.linspace(min(y), max(y), ticks + 1)])
+	ax.set_xticklabels(['%1.2f'%i for i in np.linspace(min(x), max(x), ticks + 1)])
+	ax.set_yticklabels(['%1.2f'%i for i in np.linspace(min(y), max(y), ticks + 1)])
 	ax.set_xlabel(xlabel)
 	ax.set_ylabel(ylabel)
 	ax.set_title(title)
@@ -146,7 +165,54 @@ def triple_heatmap(x, y, z, xlabel, ylabel, title, grid_size=150, ticks=10, show
 	ax.set_aspect(aspect=1)
 	plt.show()
 
-def generic_heatmap(_x, _y, _z, points, show_points=False, colormap=None, names=None):
+def triple_contour(x, y, z, xlabel, ylabel, title, grid_size=150, ticks=10, levels=10, show_points=False, colormap=None):
+	fig, ax = plt.subplots(1, 1)
+	fig.set_size_inches(8, 8)
+
+	x = np.array(x)
+	y = np.array(y)
+	z = np.array(z)
+	values = xyz_to_img(x, y, z, grid_size=grid_size)
+
+	x_rng = max(x) - min(x)
+	y_rng = max(y) - min(y)
+
+	if colormap is None:
+		_cmap = 'inferno'
+	else:
+		_cmap = colormap
+
+	plot = ax.contour(values, cmap=_cmap, levels=levels)
+	ax.clabel(plot, inline=1, fontsize=10)
+	_ticks = np.arange(0, grid_size + 1, grid_size // ticks)
+	_ticks[_ticks > 0] -= 1
+	ax.set_xticks(_ticks)
+	ax.set_yticks(_ticks)
+	ax.set_xticklabels(['%1.2f'%i for i in np.linspace(min(x), max(x), ticks + 1)])
+	ax.set_yticklabels(['%1.2f'%i for i in np.linspace(min(y), max(y), ticks + 1)])
+	ax.set_xlabel(xlabel)
+	ax.set_ylabel(ylabel)
+	ax.set_title(title)
+
+	if show_points:
+		# We need to remap these points to match the current scaling.
+		x = (grid_size - 1) * ((x - min(x)) / x_rng)
+		y = (grid_size - 1) * ((y - min(y)) / y_rng)
+		x[x <= min(x)] += 1
+		x[x >= max(x)] -= 1
+		y[y <= min(y)] += 1
+		y[y >= max(y)] -= 1
+		ax.scatter(x, y, s=10, facecolor='#000000', edgecolor='#FFFFFF')
+
+
+	
+	ax.set_xlim(0, grid_size - 1)
+	ax.set_ylim(0, grid_size - 1)
+	#fig.colorbar(plot)
+	ax.set_aspect(aspect=1)
+	plt.show()
+
+def generic_3d(_x, _y, _z, points, show_points=False, colormap=None, names=None, contour=False):
 	x = np.array([p[_x] for p in points])
 	y = np.array([p[_y] for p in points])
 	z = np.array([p[_z] for p in points])
@@ -161,14 +227,24 @@ def generic_heatmap(_x, _y, _z, points, show_points=False, colormap=None, names=
 		ylabel = 'Unspecified'
 		title  = 'Unspecified'
 
-	triple_heatmap(
-		x, y, z, 
-		xlabel, 
-		ylabel, 
-		title,
-		show_points=show_points,
-		colormap=colormap
-	)
+	if contour:
+		triple_contour(
+			x, y, z, 
+			xlabel, 
+			ylabel, 
+			title,
+			show_points=show_points,
+			colormap=colormap
+		)
+	else:
+		triple_heatmap(
+			x, y, z, 
+			xlabel, 
+			ylabel, 
+			title,
+			show_points=show_points,
+			colormap=colormap
+		)
 
 def r_l_min_heatmap(points, show_points=False):
 	x = np.array([p['rmin'] for p in points])
@@ -264,6 +340,8 @@ if __name__ == '__main__':
 	if '--colormap' in args:
 		colormap = sys.argv[args.index('--colormap') + 3]
 
+	if '--sigma' in args:
+		sigmax = sigmay = float(sys.argv[args.index('--sigma') + 3])
 
 	# Look for a heatmap argument in the form:
 	#    --heatmap:x:y:z, where x, y and z are 
@@ -274,7 +352,10 @@ if __name__ == '__main__':
 	for arg in args:
 		if arg.startswith('--heatmap'):
 			_, x, y, z = arg.split(':')
-			heatmaps.append((x, y, z))
+			heatmaps.append((x, y, z, False))
+		elif arg.startswith('--contour'):
+			_, x, y, z = arg.split(':')
+			heatmaps.append((x, y, z, True))
 
 
 
@@ -433,7 +514,7 @@ if __name__ == '__main__':
 		print("Using colormap: %s"%colormap)
 
 	if len(heatmaps) != 0:
-		print("Constructing the following heatmaps:")
+		print("Constructing the following 3d plots:")
 		for h in heatmaps:
 			print("\tx :: %s"%(names[h[0]]))
 			print("\ty :: %s"%(names[h[1]]))
@@ -441,12 +522,13 @@ if __name__ == '__main__':
 			print('')
 
 	for h in heatmaps:
-		generic_heatmap(
+		generic_3d(
 			h[0], h[1], h[2], 
 			critical_data,
 			show_points=show_points, 
 			colormap=colormap, 
-			names=names
+			names=names,
+			contour=h[3]
 		)
 	#fm_vs_ff_fc(critical_data, show_points=False)
 	#rmse_vs_ff_fc(critical_data, show_points=False)
