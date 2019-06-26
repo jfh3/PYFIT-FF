@@ -193,7 +193,7 @@ def triple_contour(x, y, z, xlabel, ylabel, title, grid_size=150, ticks=10, leve
 	else:
 		_cmap = colormap
 
-	plot = ax.contour(values, cmap=_cmap, levels=levels, linewidths=2.0)
+	plot = ax.contour(values, cmap=_cmap, levels=levels, linewidths=2.6)
 	
 	if _integer_ticks:
 		_ticks = np.arange(0, grid_size + 1, grid_size // ticks)
@@ -202,32 +202,6 @@ def triple_contour(x, y, z, xlabel, ylabel, title, grid_size=150, ticks=10, leve
 		ax.set_yticks(_ticks)
 		ax.set_xticklabels(['%i'%int(round(i)) for i in np.linspace(min(x), max(x), ticks + 1)], fontsize=13)
 		ax.set_yticklabels(['%i'%int(round(i)) for i in np.linspace(min(y), max(y), ticks + 1)], fontsize=13)
-		# _ticks = np.arange(0, grid_size + 1, grid_size // ticks)
-		# _ticks[_ticks > 0] -= 1
-		# ax.set_xticks(_ticks)
-		# ax.set_yticks(_ticks)
-
-		# # For each tick location, we need to find the closest appropriate integer tick
-		# # in the actual data space.
-		# scaled_ticks    = (_ticks - min(_ticks)) / (max(_ticks) - min(_ticks))
-		# x_labels        = []
-		# x_points        = np.linspace(min(x), max(x), grid_size // ticks)
-		# x_points_scaled = (x_points - min(x_points)) / (max(x_points) - min(x_points))
-		# for _tick in scaled_ticks:
-		# 	distances = np.abs(_tick - x_points_scaled)
-		# 	min_idx   = np.argmin(distances)
-		# 	x_labels.append(str(int(round(x_points[min_idx]))))
-
-		# y_labels        = []
-		# y_points        = np.linspace(min(y), max(y), grid_size // ticks)
-		# y_points_scaled = (y_points - min(y_points)) / (max(y_points) - min(y_points))
-		# for _tick in scaled_ticks:
-		# 	distances = np.abs(_tick - y_points_scaled)
-		# 	min_idx   = np.argmin(distances)
-		# 	y_labels.append(str(int(round(y_points[min_idx]))))
-
-		# ax.set_xticklabels(x_labels, fontsize=13)
-		# ax.set_yticklabels(y_labels, fontsize=13)
 		
 	else:
 		_ticks = np.arange(0, grid_size + 1, grid_size // ticks)
@@ -282,7 +256,7 @@ def triple_contour(x, y, z, xlabel, ylabel, title, grid_size=150, ticks=10, leve
 	ax.set_xlim(0, grid_size - 1)
 	ax.set_ylim(0, grid_size - 1)
 	ax.set_aspect(aspect=1)
-	ax.clabel(plot, inline=1, fontsize=12, colors='#424242', manual=True)
+	ax.clabel(plot, inline=1, fontsize=12, colors='#424242', manual=True, fmt='%1.2f')
 	plt.show()
 
 def generic_3d(_x, _y, _z, points, show_points=False, colormap=None, names=None, contour=False):
