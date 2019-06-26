@@ -33,7 +33,7 @@ from   mpldatacursor        import datacursor
 from   mpl_toolkits.mplot3d import Axes3D
 import warnings
 warnings.filterwarnings("ignore")
-plt.ion()
+#plt.ion()
 
 sigmax         = 0.05
 sigmay         = 0.05
@@ -200,19 +200,19 @@ def triple_contour(x, y, z, xlabel, ylabel, title, grid_size=150, ticks=10, leve
 		_ticks[_ticks > 0] -= 1
 		ax.set_xticks(_ticks)
 		ax.set_yticks(_ticks)
-		ax.set_xticklabels(['%i'%int(round(i)) for i in np.linspace(min(x), max(x), ticks + 1)], fontsize=13)
-		ax.set_yticklabels(['%i'%int(round(i)) for i in np.linspace(min(y), max(y), ticks + 1)], fontsize=13)
+		ax.set_xticklabels(['%i'%int(round(i)) for i in np.linspace(min(x), max(x), ticks + 1)], fontsize=16)
+		ax.set_yticklabels(['%i'%int(round(i)) for i in np.linspace(min(y), max(y), ticks + 1)], fontsize=16)
 		
 	else:
 		_ticks = np.arange(0, grid_size + 1, grid_size // ticks)
 		_ticks[_ticks > 0] -= 1
 		ax.set_xticks(_ticks)
 		ax.set_yticks(_ticks)
-		ax.set_xticklabels(['%1.2f'%i for i in np.linspace(min(x), max(x), ticks + 1)], fontsize=13)
-		ax.set_yticklabels(['%1.2f'%i for i in np.linspace(min(y), max(y), ticks + 1)], fontsize=13)
+		ax.set_xticklabels(['%1.2f'%i for i in np.linspace(min(x), max(x), ticks + 1)], fontsize=16)
+		ax.set_yticklabels(['%1.2f'%i for i in np.linspace(min(y), max(y), ticks + 1)], fontsize=16)
 
-	ax.set_xlabel(xlabel, fontsize=18)
-	ax.set_ylabel(ylabel, fontsize=18)
+	ax.set_xlabel(xlabel, fontsize=20)
+	ax.set_ylabel(ylabel, fontsize=20)
 	ax.xaxis.set_tick_params(width=2)
 	ax.yaxis.set_tick_params(width=2)
 	for axis in ['top','bottom','left','right']:
@@ -245,7 +245,7 @@ def triple_contour(x, y, z, xlabel, ylabel, title, grid_size=150, ticks=10, leve
 
 			match_indices = x_same & y_same
 			avg           = values[match_indices].mean()
-			new_colors.append(cmap(avg**2))
+			new_colors.append(cmap(avg**(1.85)))
 
 		point_colors = new_colors
 
@@ -256,7 +256,9 @@ def triple_contour(x, y, z, xlabel, ylabel, title, grid_size=150, ticks=10, leve
 	ax.set_xlim(0, grid_size - 1)
 	ax.set_ylim(0, grid_size - 1)
 	ax.set_aspect(aspect=1)
-	ax.clabel(plot, inline=1, fontsize=12, colors='#424242', manual=True, fmt='%1.2f')
+	lb = ax.clabel(plot, inline=1, fontsize=15, colors='#000000', manual=True, fmt='%1.2f')
+	for l in lb:
+		l.set_fontweight('bold')
 	plt.show()
 
 def generic_3d(_x, _y, _z, points, show_points=False, colormap=None, names=None, contour=False):
