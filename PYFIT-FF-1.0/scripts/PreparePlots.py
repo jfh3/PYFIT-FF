@@ -24,6 +24,7 @@
 #    --contour:nf:fc:fm --colormap cool --sigma 0.08
 
 import matplotlib.pyplot as plt
+import matplotlib
 import numpy             as np
 import sys
 import json
@@ -32,11 +33,15 @@ from   mpldatacursor        import datacursor
 from   mpl_toolkits.mplot3d import Axes3D
 import warnings
 warnings.filterwarnings("ignore")
+plt.ion()
 
-sigmax  = 0.05
-sigmay  = 0.05
-_title  = None
-_levels = None
+sigmax         = 0.05
+sigmay         = 0.05
+_tick_count    = None
+_title         = None
+_levels        = None
+_uniform       = False
+_integer_ticks = False
 
 def load_files(path, minimal=False):
 	results_file = path + 'master_results.json'
@@ -84,7 +89,7 @@ def sort_by(l, k, r=False):
 # correspond to the sigma parameters in this 2-D gaussion. 
 # In essence, this function makes an attempt at Gaussian averaging of points
 # in order to create a smooth uniform plot.
-def xyz_to_img(x, y, z, cutoff=50.0, grid_size=150):
+def xyz_to_img(x, y, z, cutoff=150.0, grid_size=150):
 	global sigmax
 	global sigmay
 
@@ -109,10 +114,10 @@ def xyz_to_img(x, y, z, cutoff=50.0, grid_size=150):
 			y_cutoff = y[distances <= cutoff] - yi
 			z_cutoff = z[distances <= cutoff]
 			weights       = (1 / (2*np.pi*sigmax*sigmay))*np.exp(-(((x_cutoff)**2 / (2*sigmax**2)) + ((y_cutoff)**2 / (2*sigmay**2))))
-			
 
 			if weights.sum() == 0.0:
 				row.append(0.0)
+				print('not enough data')
 			else:
 				mean_val = np.average(z_cutoff, weights=weights)
 				row.append(mean_val)
@@ -172,6 +177,9 @@ def triple_contour(x, y, z, xlabel, ylabel, title, grid_size=150, ticks=10, leve
 	fig, ax = plt.subplots(1, 1)
 	fig.set_size_inches(8, 8)
 
+	if _tick_count is not None:
+		ticks = _tick_count
+
 	x = np.array(x)
 	y = np.array(y)
 	z = np.array(z)
@@ -185,19 +193,66 @@ def triple_contour(x, y, z, xlabel, ylabel, title, grid_size=150, ticks=10, leve
 	else:
 		_cmap = colormap
 
-	plot = ax.contour(values, cmap=_cmap, levels=levels)
-	ax.clabel(plot, inline=1, fontsize=10)
-	_ticks = np.arange(0, grid_size + 1, grid_size // ticks)
-	_ticks[_ticks > 0] -= 1
-	ax.set_xticks(_ticks)
-	ax.set_yticks(_ticks)
-	ax.set_xticklabels(['%1.2f'%i for i in np.linspace(min(x), max(x), ticks + 1)])
-	ax.set_yticklabels(['%1.2f'%i for i in np.linspace(min(y), max(y), ticks + 1)])
-	ax.set_xlabel(xlabel)
-	ax.set_ylabel(ylabel)
-	ax.set_title(title)
+	plot = ax.contour(values, cmap=_cmap, levels=levels, linewidths=2.0)
+	
+	if _integer_ticks:
+		_ticks = np.arange(0, grid_size + 1, grid_size // ticks)
+		_ticks[_ticks > 0] -= 1
+		ax.set_xticks(_ticks)
+		ax.set_yticks(_ticks)
+		ax.set_xticklabels(['%i'%int(round(i)) for i in np.linspace(min(x), max(x), ticks + 1)], fontsize=13)
+		ax.set_yticklabels(['%i'%int(round(i)) for i in np.linspace(min(y), max(y), ticks + 1)], fontsize=13)
+		# _ticks = np.arange(0, grid_size + 1, grid_size // ticks)
+		# _ticks[_ticks > 0] -= 1
+		# ax.set_xticks(_ticks)
+		# ax.set_yticks(_ticks)
+
+		# # For each tick location, we need to find the closest appropriate integer tick
+		# # in the actual data space.
+		# scaled_ticks    = (_ticks - min(_ticks)) / (max(_ticks) - min(_ticks))
+		# x_labels        = []
+		# x_points        = np.linspace(min(x), max(x), grid_size // ticks)
+		# x_points_scaled = (x_points - min(x_points)) / (max(x_points) - min(x_points))
+		# for _tick in scaled_ticks:
+		# 	distances = np.abs(_tick - x_points_scaled)
+		# 	min_idx   = np.argmin(distances)
+		# 	x_labels.append(str(int(round(x_points[min_idx]))))
+
+		# y_labels        = []
+		# y_points        = np.linspace(min(y), max(y), grid_size // ticks)
+		# y_points_scaled = (y_points - min(y_points)) / (max(y_points) - min(y_points))
+		# for _tick in scaled_ticks:
+		# 	distances = np.abs(_tick - y_points_scaled)
+		# 	min_idx   = np.argmin(distances)
+		# 	y_labels.append(str(int(round(y_points[min_idx]))))
+
+		# ax.set_xticklabels(x_labels, fontsize=13)
+		# ax.set_yticklabels(y_labels, fontsize=13)
+		
+	else:
+		_ticks = np.arange(0, grid_size + 1, grid_size // ticks)
+		_ticks[_ticks > 0] -= 1
+		ax.set_xticks(_ticks)
+		ax.set_yticks(_ticks)
+		ax.set_xticklabels(['%1.2f'%i for i in np.linspace(min(x), max(x), ticks + 1)], fontsize=13)
+		ax.set_yticklabels(['%1.2f'%i for i in np.linspace(min(y), max(y), ticks + 1)], fontsize=13)
+
+	ax.set_xlabel(xlabel, fontsize=18)
+	ax.set_ylabel(ylabel, fontsize=18)
+	ax.xaxis.set_tick_params(width=2)
+	ax.yaxis.set_tick_params(width=2)
+	for axis in ['top','bottom','left','right']:
+  		ax.spines[axis].set_linewidth(1.8)
+	ax.set_title(title, fontsize=20)
 
 	if show_points:
+		# Normalize the values for the scatterplot points to between
+		# zero and 1.0.
+		values       = (z - z.min()) / (z.max() - z.min())
+		cmap         = matplotlib.cm.get_cmap(colormap)
+		# point_colors = [cmap(v) for v in values]
+
+
 		# We need to remap these points to match the current scaling.
 		x = (grid_size - 1) * ((x - min(x)) / x_rng)
 		y = (grid_size - 1) * ((y - min(y)) / y_rng)
@@ -205,13 +260,29 @@ def triple_contour(x, y, z, xlabel, ylabel, title, grid_size=150, ticks=10, leve
 		x[x >= max(x)] -= 1
 		y[y <= min(y)] += 1
 		y[y >= max(y)] -= 1
-		ax.scatter(x, y, s=10, facecolor='#000000', edgecolor='#FFFFFF')
+
+		# Now we get all of the points that are basically on top of eachother and
+		# average them.
+		new_colors = []
+		for xi, yi in zip(x, y):
+			# Get all of the points that are at the same location.
+			x_same = (np.abs(x - xi) < (x_rng / 100))
+			y_same = (np.abs(y - yi) < (y_rng / 100))
+
+			match_indices = x_same & y_same
+			avg           = values[match_indices].mean()
+			new_colors.append(cmap(avg**2))
+
+		point_colors = new_colors
+
+
+		ax.scatter(x, y, s=50, facecolor=point_colors, edgecolor='#FFFFFF')
 
 
 	ax.set_xlim(0, grid_size - 1)
 	ax.set_ylim(0, grid_size - 1)
-	#fig.colorbar(plot)
 	ax.set_aspect(aspect=1)
+	ax.clabel(plot, inline=1, fontsize=12, colors='#424242', manual=True)
 	plt.show()
 
 def generic_3d(_x, _y, _z, points, show_points=False, colormap=None, names=None, contour=False):
@@ -261,11 +332,22 @@ def histogram_plot(locations, counts, xlabel):
 
 	width = (max(locations) - min(locations)) / (len(locations)*1.8)
 
-	ax.bar(locations, counts, edgecolor='black', linewidth=0.5, width=width)
+	if _uniform:
+		_loc = np.linspace(min(locations), max(locations), len(locations))
+
+		ax.bar(_loc, counts, edgecolor='black', linewidth=0.5, width=width)
+	else:
+		ax.bar(locations, counts, edgecolor='black', linewidth=0.5, width=width)
+
 	ax.set_xlabel(xlabel)
 	ax.set_ylabel("Quantity")
-	ax.set_xticks(loc)
-	ax.set_xticklabels(['%1.2f'%l for l in loc], rotation = 45)
+
+	if _uniform:
+		ax.set_xticks(_loc)
+	else:
+		ax.set_xticks(locations)
+
+	ax.set_xticklabels(['%1.2f'%l for l in locations], rotation = 45)
 	ax.set_title(_title or "Unspecified")
 
 	plt.show()
@@ -280,6 +362,9 @@ if __name__ == '__main__':
 	do_filter   = '--filter'      in args # Run the filter code below
 	show_points = '--show-points' in args # Whether or not to show data points in 
 	                                      # heatmaps
+	_uniform    = '--uniform-histogram' in args
+
+	_integer_ticks = '--integer-ticks' in args
 
 	colormap = None
 	if '--colormap' in args:
@@ -293,6 +378,9 @@ if __name__ == '__main__':
 
 	if '--levels' in args:
 		_levels = int(sys.argv[args.index('--levels') + 3])
+
+	if '--tick-count' in args:
+		_tick_count = int(sys.argv[args.index('--tick-count') + 3])
 
 	# Look for a heatmap argument in the form:
 	#    --heatmap:x:y:z, where x, y and z are 
