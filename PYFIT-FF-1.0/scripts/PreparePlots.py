@@ -31,6 +31,8 @@ import json
 import os
 from   mpldatacursor        import datacursor
 from   mpl_toolkits.mplot3d import Axes3D
+from   matplotlib           import cm
+from   matplotlib.colors    import ListedColormap, Normalize
 import warnings
 warnings.filterwarnings("ignore")
 #plt.ion()
@@ -103,26 +105,13 @@ def xyz_to_img(x, y, z, cutoff=150.0, grid_size=150):
 	y = np.array(y)
 	z = np.array(z)
 
-	grid = []
+	grid = np.zeros((grid_size, grid_size))
 
-	for yi in y_rng:
-		row = []
-		for xi in x_rng:
-			distances = np.sqrt((xi - x)**2 + (y - yi)**2)
-			
-			x_cutoff = x[distances <= cutoff] - xi
-			y_cutoff = y[distances <= cutoff] - yi
-			z_cutoff = z[distances <= cutoff]
-			weights       = (1 / (2*np.pi*sigmax*sigmay))*np.exp(-(((x_cutoff)**2 / (2*sigmax**2)) + ((y_cutoff)**2 / (2*sigmay**2))))
-
-			if weights.sum() == 0.0:
-				row.append(0.0)
-				print('not enough data')
-			else:
-				mean_val = np.average(z_cutoff, weights=weights)
-				row.append(mean_val)
-			#row.append(yi)
-		grid.append(row)
+	for yidx, yi in enumerate(y_rng):
+		for xidx, xi in enumerate(x_rng):
+			weights  = (1 / (2*np.pi*sigmax*sigmay))*np.exp(-(((x - xi)**2 / (2*sigmax**2)) + ((y - yi)**2 / (2*sigmay**2))))
+			mean_val = np.average(z, weights=weights)
+			grid[yidx][xidx] = mean_val
 
 	return grid
 
@@ -174,6 +163,7 @@ def triple_heatmap(x, y, z, xlabel, ylabel, title, grid_size=150, ticks=10, show
 	plt.show()
 
 def triple_contour(x, y, z, xlabel, ylabel, title, grid_size=150, ticks=10, levels=10, show_points=False, colormap=None):
+
 	fig, ax = plt.subplots(1, 1)
 	fig.set_size_inches(8, 8)
 
@@ -185,6 +175,9 @@ def triple_contour(x, y, z, xlabel, ylabel, title, grid_size=150, ticks=10, leve
 	z = np.array(z)
 	values = xyz_to_img(x, y, z, grid_size=grid_size)
 
+	print("Contour min: %f"%values.min())
+	print("Contour max: %f"%values.max())
+
 	x_rng = max(x) - min(x)
 	y_rng = max(y) - min(y)
 
@@ -193,7 +186,13 @@ def triple_contour(x, y, z, xlabel, ylabel, title, grid_size=150, ticks=10, leve
 	else:
 		_cmap = colormap
 
-	plot = ax.contour(values, cmap=_cmap, levels=levels, linewidths=2.6)
+	plot = ax.contour(
+		values, 
+		cmap=_cmap, 
+		levels=levels, 
+		linewidths=2.6,
+		norm=Normalize(vmin=values.min(), vmax=values.max())
+	)
 	
 	if _integer_ticks:
 		_ticks = np.arange(0, grid_size + 1, grid_size // ticks)
@@ -222,35 +221,47 @@ def triple_contour(x, y, z, xlabel, ylabel, title, grid_size=150, ticks=10, leve
 	if show_points:
 		# Normalize the values for the scatterplot points to between
 		# zero and 1.0.
-		values       = (z - z.min()) / (z.max() - z.min())
-		cmap         = matplotlib.cm.get_cmap(colormap)
-		# point_colors = [cmap(v) for v in values]
+		cmap = matplotlib.cm.get_cmap(_cmap)
+
+		xy = np.zeros((x.shape[0], 2))
+		xy[:, 0] = x
+		xy[:, 1] = y
+
+		unique_points = np.unique(xy, axis=0)
+
+		print('%i Unique points'%unique_points.shape[0])
+
+		means = np.zeros(unique_points.shape[0])
+
+		for idx, [xi, yi] in enumerate(unique_points):
+			# Find all points in the original arrays
+			# that have the same location and average their
+			# values.
+			x_same       = x == xi
+			y_same       = y == yi
+			same_indices = x_same & y_same
+			means[idx]   = z[same_indices].mean()
 
 
-		# We need to remap these points to match the current scaling.
-		x = (grid_size - 1) * ((x - min(x)) / x_rng)
-		y = (grid_size - 1) * ((y - min(y)) / y_rng)
-		x[x <= min(x)] += 1
-		x[x >= max(x)] -= 1
-		y[y <= min(y)] += 1
-		y[y >= max(y)] -= 1
+		print("Point min: %f"%means.min())
+		print("Point max: %f"%means.max())
 
-		# Now we get all of the points that are basically on top of eachother and
-		# average them.
-		new_colors = []
-		for xi, yi in zip(x, y):
-			# Get all of the points that are at the same location.
-			x_same = (np.abs(x - xi) < (x_rng / 100))
-			y_same = (np.abs(y - yi) < (y_rng / 100))
+		# Normalize the values.
+		means    = (means - means.min()) / (means.max() - means.min())
+		x_scaled = unique_points[:, 0]
+		y_scaled = unique_points[:, 1]
 
-			match_indices = x_same & y_same
-			avg           = values[match_indices].mean()
-			new_colors.append(cmap(avg**(1.85)))
+		x_scatter = (grid_size - 1) * ((x_scaled - x_scaled.min()) / (x_scaled.max() - x_scaled.min()))
+		y_scatter = (grid_size - 1) * ((y_scaled - y_scaled.min()) / (y_scaled.max() - y_scaled.min()))
 
-		point_colors = new_colors
+		# Move points in a little bit from the edge so they are visible.
+		x_scatter[x_scatter <= x_scatter.min()] += 1
+		x_scatter[x_scatter >= x_scatter.max()] -= 1
+		y_scatter[y_scatter <= y_scatter.min()] += 1
+		y_scatter[y_scatter >= y_scatter.max()] -= 1
 
-
-		ax.scatter(x, y, s=50, facecolor=point_colors, edgecolor='#FFFFFF')
+		point_colors = cmap(means)
+		ax.scatter(x_scatter, y_scatter, s=50, facecolor=point_colors, edgecolor='#FFFFFF')
 
 
 	ax.set_xlim(0, grid_size - 1)
@@ -345,6 +356,54 @@ if __name__ == '__main__':
 	colormap = None
 	if '--colormap' in args:
 		colormap = sys.argv[args.index('--colormap') + 3]
+
+	if colormap is not None:
+		if colormap == 'customRYG':
+			# Generate a variant ot the RdYlGn colormap with the 
+			# values close to the center interpolated in a manner
+			# that keep the colors darker and therefor more visible.
+
+			color_points = 256
+
+			RdYlGn    = cm.get_cmap('RdYlGn', color_points)
+			customRYG = RdYlGn(np.linspace(0, 1, color_points))
+			
+			start = int(round(0.33 * color_points))
+			stop  = int(round(0.66 * color_points))
+
+			# max_mean_channel = 0.5
+
+			x_range     = stop - start
+			start_color = customRYG[start]
+			stop_color  = customRYG[stop]
+
+			start_intensity = start_color[:3].mean()
+
+			r_start = start_color[0]
+			g_start = start_color[1]
+			b_start = start_color[2]
+			r_slope = (stop_color[0] - start_color[0]) / x_range
+			g_slope = (stop_color[1] - start_color[1]) / x_range
+			b_slope = (stop_color[2] - start_color[2]) / x_range
+
+			for idx in range(start, stop):
+				customRYG[idx, :] = [
+					r_slope * (idx - start) + r_start,
+					g_slope * (idx - start) + g_start,
+					b_slope * (idx - start) + b_start,
+					1.0
+				]
+				# customRYG[idx, :] = [
+				# 	0.0,
+				# 	0.0,
+				# 	0.0,
+				# 	1.0
+				# ]
+
+
+
+			customRYG = ListedColormap(customRYG)
+			colormap  = customRYG
 
 	if '--sigma' in args:
 		sigmax = sigmay = float(sys.argv[args.index('--sigma') + 3])
