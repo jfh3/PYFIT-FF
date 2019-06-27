@@ -39,11 +39,13 @@ warnings.filterwarnings("ignore")
 
 sigmax         = 0.05
 sigmay         = 0.05
-_tick_count    = None
+_tick_count_x  = None
+_tick_count_y  = None
 _title         = None
 _levels        = None
 _uniform       = False
-_integer_ticks = False
+_integer_ticks_x = False
+_integer_ticks_y = False
 
 def load_files(path, minimal=False):
 	results_file = path + 'master_results.json'
@@ -167,16 +169,18 @@ def triple_contour(x, y, z, xlabel, ylabel, title, grid_size=150, ticks=10, leve
 	fig, ax = plt.subplots(1, 1)
 	fig.set_size_inches(8, 8)
 
-	if _tick_count is not None:
-		ticks = _tick_count
+	ticksy = ticksx = ticks
+
+	if _tick_count_x is not None:
+		ticksx = _tick_count_x
+
+	if _tick_count_y is not None:
+		ticksy = _tick_count_y
 
 	x = np.array(x)
 	y = np.array(y)
 	z = np.array(z)
 	values = xyz_to_img(x, y, z, grid_size=grid_size)
-
-	print("Contour min: %f"%values.min())
-	print("Contour max: %f"%values.max())
 
 	x_rng = max(x) - min(x)
 	y_rng = max(y) - min(y)
@@ -190,28 +194,47 @@ def triple_contour(x, y, z, xlabel, ylabel, title, grid_size=150, ticks=10, leve
 		values, 
 		cmap=_cmap, 
 		levels=levels, 
-		linewidths=2.6,
-		norm=Normalize(vmin=values.min(), vmax=values.max())
+		linewidths=2.6
 	)
 	
-	if _integer_ticks:
-		_ticks = np.arange(0, grid_size + 1, grid_size // ticks)
-		_ticks[_ticks > 0] -= 1
-		ax.set_xticks(_ticks)
-		ax.set_yticks(_ticks)
-		ax.set_xticklabels(['%i'%int(round(i)) for i in np.linspace(min(x), max(x), ticks + 1)], fontsize=16)
-		ax.set_yticklabels(['%i'%int(round(i)) for i in np.linspace(min(y), max(y), ticks + 1)], fontsize=16)
-		
-	else:
-		_ticks = np.arange(0, grid_size + 1, grid_size // ticks)
-		_ticks[_ticks > 0] -= 1
-		ax.set_xticks(_ticks)
-		ax.set_yticks(_ticks)
-		ax.set_xticklabels(['%1.2f'%i for i in np.linspace(min(x), max(x), ticks + 1)], fontsize=16)
-		ax.set_yticklabels(['%1.2f'%i for i in np.linspace(min(y), max(y), ticks + 1)], fontsize=16)
+	#_ticks = np.arange(0, grid_size + 1, grid_size // ticks)
+	_ticks_x = np.linspace(0, grid_size - 1, ticksx)
+	_ticks_x[_ticks_x > 0] -= 1
+	
 
-	ax.set_xlabel(xlabel, fontsize=20)
-	ax.set_ylabel(ylabel, fontsize=20)
+
+	_ticks_y = np.linspace(0, grid_size - 1, ticksy)
+	_ticks_y[_ticks_y > 0] -= 1
+	
+
+
+	if _integer_ticks_x:
+		# Round the tick locations to the nearest integer.
+		_ticks_x = [int(round(t)) + 1 for t in _ticks_x]
+		ax.set_xticks(_ticks_x)
+		ax.set_xticklabels(['%i'%int(round(i)) for i in np.linspace(min(x), max(x), ticksx)], fontsize=20)
+	else:
+		ax.set_xticks(_ticks_x)
+		ax.set_xticklabels(['%1.1f'%i for i in np.linspace(min(x), max(x), ticksx)], fontsize=20)
+
+
+	if _integer_ticks_y:
+		_ticks_y = [int(round(t)) + 1 for t in _ticks_y]
+		ax.set_yticks(_ticks_y)
+		ax.set_yticklabels(['%i'%int(round(i)) for i in np.linspace(min(y), max(y), ticksy)], fontsize=20)
+	else:
+		ax.set_yticks(_ticks_y)
+		ax.set_yticklabels(['%1.1f'%i for i in np.linspace(min(y), max(y), ticksy)], fontsize=20)
+
+	
+
+
+
+
+	
+
+	ax.set_xlabel(xlabel, fontsize=22)
+	ax.set_ylabel(ylabel, fontsize=22)
 	ax.xaxis.set_tick_params(width=2)
 	ax.yaxis.set_tick_params(width=2)
 	for axis in ['top','bottom','left','right']:
@@ -228,10 +251,7 @@ def triple_contour(x, y, z, xlabel, ylabel, title, grid_size=150, ticks=10, leve
 		xy[:, 1] = y
 
 		unique_points = np.unique(xy, axis=0)
-
-		print('%i Unique points'%unique_points.shape[0])
-
-		means = np.zeros(unique_points.shape[0])
+		means         = np.zeros(unique_points.shape[0])
 
 		for idx, [xi, yi] in enumerate(unique_points):
 			# Find all points in the original arrays
@@ -243,9 +263,6 @@ def triple_contour(x, y, z, xlabel, ylabel, title, grid_size=150, ticks=10, leve
 			means[idx]   = z[same_indices].mean()
 
 
-		print("Point min: %f"%means.min())
-		print("Point max: %f"%means.max())
-
 		# Normalize the values.
 		means    = (means - means.min()) / (means.max() - means.min())
 		x_scaled = unique_points[:, 0]
@@ -255,10 +272,16 @@ def triple_contour(x, y, z, xlabel, ylabel, title, grid_size=150, ticks=10, leve
 		y_scatter = (grid_size - 1) * ((y_scaled - y_scaled.min()) / (y_scaled.max() - y_scaled.min()))
 
 		# Move points in a little bit from the edge so they are visible.
-		x_scatter[x_scatter <= x_scatter.min()] += 1
-		x_scatter[x_scatter >= x_scatter.max()] -= 1
-		y_scatter[y_scatter <= y_scatter.min()] += 1
-		y_scatter[y_scatter >= y_scatter.max()] -= 1
+		x_scatter[x_scatter <= 0] += 1
+		x_scatter[x_scatter >= grid_size - 1] -= 1
+		y_scatter[y_scatter <= 0] += 1
+		y_scatter[y_scatter >= grid_size - 1] -= 1
+
+		if _integer_ticks_y:
+			y_scatter = [int(round(t)) for t in y_scatter]
+
+		if _integer_ticks_x:
+			x_scatter = [int(round(t)) for t in x_scatter]
 
 		point_colors = cmap(means)
 		ax.scatter(x_scatter, y_scatter, s=50, facecolor=point_colors, edgecolor='#FFFFFF')
@@ -267,7 +290,7 @@ def triple_contour(x, y, z, xlabel, ylabel, title, grid_size=150, ticks=10, leve
 	ax.set_xlim(0, grid_size - 1)
 	ax.set_ylim(0, grid_size - 1)
 	ax.set_aspect(aspect=1)
-	lb = ax.clabel(plot, inline=1, fontsize=15, colors='#000000', manual=True, fmt='%1.2f')
+	lb = ax.clabel(plot, inline=1, fontsize=16, colors='#000000', manual=True, fmt='%1.2f')
 	for l in lb:
 		l.set_fontweight('bold')
 	plt.show()
@@ -351,59 +374,31 @@ if __name__ == '__main__':
 	                                      # heatmaps
 	_uniform    = '--uniform-histogram' in args
 
-	_integer_ticks = '--integer-ticks' in args
+	_integer_ticks_x = '--integer-ticks-x' in args
+	_integer_ticks_y = '--integer-ticks-y' in args
 
 	colormap = None
 	if '--colormap' in args:
 		colormap = sys.argv[args.index('--colormap') + 3]
 
 	if colormap is not None:
-		if colormap == 'customRYG':
-			# Generate a variant ot the RdYlGn colormap with the 
-			# values close to the center interpolated in a manner
-			# that keep the colors darker and therefor more visible.
+		if os.path.isfile(colormap):
+			# Load the custom colormap.
+			f   = open(colormap, 'r')
+			raw = f.read()
+			f.close()
 
-			color_points = 256
+			lines = raw.split('\n')
+			c = np.zeros((len(lines), 4))
 
-			RdYlGn    = cm.get_cmap('RdYlGn', color_points)
-			customRYG = RdYlGn(np.linspace(0, 1, color_points))
-			
-			start = int(round(0.33 * color_points))
-			stop  = int(round(0.66 * color_points))
+			for idx, line in enumerate(lines):
+				c[idx, :3] = [float(i) / 255.0 for i in line.split(' ')]
+				c[idx,  3] = 1.0
 
-			# max_mean_channel = 0.5
-
-			x_range     = stop - start
-			start_color = customRYG[start]
-			stop_color  = customRYG[stop]
-
-			start_intensity = start_color[:3].mean()
-
-			r_start = start_color[0]
-			g_start = start_color[1]
-			b_start = start_color[2]
-			r_slope = (stop_color[0] - start_color[0]) / x_range
-			g_slope = (stop_color[1] - start_color[1]) / x_range
-			b_slope = (stop_color[2] - start_color[2]) / x_range
-
-			for idx in range(start, stop):
-				customRYG[idx, :] = [
-					r_slope * (idx - start) + r_start,
-					g_slope * (idx - start) + g_start,
-					b_slope * (idx - start) + b_start,
-					1.0
-				]
-				# customRYG[idx, :] = [
-				# 	0.0,
-				# 	0.0,
-				# 	0.0,
-				# 	1.0
-				# ]
-
-
-
-			customRYG = ListedColormap(customRYG)
+			customRYG = ListedColormap(c)
 			colormap  = customRYG
+
+			
 
 	if '--sigma' in args:
 		sigmax = sigmay = float(sys.argv[args.index('--sigma') + 3])
@@ -414,8 +409,11 @@ if __name__ == '__main__':
 	if '--levels' in args:
 		_levels = int(sys.argv[args.index('--levels') + 3])
 
-	if '--tick-count' in args:
-		_tick_count = int(sys.argv[args.index('--tick-count') + 3])
+	if '--tick-count-x' in args:
+		_tick_count_x = int(sys.argv[args.index('--tick-count-x') + 3])
+
+	if '--tick-count-y' in args:
+		_tick_count_y = int(sys.argv[args.index('--tick-count-y') + 3])
 
 	# Look for a heatmap argument in the form:
 	#    --heatmap:x:y:z, where x, y and z are 
