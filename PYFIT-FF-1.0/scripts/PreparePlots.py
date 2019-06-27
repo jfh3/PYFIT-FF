@@ -215,7 +215,7 @@ def triple_contour(x, y, z, xlabel, ylabel, title, grid_size=150, ticks=10, leve
 		ax.set_xticklabels(['%i'%int(round(i)) for i in np.linspace(min(x), max(x), ticksx)], fontsize=20)
 	else:
 		ax.set_xticks(_ticks_x)
-		ax.set_xticklabels(['%1.1f'%i for i in np.linspace(min(x), max(x), ticksx)], fontsize=20)
+		ax.set_xticklabels(['%1.2f'%i for i in np.linspace(min(x), max(x), ticksx)], fontsize=20)
 
 
 	if _integer_ticks_y:
@@ -224,15 +224,9 @@ def triple_contour(x, y, z, xlabel, ylabel, title, grid_size=150, ticks=10, leve
 		ax.set_yticklabels(['%i'%int(round(i)) for i in np.linspace(min(y), max(y), ticksy)], fontsize=20)
 	else:
 		ax.set_yticks(_ticks_y)
-		ax.set_yticklabels(['%1.1f'%i for i in np.linspace(min(y), max(y), ticksy)], fontsize=20)
+		ax.set_yticklabels(['%1.2f'%i for i in np.linspace(min(y), max(y), ticksy)], fontsize=20)
 
 	
-
-
-
-
-	
-
 	ax.set_xlabel(xlabel, fontsize=22)
 	ax.set_ylabel(ylabel, fontsize=22)
 	ax.xaxis.set_tick_params(width=2)
