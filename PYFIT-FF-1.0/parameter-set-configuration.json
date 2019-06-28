@@ -13,9 +13,9 @@
 		"network_layers"       : [16, 16, 1]
 	},
 
-	"poscar_data_file" : "input/Feature_Selection/SET-ADAM-ALL-CLUSTERS-06-14-19-POSCAR-E-full.dat",
+	"poscar_data_file" : "input/Feature_Selection/SET-ADAM-RM-BAD-CLUSTERS-06-14-19-POSCAR-E-full.dat",
 	"default_config"   : "parameter-eval-config-default.py",
-	"minimum_output"   : true,
+	"minimum_output"   : false,
 
 	"feature_feature_correlation" : {
 		"feature_metric"    : "pearson",
@@ -31,11 +31,11 @@
 		"cross_network_convergence_threshold" : 0.025,
 		"train_sequential"     : true,
 		"number_of_networks"   : 1,
-		"number_of_iterations" : 220,
-		"number_of_backups"    : 20,
+		"number_of_iterations" : 100,
+		"number_of_backups"    : 5,
 		"learning_rate"        : 0.05,
 		"scatterplot_ratio"    : 1.0,
-		"export_scatter"       : false,
+		"export_scatter"       : true,
 		"feature_metric"       : "pearson",
 		"matrix_abs"           : false
 	}

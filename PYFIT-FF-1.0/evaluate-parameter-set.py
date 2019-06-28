@@ -46,8 +46,8 @@ def eprint(*args, **kwargs):
 #
 # return configuration, work_directory, final_directory
 def parse_and_validate_args():
-	if len(sys.argv) != 4:
-		eprint("This program takes 3 arguments.")
+	if len(sys.argv) < 4:
+		eprint("This program takes 3 or more arguments.")
 		sys.exit(1)
 
 	configuration_file = sys.argv[1]
@@ -106,7 +106,11 @@ def parse_and_validate_args():
 			eprint("Could not create the output directory.")
 			sys.exit(1)
 
-	return configuration, work_directory, final_directory
+	pyfit_args = ''
+	if len(sys.argv) >= 5:
+		pyfit_args = sys.argv[4:]
+
+	return configuration, work_directory, final_directory, pyfit_args
 
 # This copies all of the configuration parameters for the 
 # neural network that were specified in the json config file
@@ -252,7 +256,7 @@ if __name__ == '__main__':
 	# Setup
 	# --------------------------------------------------
 
-	config, wrk_dir, final_dir = parse_and_validate_args()
+	config, wrk_dir, final_dir, pyfit_args = parse_and_validate_args()
 
 	subroutines_dirs = []
 
@@ -411,19 +415,29 @@ if __name__ == '__main__':
 
 		subroutines_dirs.append(this_dir + 'subroutines/')
 		print("START Training")
+		additional_args = ' '.join(pyfit_args)
 		if config['feature_output_correlation']['train_sequential']:
-			run_pyfit_with_config(
-				this_config,
-				'-t -u -r',
-				this_dir,
-				config_file_path=config["default_config"],
-				async=False
-			)
+			if pyfit_args != '':
+				run_pyfit_with_config(
+					this_config,
+					'-t -u -r %s'%additional_args,
+					this_dir,
+					config_file_path=config["default_config"],
+					async=False
+				)
+			else:
+				run_pyfit_with_config(
+					this_config,
+					'-t -u -r',
+					this_dir,
+					config_file_path=config["default_config"],
+					async=False
+				)
 		else:
 			# Run the program.
 			p = run_pyfit_with_config(
 				this_config,
-				'-t -u -r --gpu-affinity %i'%gpu_idx,
+				'-t -u -r --gpu-affinity %i %s'%(gpu_idx, additional_args),
 				this_dir,
 				config_file_path=config["default_config"],
 				async=True
@@ -653,18 +667,27 @@ if __name__ == '__main__':
 
 
 	all_rmse         = []
+	all_val          = []
 	all_coefficients = []
 
 	for initial_condition in range(n_networks):
 		correlation_data = correlation_sets[initial_condition][-1]
 		error_file       = training_output_dir + 'IC-%02i/loss_log.txt'%initial_condition
+		val_file         = training_output_dir + 'IC-%02i/validation_loss_log.txt'%initial_condition
 
 		f   = open(error_file, 'r')
 		raw = f.read()
 		f.close()
+
+		f   = open(val_file, 'r')
+		raw_val = f.read()
+		f.close()
+
 		final_rmse = float([n for n in raw.split('\n') if n != ''][-1])
+		final_val  = float([n for n in raw_val.split('\n') if n != ''][-1])
 
 		all_rmse.append(final_rmse)
+		all_val.append(final_val)
 
 		all_coefficients_this_nn = [res['pcc'] for res in correlation_data["data"]]
 
@@ -676,6 +699,13 @@ if __name__ == '__main__':
 	std_rmse            = all_rmse.std()
 	min_rmse            = all_rmse.min()
 	max_rmse            = all_rmse.max()
+
+
+	all_val  = np.array(all_val)
+	mean_val = all_val.mean()
+	std_val  = all_val.std()
+	min_val  = all_val.min()
+	max_val  = all_val.max()
 
 	k = len(config["parameter-set"]["r_0_values"]) * len(config["parameter-set"]["legendre_polynomials"])
 
@@ -691,7 +721,11 @@ if __name__ == '__main__':
 		"mean_rmse"           : mean_rmse,
 		"std_rmse"            : std_rmse,
 		"min_rmse"            : min_rmse,
-		"max_rmse"            : max_rmse
+		"max_rmse"            : max_rmse,
+		"mean_val"            : mean_val,
+		"std_val"             : std_val,
+		"min_val"             : min_val,
+		"max_val"             : max_val
 	}
 
 	master_results['all_params_converged'] = network_converged_indicators

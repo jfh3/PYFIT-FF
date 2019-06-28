@@ -29,6 +29,7 @@ import numpy             as np
 import sys
 import json
 import os
+import tl
 from   mpldatacursor        import datacursor
 from   mpl_toolkits.mplot3d import Axes3D
 from   matplotlib           import cm
@@ -46,6 +47,8 @@ _levels        = None
 _uniform       = False
 _integer_ticks_x = False
 _integer_ticks_y = False
+_bin_min         = None
+_bin_max         = None
 
 def load_files(path, minimal=False):
 	results_file = path + 'master_results.json'
@@ -356,6 +359,23 @@ def histogram_plot(locations, counts, xlabel):
 
 	plt.show()
 
+def true_histogram_plot(to_show, bins, xlabel):
+	fig, ax = plt.subplots(1, 1)
+		
+	ax.hist(
+		to_show, 
+		bins=bins, 
+		edgecolor='black', 
+		linewidth=0.5
+	)
+
+	ax.set_xlabel(xlabel)
+	ax.set_ylabel("Quantity")
+
+	ax.set_title(_title or "Unspecified")
+
+	plt.show()
+
 if __name__ == '__main__':
 	root_dir = sys.argv[1] # The directory that contains all of the idx_* directories
 
@@ -409,6 +429,11 @@ if __name__ == '__main__':
 	if '--tick-count-y' in args:
 		_tick_count_y = int(sys.argv[args.index('--tick-count-y') + 3])
 
+	if '--bin-range' in args:
+		_bin_range = sys.argv[args.index('--bin-range') + 3]
+		[_bin_min, _bin_max] = [loat(i) for i in _bin_range.split]
+
+
 	# Look for a heatmap argument in the form:
 	#    --heatmap:x:y:z, where x, y and z are 
 	#    keys in the critical data array.
@@ -437,6 +462,22 @@ if __name__ == '__main__':
 			]
 
 			histograms.append(histogram)
+
+	true_histograms = []
+
+	for arg in args:
+		if arg.startswith('--true-histogram'):
+			_, data, spec, ratio, sort, bins = arg.split(':')
+
+			histogram = [
+				data, 
+				spec == 'bottom',
+				float(ratio),
+				sort,
+				int(bins)
+			]
+
+			true_histograms.append(histogram)
 
 
 	criterion = None
@@ -679,3 +720,21 @@ if __name__ == '__main__':
 
 		histogram_plot(loc, count, xlabel)
 
+
+
+	for [data, spec, ratio, sort, bins] in true_histograms:
+		# Sort by the specified value.
+		sort_vals = sorted(critical_data, key=lambda x: x[sort])
+		n_select  = int(round(ratio * len(sort_vals)))
+
+		use = None
+		if not spec:
+			use = sort_vals[-n_select:]
+		else:
+			use = sort_vals[:n_select]
+
+		#loc, count = gen_bar([p[data] for p in use])
+		to_show = [p[data] for p in use]
+		xlabel  = names[data]
+
+		true_histogram_plot(to_show, bins, xlabel)

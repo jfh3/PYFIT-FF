@@ -1296,10 +1296,12 @@ if __name__ == '__main__':
 			os.environ["OMP_NUM_THREADS"] = str(args[args.index('--n-threads') + 1])
 			os.environ["MKL_NUM_THREADS"] = str(args[args.index('--n-threads') + 1])
 			torch.set_num_threads(int(args[args.index('--n-threads') + 1]))
+			os.environ["KMP_AFFINITY"]    = 'granularity=fine,compact,1,0'
 		if '-n' in args:
 			os.environ["OMP_NUM_THREADS"] = str(args[args.index('-n') + 1])
 			os.environ["MKL_NUM_THREADS"] = str(args[args.index('-n') + 1])
 			torch.set_num_threads(int(args[args.index('-n') + 1]))
+			os.environ["KMP_AFFINITY"]    = 'granularity=fine,compact,1,0'
 
 		if '--unsupervised' in args or '-u' in args:
 			unsupervised = True
