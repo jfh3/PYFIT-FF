@@ -132,7 +132,7 @@ if __name__ == '__main__':
 	for lset in legendre_sets:
 		for sigma in sigma_sets:
 			for r0 in r0_sets:
-				dir_name = '/home/ajr6/2019-06-28/deep-runs-debug-all/idx_%05i'%(
+				dir_name = '/home/ajr6/2019-06-28/deep-runs-final/idx_%05i'%(
 					idx
 				)
 				idx += 1
@@ -169,7 +169,7 @@ if __name__ == '__main__':
 	runfile = open('run_evals.sh', 'w')
 
 	for name, _dir in zip(config_names, config_dirs):
-		runfile.write("./run_eval_enki_generic_dbg.sh 4 %s %s\n"%(name, _dir))
+		runfile.write("./run_eval_enki_generic.sh 1 %s %s\n"%(name, _dir))
 		runfile.write("sleep 0.1\n")
 
 	runfile.close()

@@ -29,7 +29,6 @@ import numpy             as np
 import sys
 import json
 import os
-import tl
 from   mpldatacursor        import datacursor
 from   mpl_toolkits.mplot3d import Axes3D
 from   matplotlib           import cm
@@ -386,10 +385,14 @@ if __name__ == '__main__':
 	do_filter   = '--filter'      in args # Run the filter code below
 	show_points = '--show-points' in args # Whether or not to show data points in 
 	                                      # heatmaps
+	ignore_non_converged = '--ignore-non-convergence' in args
 	_uniform    = '--uniform-histogram' in args
 
 	_integer_ticks_x = '--integer-ticks-x' in args
 	_integer_ticks_y = '--integer-ticks-y' in args
+
+	if ignore_non_converged:
+		print("Using non-converged networks as well.")
 
 	colormap = None
 	if '--colormap' in args:
@@ -594,6 +597,19 @@ if __name__ == '__main__':
 	print("\tNon Converged Networks       = %i"%(len(non_param_convergence)))
 	print("\tNon Converged Network Groups = %i"%(len(non_net_convergence)))
 
+	if ignore_non_converged:
+
+		results.extend(non_param_convergence)
+		data.extend(non_param_convergence_data)
+		locations.extend(non_param_convergence_locations)
+
+
+		results.extend(non_net_convergence)
+		data.extend(non_net_convergence_data)
+		locations.extend(non_net_convergence_locations)
+
+
+
 	# Now we prepare a minimal list of parameters that can be processed
 	# easily.
 
@@ -635,6 +651,15 @@ if __name__ == '__main__':
 			'stdrmse' : res['scores']['std_rmse']
 		}
 
+		if 'mean_val' in res['scores']:
+			point.update({
+				'mval'     : res['scores']['mean_val'],
+				'minval'   : res['scores']['min_val'],
+				'maxval'   : res['scores']['max_val'],
+				'stdval'   : res['scores']['std_val'],
+				'fit'      : res['scores']['mean_rmse'] / res['scores']['mean_val']
+			})
+
 		critical_data.append(point)
 
 
@@ -670,7 +695,12 @@ if __name__ == '__main__':
 		'nf'      : "Number of Features",
 		'minrmse' : "Minimum Root Mean Squared Training Error",
 		'maxrmse' : "Maximum Root Mean Squared Training Error",
-		'stdrmse' : "Root Mean Squared Training Error Standard Deviation"
+		'stdrmse' : "Root Mean Squared Training Error Standard Deviation",
+		'mval'    : "Root Mean Squared Validation Error",
+		'minval'  : "Minimum Root Mean Squared Validation Error",
+		'maxval'  : "Maximum Root Mean Squared Validation Error",
+		'stdval'  : "Root Mean Squared Validation Error Standard Deviation",
+		'fit'     : "Training Error to Validation Error Ratio"
 	}
 
 	if colormap is not None:

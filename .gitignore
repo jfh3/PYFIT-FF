@@ -14,3 +14,4 @@
 /PYFIT-FF-1.0/_out*
 /PYFIT-FF-1.0/config/*
 /input/*
+*.nogit.*

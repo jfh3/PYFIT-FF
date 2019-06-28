@@ -1,6 +1,7 @@
 import os
 import sys
 import numpy as np
+import struct
 
 # Find all files matching either an exact name, or an extension,
 # within the given directory. This function will return two arrays,
@@ -29,6 +30,8 @@ def walk_dir_recursive(directory, max_depth, **kwargs):
 			msg  = "You must specify either an extension to search for" 
 			msg += " or a file name to search for."
 			raise ValueError(msg)
+	elif 'name' in kwargs.keys():
+		raise ValueError("Cannot specify both 'extension' and 'name'.")
 
 	if extension_mode:
 		target = kwargs['extension']
@@ -181,6 +184,28 @@ def _inner_walk_dir_recursive(directory, max_depth, depth, extension_mode, targe
 	else:
 		return None, None, stats
 
+
+# Writes the given matrix to a file in a format that should
+# be very fast to read. If you pass a serialize function, it
+# will be called on every element of the matrix to write it 
+# to the file. Every element needs to be the same number of 
+# bytes though.
+def mat_to_file(fpath, contents):
+	with open(fpath, 'wb') as file:
+		file.write(contents.shape[0].to_bytes(8, byteorder='little'))
+		file.write(contents.shape[1].to_bytes(8, byteorder='little'))
+		file.write(contents.tobytes())
+
+def mat_from_file(fpath, dtype):
+	with open(fpath, 'rb') as file:
+		data = file.read()
+		rows = int.from_bytes(data[0:8],  byteorder='little')
+		cols = int.from_bytes(data[8:16], byteorder='little')
+		arr  = np.frombuffer(data[16:], dtype=dtype).reshape((rows, cols))
+
+	return arr
+
+	
 
 if __name__ == '__main__':
 	if len(sys.argv) < 2:

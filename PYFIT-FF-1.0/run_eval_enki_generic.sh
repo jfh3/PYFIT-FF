@@ -9,7 +9,7 @@ cat > slurm.sh <<!
 #SBATCH --gres=gpu:1
 #SBATCH -c $1
 #SBATCH --partition=gpu
-#SBATCH --time=5:20:00  
+#SBATCH --time=6:30:00  
 #SBATCH -D $current_path
 
 cd $current_path
