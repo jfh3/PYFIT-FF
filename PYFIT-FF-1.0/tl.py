@@ -185,23 +185,43 @@ def _inner_walk_dir_recursive(directory, max_depth, depth, extension_mode, targe
 		return None, None, stats
 
 
-# Writes the given matrix to a file in a format that should
+# Writes the given tensor to a file in a format that should
 # be very fast to read. If you pass a serialize function, it
 # will be called on every element of the matrix to write it 
 # to the file. Every element needs to be the same number of 
 # bytes though.
-def mat_to_file(fpath, contents):
+# Will not work with an array that is more than 255 dimensions.
+def ndarray_to_file(self, fpath):
 	with open(fpath, 'wb') as file:
-		file.write(contents.shape[0].to_bytes(8, byteorder='little'))
-		file.write(contents.shape[1].to_bytes(8, byteorder='little'))
-		file.write(contents.tobytes())
+		typename = str(self.dtype).encode('utf-8')
+		typelen  = len(typename)
+		shape    = self.shape
+		ndim     = len(shape)
 
-def mat_from_file(fpath, dtype):
+		file.write(typelen.to_bytes(1, byteorder='little'))
+		file.write(typename)
+		file.write(ndim.to_bytes(1, byteorder='little'))
+
+		for dim in shape:
+			file.write(dim.to_bytes(8, byteorder='little'))
+
+		file.write(self.tobytes())
+
+def ndarray_from_file(fpath):
 	with open(fpath, 'rb') as file:
-		data = file.read()
-		rows = int.from_bytes(data[0:8],  byteorder='little')
-		cols = int.from_bytes(data[8:16], byteorder='little')
-		arr  = np.frombuffer(data[16:], dtype=dtype).reshape((rows, cols))
+		data     = file.read()
+		typelen  = data[0]
+		typename = data[1:typelen + 1].decode('utf-8')
+
+		ndim  = data[typelen + 1]
+		shape = []
+		for dim in range(ndim):
+			base   = typelen + 2 + dim*8
+			stride = base + 8 
+			shape.append(int.from_bytes(data[base:stride], byteorder='little'))
+
+		shape = tuple(shape)
+		arr   = np.frombuffer(data[typelen + 2 + ndim*8:], dtype=typename).reshape(shape)
 
 	return arr
 
