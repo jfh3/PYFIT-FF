@@ -1,32 +1,8 @@
-# Good ColorMaps:
-#    seismic
-#    inferno
-#    
-# --small-mode --small-load 
-# Good Command Lines to try:
-#    --heatmap:nf:ff:fm --colormap inferno
-#    --heatmap:lmin:lmax:fm --colormap Accent
-#    --heatmap:rmin:rmax:fm --colormap Accent
-#    --heatmap:ff:fc:fm --colormap Accent
-#    --heatmap:ff:fc:mrmse --colormap Accent
-#    --heatmap:s:nf:fm --colormap gnuplot
-#    --heatmap:nf:fc:fm --colormap gnuplot
-#    --heatmap:nf:fc:fm --colormap Accent --show-points
-#    --contour:ff:fc:fm --colormap cool
-#    --contour:lmax:lmin:fm --colormap cool
-#    --contour:rmax:rmin:fm --colormap cool
-#    --contour:ff:fc:mrmse --colormap cool --show-points
-#    --contour:nf:fc:fm --colormap cool --sigma 0.13
-#    --contour:r#:l#:fm --colormap cool --sigma 0.08 --show-points
-#    --contour:rmax:lmax:fm --colormap cool --sigma 0.08
-#    --contour:rmin:lmin:fm --colormap cool --sigma 0.08 --show-points
-#    --contour:ff:fc:fm --colormap cool --sigma 0.08
-#    --contour:nf:fc:fm --colormap cool --sigma 0.08
-
 import matplotlib.pyplot as plt
 import matplotlib
 import numpy             as np
 import sys
+import copy
 import json
 import os
 import tl
@@ -436,6 +412,7 @@ if __name__ == '__main__':
 	show_points = '--show-points' in args # Whether or not to show data points in 
 	                                      # heatmaps
 	load_error  = '--load-error'  in args # Load the error_log.txt and validation_loss_log.txt files.
+	find_error_convergence = '--find-error-convergence' in args
 	ignore_non_converged = '--ignore-non-convergence' in args
 	_uniform    = '--uniform-histogram' in args
 
@@ -489,6 +466,10 @@ if __name__ == '__main__':
 	if '--bin-range' in args:
 		_bin_range = sys.argv[args.index('--bin-range') + 3]
 		[_bin_min, _bin_max] = [loat(i) for i in _bin_range.split]
+
+	export_template = None
+	if '--re-export' in args:
+		export_template = sys.argv[args.index('--re-export') + 3]
 
 	plot_error = None
 	if '--plot-error' in args:
@@ -615,6 +596,8 @@ if __name__ == '__main__':
 		first_elem = error_info[list(error_info.keys())[0]]
 
 		validation_interval = len(first_elem[0]) // len(first_elem[1])
+
+	
 
 	if plot_error != None:
 		data = error_info[plot_error]
@@ -810,9 +793,79 @@ if __name__ == '__main__':
 		critical_data = tmp
 	
 
+	if load_error:
+		# Filter the error data as well.
+		err_tmp = {}
+		for k in error_info.keys():
+			for point in critical_data:
+				if k in point['loc']:
+					err_tmp.update({k: error_info[k]})
+					break
+		error_info = err_tmp
+
 	if print_stmt != None:
 		for values in critical_data:
 			eval("print(%s)"%print_stmt)
+
+	if export_template is not None:
+		os.mkdir("config_re_export/")
+		# We need to take every configuration set that survived the filter 
+		# insert its parameters into the template specified and write it
+		# out into its own new config file.
+		print("Exporting %i new config files . . ."%len(critical_data))
+
+		with open(export_template, 'r') as f:
+			raw = f.read()
+			template = json.loads(raw)
+
+		output_dir = '/home/ajr6/2019-07-01/deep-sweep-rerun/'
+
+		with open('rerun.sh', 'w') as run_file:
+			for idx, data in enumerate(critical_data):
+				with open(data['loc'] + 'master_results.json', 'r') as f:
+					json_data = json.loads(f.read())
+					new_config = copy.deepcopy(template)
+					new_config['parameter-set'] = json_data['parameter_set']
+
+				with open("config_re_export/config_%05i.json"%(idx), 'w') as f:
+					f.write(json.dumps(new_config))
+
+				output = '%s%s'%(output_dir, 'idx_%05i'%(idx))
+				run_file.write("./run_eval_enki_generic.sh 1 %s %s\n"%("config_re_export/config_%05i.json"%(idx), output))
+				run_file.write("sleep 0.1\n")
+
+		print("done")
+
+
+
+	if find_error_convergence:
+		if not load_error:
+			print("Must specify --load-error if specifying --find-error-convergence")
+			exit(1)
+
+		convergence_points    = np.zeros(len(error_info.keys()))
+		convergence_threshold = 0.00001
+		convergence_window    = 200
+		step                  = 20
+		for idx, k in enumerate(error_info.keys()):
+			error = np.array(error_info[k][0])
+
+			end   = error.shape[0]
+			start = end - convergence_window
+
+			while start >= 0:
+				if error[start:end].std() > convergence_threshold:
+					convergence_points[idx] = start + step
+					break
+
+				end   -= step
+				start -= step
+
+		print("Convergence Info: ")
+		print("\tmin:  %i"%convergence_points.min())
+		print("\tmax:  %i"%convergence_points.max())
+		print("\tmean: %f"%convergence_points.mean())
+		print("\tstd:  %f"%convergence_points.std())
 
 
 	names = {
