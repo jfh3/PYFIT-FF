@@ -29,7 +29,9 @@ import numpy             as np
 import sys
 import json
 import os
+import tl
 from   mpldatacursor        import datacursor
+from   scipy.optimize       import curve_fit
 from   mpl_toolkits.mplot3d import Axes3D
 from   matplotlib           import cm
 from   matplotlib.colors    import ListedColormap, Normalize
@@ -76,8 +78,6 @@ def load_files(path, minimal=False):
 			data = json.loads(raw2)
 		else:
 			data = None
-
-		# Too much memory is being taken up. Need to delete some keys.
 
 
 		return False, res, file, data
@@ -286,7 +286,7 @@ def triple_contour(x, y, z, xlabel, ylabel, title, grid_size=150, ticks=10, leve
 	ax.set_xlim(0, grid_size - 1)
 	ax.set_ylim(0, grid_size - 1)
 	ax.set_aspect(aspect=1)
-	lb = ax.clabel(plot, inline=1, fontsize=16, colors='#000000', manual=True, fmt='%1.2f')
+	lb = ax.clabel(plot, inline=1, fontsize=16, colors='#000000', manual=True, fmt='%1.3f')
 	for l in lb:
 		l.set_fontweight('bold')
 	plt.show()
@@ -333,6 +333,44 @@ def generic_3d(_x, _y, _z, points, show_points=False, colormap=None, names=None,
 			colormap=colormap
 		)
 
+def single_series_scatter(x, y, xlabel, ylabel, fit_lines=None):
+	fig, ax = plt.subplots(1, 1)
+
+	if fit_lines != None:
+		ax.plot(fit_lines[0][0], fit_lines[0][1])
+
+	ax.scatter(x, y, s=5)
+	ax.set_title(_title or "Unspecified")
+	ax.set_xlabel(xlabel)
+	ax.set_ylabel(ylabel)
+
+	plt.show()
+
+
+def multi_series_scatter(series, xlabel, ylabel, fit_lines=None):
+	fig, ax = plt.subplots(1, 1)
+
+	series_names = []
+	series_objs  = []
+
+	if fit_lines != None:
+		for fit in fit_lines:
+			pl, = ax.plot(fit[0], fit[1])
+			series_names.append('fit for %s'%fit[2])
+			series_objs.append(pl)
+
+	for s in series:
+		pl = ax.scatter(s[0], s[1], s=5)
+		series_names.append(s[2])
+		series_objs.append(pl)
+
+	ax.legend(series_objs, series_names)
+	ax.set_title(_title or "Unspecified")
+	ax.set_xlabel(xlabel)
+	ax.set_ylabel(ylabel)
+
+	plt.show()
+
 def histogram_plot(locations, counts, xlabel):
 	fig, ax = plt.subplots(1, 1)
 
@@ -357,6 +395,18 @@ def histogram_plot(locations, counts, xlabel):
 	ax.set_title(_title or "Unspecified")
 
 	plt.show()
+
+def pcc(x, y):
+	x = np.array(x)
+	y = np.array(y)
+
+	xm = x.mean()
+	ym = y.mean()
+
+	top    = ((x - xm)*(y - ym)).mean()
+	bottom = x.std()*y.std()
+
+	return top / bottom
 
 def true_histogram_plot(to_show, bins, xlabel):
 	fig, ax = plt.subplots(1, 1)
@@ -385,8 +435,12 @@ if __name__ == '__main__':
 	do_filter   = '--filter'      in args # Run the filter code below
 	show_points = '--show-points' in args # Whether or not to show data points in 
 	                                      # heatmaps
+	load_error  = '--load-error'  in args # Load the error_log.txt and validation_loss_log.txt files.
 	ignore_non_converged = '--ignore-non-convergence' in args
 	_uniform    = '--uniform-histogram' in args
+
+	fit_reciprocal = '--fit-reciprocal' in args
+	fit_linear     = '--fit-linear'     in args
 
 	_integer_ticks_x = '--integer-ticks-x' in args
 	_integer_ticks_y = '--integer-ticks-y' in args
@@ -436,6 +490,10 @@ if __name__ == '__main__':
 		_bin_range = sys.argv[args.index('--bin-range') + 3]
 		[_bin_min, _bin_max] = [loat(i) for i in _bin_range.split]
 
+	plot_error = None
+	if '--plot-error' in args:
+		plot_error = sys.argv[args.index('--plot-error') + 3]
+
 
 	# Look for a heatmap argument in the form:
 	#    --heatmap:x:y:z, where x, y and z are 
@@ -482,14 +540,34 @@ if __name__ == '__main__':
 
 			true_histograms.append(histogram)
 
+	show_pcc = False
+	show_fit = False
+	scatter = []
+	for arg in args:
+		if arg.startswith('--scatter'):
+			scatter_args = arg.split(':')[1:]
+
+			if scatter_args[-1].startswith('pcc'):
+				show_pcc     = True
+				scatter_args = scatter_args[:-1]
+
+			scatter.append([*scatter_args])
+
 
 	criterion = None
 
 	for arg in args:
 		if arg.startswith('--filter'):
 			_, expr = arg.split(':')
-			expr = expr.replace('%', 'values')
+			expr = expr.replace('?', 'values')
 			criterion = expr
+
+	print_stmt = None
+	for arg in args:
+		if arg.startswith('--print'):
+			_, expr = arg.split(':')
+			expr = expr.replace('?', 'values')
+			print_stmt = expr
 
 
 	print("Analyzing %s"%root_dir)
@@ -498,6 +576,54 @@ if __name__ == '__main__':
 	# ==================================================
 	# Data Loading
 	# ==================================================
+
+	if load_error:
+
+		print("Loading Error Files")
+		e_loc, e_raw, e_stat = tl.walk_dir_recursive(
+			root_dir, 6,
+			name='loss_log.txt'
+		)
+
+		v_loc, v_raw, v_stat = tl.walk_dir_recursive (
+			root_dir, 6,
+			name='validation_loss_log.txt'
+		)
+
+		# Parse the files and pair them together
+		# by their index.
+		error_info = {}
+
+		for t_loc, t_err in zip(e_loc, e_raw):
+			# Figure out the index of this set.
+			comp    = t_loc.split('/')
+			idx_str = ''
+			for c in comp:
+				if c.startswith('idx_'):
+					idx_str = c.split('_')[1]
+
+			# Load the error information.
+			e_values = [float(i) for i in t_err.split('\n') if i != '']
+
+			# Find the corresponding validation info
+			for _v_loc, v_err in zip(v_loc, v_raw):
+				if idx_str in _v_loc:
+					v_values = [float(i) for i in v_err.split('\n') if i != '']
+
+			error_info[idx_str] = (e_values, v_values)
+
+		first_elem = error_info[list(error_info.keys())[0]]
+
+		validation_interval = len(first_elem[0]) // len(first_elem[1])
+
+	if plot_error != None:
+		data = error_info[plot_error]
+		t_rng = np.arange(len(data[0]))
+		v_rng = np.arange(len(data[1]))*validation_interval
+
+		plt.scatter(t_rng, data[0], s=5)
+		plt.scatter(v_rng, data[1], s=5)
+		plt.show()
 
 	results   = [] # master_results.json file data
 	data      = [] # final_data.json file data
@@ -508,12 +634,14 @@ if __name__ == '__main__':
 
 	for subdir in os.listdir(root_dir):
 		new_dir = root_dir + subdir + '/'
+		no_file = True
 		if os.path.isdir(new_dir) and 'idx' in new_dir:
 			if small_mode:
 				contents_dir = new_dir
 				results_file = contents_dir + 'master_results.json'
 				if os.path.isfile(results_file):
 					is_divergent, result, location, run_data = load_files(contents_dir, small_load)
+					no_file = False
 					
 			else:
 				for subsubdir in os.listdir(new_dir):
@@ -521,14 +649,16 @@ if __name__ == '__main__':
 					results_file = contents_dir + 'master_results.json'
 					if os.path.isfile(results_file):
 						is_divergent, result, location, run_data = load_files(contents_dir, small_load)
+						no_file = False
 
-			if is_divergent:
-				divergent_results.append(result)
-				divergent_locations.append(location)
-			else:
-				results.append(result)
-				locations.append(location)
-				data.append(run_data)
+			if not no_file:
+				if is_divergent:
+					divergent_results.append(result)
+					divergent_locations.append(location)
+				else:
+					results.append(result)
+					locations.append(location)
+					data.append(run_data)
 
 	# composite_sort = [(a, b, c) for a, b, c in zip(results, data, locations)]
 	# composite_sort = sorted(composite_sort, key=lambda x: x[2])
@@ -652,12 +782,19 @@ if __name__ == '__main__':
 		}
 
 		if 'mean_val' in res['scores']:
+			ovf   = res['scores']['mean_val'] / res['scores']['mean_rmse']
+			t_err = res['scores']['mean_rmse']
+			v_err = res['scores']['mean_val']
+			n_r   = len(res['parameter_set']['r_0_values'])
+			n_l   = len(res['parameter_set']['legendre_polynomials'])
+			score = (-np.tanh(1.7*(ovf) - 4) + 1) / (t_err * v_err * n_l * (1 + 2*n_r))
 			point.update({
-				'mval'     : res['scores']['mean_val'],
-				'minval'   : res['scores']['min_val'],
-				'maxval'   : res['scores']['max_val'],
-				'stdval'   : res['scores']['std_val'],
-				'fit'      : res['scores']['mean_rmse'] / res['scores']['mean_val']
+				'mval'       : res['scores']['mean_val'],
+				'minval'     : res['scores']['min_val'],
+				'maxval'     : res['scores']['max_val'],
+				'stdval'     : res['scores']['std_val'],
+				'overfit'    : ovf,
+				'score'      : score
 			})
 
 		critical_data.append(point)
@@ -672,6 +809,10 @@ if __name__ == '__main__':
 		print("Filter eliminated %i points"%(len(critical_data) - len(tmp)))
 		critical_data = tmp
 	
+
+	if print_stmt != None:
+		for values in critical_data:
+			eval("print(%s)"%print_stmt)
 
 
 	names = {
@@ -700,7 +841,8 @@ if __name__ == '__main__':
 		'minval'  : "Minimum Root Mean Squared Validation Error",
 		'maxval'  : "Maximum Root Mean Squared Validation Error",
 		'stdval'  : "Root Mean Squared Validation Error Standard Deviation",
-		'fit'     : "Training Error to Validation Error Ratio"
+		'overfit' : "Validation Error to Training Error Ratio",
+		'score'   : "Overall Score"
 	}
 
 	if colormap is not None:
@@ -723,6 +865,90 @@ if __name__ == '__main__':
 			names=names,
 			contour=h[3]
 		)
+
+	for spl in scatter:
+		if len(spl) == 3:
+			# Split the plot into multiple series,
+			# each series being for values with a unique
+			# value of spl[3]
+			x_data = [(c[spl[0]], c[spl[2]]) for c in critical_data]
+			y_data = [(c[spl[1]], c[spl[2]]) for c in critical_data]
+
+
+			f_data = [c[spl[2]] for c in critical_data]
+
+			unq = np.unique(f_data)
+
+			x_lbl  = names[spl[0]]
+			y_lbl  = names[spl[1]]
+
+			series = []
+			fits   = []
+			for u in unq:
+				x_filtered = np.array([x[0] for x in x_data if x[1] == u])
+				y_filtered = np.array([y[0] for y in y_data if y[1] == u])
+				name       = '%s = %f'%(names[spl[2]], u)
+
+				if show_pcc:
+					print("Pearson Coefficient (%10s): %1.3f"%(name, pcc(x_filtered, y_filtered)))
+				
+				series.append((x_filtered, y_filtered, name))
+
+				
+				if fit_reciprocal:
+					model    = lambda x, a, b, c: (a / (x - b)) + c
+					res, cov = curve_fit(model, x_filtered, y_filtered)
+					fn       = lambda x: (res[0] / (x - res[1])) + res[2]
+
+					print("f(∞) = %1.2f"%res[2])
+
+					x_fit = np.linspace(x_filtered.min(), x_filtered.max(), 128)
+					y_fit = fn(x_fit)
+					fits.append([x_fit, y_fit, name])
+				elif fit_linear:
+					model    = lambda x, a, b: a*x + b
+					res, cov = curve_fit(model, x_filtered, y_filtered)
+					fn       = lambda x: res[0]*x + res[1]
+
+					x_fit = np.linspace(x_filtered.min(), x_filtered.max(), 128)
+					y_fit = fn(x_fit)
+					fits.append([x_fit, y_fit, name])
+				
+
+			multi_series_scatter(series, x_lbl, y_lbl, fits)
+
+		else:
+			x_data = np.array([c[spl[0]] for c in critical_data])
+			y_data = np.array([c[spl[1]] for c in critical_data])
+			x_lbl  = names[spl[0]]
+			y_lbl  = names[spl[1]]
+
+			if show_pcc:
+				print("Pearson Coefficient: %1.3f"%pcc(x_data, y_data))
+
+			fits = None
+			if fit_reciprocal:
+				fits = []
+				model    = lambda x, a, b, c: (a / (x - b)) + c
+				res, cov = curve_fit(model, x_data, y_data)
+				fn       = lambda x: (res[0] / (x - res[1])) + res[2]
+				print("f(∞) = %1.2f"%res[2])
+
+				x_fit = np.linspace(x_data.min(), x_data.max(), 128)
+				y_fit = fn(x_fit)
+				fits.append([x_fit, y_fit, None])
+			elif fit_linear:
+				fits = []
+				model    = lambda x, a, b: a*x + b
+				res, cov = curve_fit(model, x_data, y_data)
+				fn       = lambda x: res[0]*x + res[1]
+
+				x_fit = np.linspace(x_data.min(), x_data.max(), 128)
+				y_fit = fn(x_fit)
+				fits.append([x_fit, y_fit, None])
+
+			single_series_scatter(x_data, y_data, x_lbl, y_lbl, fits)
+
 
 	def gen_bar(vals):
 		locations = np.unique(vals).tolist()
