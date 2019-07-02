@@ -26,6 +26,7 @@ _integer_ticks_x = False
 _integer_ticks_y = False
 _bin_min         = None
 _bin_max         = None
+_draw_trendline  = False
 
 def load_files(path, minimal=False):
 	results_file = path + 'master_results.json'
@@ -326,6 +327,28 @@ def single_series_scatter(x, y, xlabel, ylabel, fit_lines=None):
 def multi_series_scatter(series, xlabel, ylabel, fit_lines=None):
 	fig, ax = plt.subplots(1, 1)
 
+
+	if _draw_trendline:
+
+		for j, s in enumerate(series):
+			tl_rng = np.unique(s[0])
+			tl_y   = np.zeros(tl_rng.shape[0])
+			# We want one point in the trendline for each x axis point in the data.
+
+			for i, x in enumerate(tl_rng):
+				y       = s[1][s[0] == x]
+				tl_y[i] = y.mean()
+
+			# Plot the trendline
+			if j < len(preffered_plot_styles):
+				plt.plot(tl_rng, tl_y, linewidth=1.0, **preffered_plot_styles[j])
+			else:
+				plt.plot(tl_rng, tl_y, linewidth=1.0)
+
+
+
+		# For each x_point, 
+
 	series_names = []
 	series_objs  = []
 
@@ -335,8 +358,11 @@ def multi_series_scatter(series, xlabel, ylabel, fit_lines=None):
 			series_names.append('fit for %s'%fit[2])
 			series_objs.append(pl)
 
-	for s in series:
-		pl = ax.scatter(s[0], s[1], s=5)
+	for idx, s in enumerate(series):
+		if idx < len(preffered_scatter_styles):
+			pl = ax.scatter(s[0], s[1], **preffered_scatter_styles[idx])
+		else:
+			pl = ax.scatter(s[0], s[1], s=10)
 		series_names.append(s[2])
 		series_objs.append(pl)
 
@@ -401,7 +427,28 @@ def true_histogram_plot(to_show, bins, xlabel):
 
 	plt.show()
 
+preffered_scatter_styles = [
+	{'marker': 's', 'edgecolors': 'blue',    's': 40, 'facecolors': 'none'},
+	{'marker': '^', 'edgecolors': 'magenta', 's': 40, 'facecolors': 'none'},
+	{'marker': 'd', 'edgecolors': 'green',   's': 40, 'facecolors': 'none'},
+	{'marker': 'h', 'edgecolors': 'orange',  's': 40, 'facecolors': 'none'},
+	{'marker': '>', 'edgecolors': '#00bcd9', 's': 40, 'facecolors': 'none'},
+	{'marker': '<', 'edgecolors': '#4a00c9', 's': 40, 'facecolors': 'none'}
+]
+
+preffered_plot_styles = [
+	{'color' : 'blue',    'linestyle' : ':'},
+	{'color' : 'magenta', 'linestyle' : '-.'},
+	{'color' : 'green',   'linestyle' : '--'},
+	{'color' : 'orange',     'linestyle' : '-'},
+	{'color' : '#00bcd9',    'linestyle' : ':'},
+	{'color' : '#4a00c9', 'linestyle' : '-.'}
+]
+
 if __name__ == '__main__':
+	
+
+
 	root_dir = sys.argv[1] # The directory that contains all of the idx_* directories
 
 	args = [arg.lower() for arg in sys.argv[2:]]
@@ -418,6 +465,8 @@ if __name__ == '__main__':
 
 	fit_reciprocal = '--fit-reciprocal' in args
 	fit_linear     = '--fit-linear'     in args
+
+	_draw_trendline = '--draw-trendline' in args
 
 	_integer_ticks_x = '--integer-ticks-x' in args
 	_integer_ticks_y = '--integer-ticks-y' in args
@@ -776,6 +825,7 @@ if __name__ == '__main__':
 				'minval'     : res['scores']['min_val'],
 				'maxval'     : res['scores']['max_val'],
 				'stdval'     : res['scores']['std_val'],
+				'diff'       : res['scores']['mean_val'] - res['scores']['mean_rmse'],
 				'overfit'    : ovf,
 				'score'      : score
 			})
@@ -885,7 +935,7 @@ if __name__ == '__main__':
 		'fm'      : "Figure of Merit",
 		'ff'      : "Mean Feature - Feature Correlation",
 		'fc'      : "Mean Feature - Output Correlation",
-		'mrmse'   : "Mean Root Mean Squared Training Error",
+		'mrmse'   : "Root Mean Squared Training Error",
 		'nf'      : "Number of Features",
 		'minrmse' : "Minimum Root Mean Squared Training Error",
 		'maxrmse' : "Maximum Root Mean Squared Training Error",
@@ -895,7 +945,8 @@ if __name__ == '__main__':
 		'maxval'  : "Maximum Root Mean Squared Validation Error",
 		'stdval'  : "Root Mean Squared Validation Error Standard Deviation",
 		'overfit' : "Validation Error to Training Error Ratio",
-		'score'   : "Overall Score"
+		'score'   : "Overall Score",
+		'diff'    : 'Validation Error Minus Training Error'
 	}
 
 	if colormap is not None:
@@ -940,7 +991,10 @@ if __name__ == '__main__':
 			for u in unq:
 				x_filtered = np.array([x[0] for x in x_data if x[1] == u])
 				y_filtered = np.array([y[0] for y in y_data if y[1] == u])
-				name       = '%s = %f'%(names[spl[2]], u)
+				if isinstance(u, float):
+					name = '%s = %f'%(names[spl[2]], u)
+				else:
+					name = '%s = %s'%(names[spl[2]], u)
 
 				if show_pcc:
 					print("Pearson Coefficient (%10s): %1.3f"%(name, pcc(x_filtered, y_filtered)))

@@ -1,1 +1,0 @@
-echo python3 evaluate-parameter-set.py $2 /scratch/nope/ $3 ${@:4:99}
