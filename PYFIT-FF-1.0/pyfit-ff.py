@@ -23,7 +23,7 @@ from   Util import log, log_indent, log_unindent, ProgressBar
 from   Help import help_str
 from   time import time
 
-def ComputeStructureParameters():
+def ComputeStructureParameters(lammps_export_dir=None):
 	log("Beginning Structural Parameter Computation")
 	log_indent()
 
@@ -34,12 +34,105 @@ def ComputeStructureParameters():
 	structural_parameters = GenerateStructuralParameters(poscar_data, neighborLists, neural_network)
 	
 
+	# We want a numpy array where each row is a gi and 
+	# each column is an atom.
+	all_params = np.zeros((len(structural_parameters[0][0]), poscar_data.n_atoms))
+
+	full_atom_idx = 0
+	for struct_idx, struct in enumerate(poscar_data.structures):
+		for atom_idx, atom in enumerate(struct.atoms):
+			all_params[:, full_atom_idx] = structural_parameters[struct_idx][atom_idx]
+			full_atom_idx += 1
+
+
+
 	WriteTrainingSet(
 		LSPARAM_FILE, 
 		neural_network.config, 
 		poscar_data, 
 		structural_parameters
 	)
+
+	full_atom_idx = 0
+	if lammps_export_dir is not None:
+		if not os.path.exists(lammps_export_dir):
+			os.mkdir(lammps_export_dir)
+
+		base_path = lammps_export_dir
+		if base_path[-1] != '/':
+			base_path += '/'
+
+
+		struct_idx = 0
+		for idx, struct in enumerate(poscar_data.structures):
+			
+
+			def orthogonality(a, b):
+				# Normalize them
+				a = a / np.linalg.norm(a)
+				b = b / np.linalg.norm(b)
+				return np.abs(np.linalg.norm(np.cross(a, b)) - 1)
+
+			# Make sure that the lattice vectors are orthogonal.
+			ortho  = orthogonality(struct.A1, struct.A2) < 1e-7
+			ortho &= orthogonality(struct.A2, struct.A3) < 1e-7
+			ortho &= orthogonality(struct.A1, struct.A3) < 1e-7
+
+			n_struct_params = len(structural_parameters[0][0])
+
+			if ortho:
+				# The lattice vectors are othogonal so we can proceed.
+				data =  ''
+				data += 'ITEM: NUMBER OF ATOMS\n'
+				data += '%i\n'%(struct.n_atoms)
+				data += 'ITEM: BOX BOUNDS pp pp pp\n'
+				half_x = max([
+					np.dot(struct.A1, [1, 0, 0]),
+					np.dot(struct.A2, [1, 0, 0]),
+					np.dot(struct.A3, [1, 0, 0])
+				])
+
+				half_y = max([
+					np.dot(struct.A1, [0, 1, 0]),
+					np.dot(struct.A2, [0, 1, 0]),
+					np.dot(struct.A3, [0, 1, 0])
+				])
+
+				half_z = max([
+					np.dot(struct.A1, [0, 0, 1]),
+					np.dot(struct.A2, [0, 0, 1]),
+					np.dot(struct.A3, [0, 0, 1])
+				])
+				data += '0 %f\n'%(half_x)
+				data += '0 %f\n'%(half_y)
+				data += '0 %f\n'%(half_z)
+				data += 'ITEM: ATOMS id type x y z c_G1\n'
+
+				new_data = copy.deepcopy(data)
+				param_values_ = []
+				for atom_idx, atom in enumerate(struct.atoms):
+					current_param  = np.abs(np.array(structural_parameters[struct_idx][atom_idx])).mean()
+					param_values_.append(current_param)
+
+				fpath = base_path + '%06i.dump'%(idx)
+				param_values_ = np.array(param_values_)
+				_min = param_values_.min()
+				_max = param_values_.max()
+				_rng = _max - _min
+				for atom_idx, atom in enumerate(struct.atoms):
+					
+					new_data += '%03i 1 %f %f %f %f\n'%(
+						atom_idx,
+						atom[0], atom[1], atom[2],
+						(param_values_[atom_idx] - _min) / _rng
+					)
+
+				with open(fpath, 'w') as file:
+					file.write(new_data)
+					full_atom_idx += 1
+
+			# Increment this regardless of whether or not we export a file.
+			struct_idx += 1
 
 	if NEIGHBOR_FILE != None and NEIGHBOR_FILE != '':
 		WriteTrainingSet(
@@ -1221,16 +1314,18 @@ if __name__ == '__main__':
 
 	
 
-	compute_gis  = False # Whether or not to compute structure params from poscar data.
-	run_training = False # Whether or not to traing the neural network against structure params.
-	graph_error  = False # Whether or not to produce a plot of error as a function of 
+	compute_gis   = False # Whether or not to compute structure params from poscar data.
+	run_training  = False # Whether or not to traing the neural network against structure params.
+	graph_error   = False # Whether or not to produce a plot of error as a function of 
 	                     # the training iteration at the end of the training process.
-	graph_val    = False # Whether or not to plot validation error as a function of iteration
+	graph_val     = False # Whether or not to plot validation error as a function of iteration
 	                     # at the end of the process.
-	graph_group  = False # Whether or not to graph the per-group error at the end.
-	force_cpu    = False # Whether or not to keep all execution on cpu
-	randomize_nn = False # Whether or not to ignore configuration and randomize the nn.
-	unsupervised = False # Whether or not to use minimal progress bars.
+	graph_group   = False # Whether or not to graph the per-group error at the end.
+	force_cpu     = False # Whether or not to keep all execution on cpu
+	randomize_nn  = False # Whether or not to ignore configuration and randomize the nn.
+	unsupervised  = False # Whether or not to use minimal progress bars.
+	export_lammps = False # Whether or not to export a specially formatted lammps file for each
+	                      # structure. This is useful for visualizing gis
 
 	# Here we expand single hyphen arguments.
 	# ex: -gte => -g -t -e
@@ -1271,6 +1366,11 @@ if __name__ == '__main__':
 			group_to_highlight = args[args.index('--highlight') + 1]
 		if '-i' in args:
 			group_to_highlight = args[args.index('-i') + 1]
+
+		if '--lammps-export' in args:
+			print("Exporting lammps/ovito files")
+			export_lammps = True
+			lammps_dir    = args[args.index('--lammps-export') + 1]
 
 		if '--target-errors' in args:
 			if OBJECTIVE_FUNCTION != 'group-targets':
@@ -1327,7 +1427,10 @@ if __name__ == '__main__':
 	plateau_annealing_iterations = None
 
 	if compute_gis:
-		ComputeStructureParameters()
+		if export_lammps:
+			ComputeStructureParameters(lammps_export_dir=lammps_dir)
+		else:
+			ComputeStructureParameters()
 
 	if run_training:
 		plateau_annealing_iterations = TrainNetwork(force_cpu, randomize_nn, gpu_affinity)

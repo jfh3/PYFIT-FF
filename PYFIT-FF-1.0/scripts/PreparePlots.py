@@ -6,6 +6,7 @@ import copy
 import json
 import os
 import tl
+import code
 from   mpldatacursor        import datacursor
 from   scipy.optimize       import curve_fit
 from   mpl_toolkits.mplot3d import Axes3D
@@ -26,6 +27,7 @@ _integer_ticks_x = False
 _integer_ticks_y = False
 _bin_min         = None
 _bin_max         = None
+_contour_format_str = None
 _draw_trendline  = False
 
 def load_files(path, minimal=False):
@@ -263,7 +265,10 @@ def triple_contour(x, y, z, xlabel, ylabel, title, grid_size=150, ticks=10, leve
 	ax.set_xlim(0, grid_size - 1)
 	ax.set_ylim(0, grid_size - 1)
 	ax.set_aspect(aspect=1)
-	lb = ax.clabel(plot, inline=1, fontsize=16, colors='#000000', manual=True, fmt='%1.3f')
+	if _contour_format_str is None:
+		lb = ax.clabel(plot, inline=1, fontsize=16, colors='#000000', manual=True, fmt='%1.3f')
+	else:
+		lb = ax.clabel(plot, inline=1, fontsize=16, colors='#000000', manual=True, fmt=_contour_format_str)
 	for l in lb:
 		l.set_fontweight('bold')
 	plt.show()
@@ -463,6 +468,8 @@ if __name__ == '__main__':
 	ignore_non_converged = '--ignore-non-convergence' in args
 	_uniform    = '--uniform-histogram' in args
 
+	run_interactive = '--run-interactive' in args
+
 	fit_reciprocal = '--fit-reciprocal' in args
 	fit_linear     = '--fit-linear'     in args
 
@@ -473,6 +480,9 @@ if __name__ == '__main__':
 
 	if ignore_non_converged:
 		print("Using non-converged networks as well.")
+
+	reverse_colormap   = '--reverse-colormap' in args
+	
 
 	colormap = None
 	if '--colormap' in args:
@@ -492,10 +502,16 @@ if __name__ == '__main__':
 				c[idx, :3] = [float(i) / 255.0 for i in line.split(' ')]
 				c[idx,  3] = 1.0
 
+			if reverse_colormap:
+				c = np.flip(c, 0)
+
 			customRYG = ListedColormap(c)
 			colormap  = customRYG
 
 			
+
+	if '--level-format-str' in args:
+		_contour_format_str = sys.argv[args.index('--level-format-str') + 3]
 
 	if '--sigma' in args:
 		sigmax = sigmay = float(sys.argv[args.index('--sigma') + 3])
@@ -512,9 +528,9 @@ if __name__ == '__main__':
 	if '--tick-count-y' in args:
 		_tick_count_y = int(sys.argv[args.index('--tick-count-y') + 3])
 
-	if '--bin-range' in args:
-		_bin_range = sys.argv[args.index('--bin-range') + 3]
-		[_bin_min, _bin_max] = [loat(i) for i in _bin_range.split]
+	# if '--bin-range' in args:
+	# 	_bin_range = sys.argv[args.index('--bin-range') + 3]
+	# 	[_bin_min, _bin_max] = [float(i) for i in _bin_range.split('')]
 
 	export_template = None
 	if '--re-export' in args:
@@ -806,11 +822,11 @@ if __name__ == '__main__':
 			'fm'      : res['scores']['figure_of_merit'],
 			'ff'      : res['scores']['mean_ff_correlation'],
 			'fc'      : res['scores']['mean_fc_correlation'],
-			'mrmse'   : res['scores']['mean_rmse'],
+			'mrmse'   : res['scores']['mean_rmse'] * 1000,
 			'nf'      : len(res['parameter_set']['r_0_values']) * len(res['parameter_set']['legendre_polynomials']),
-			'minrmse' : res['scores']['min_rmse'],
-			'maxrmse' : res['scores']['max_rmse'],
-			'stdrmse' : res['scores']['std_rmse']
+			'minrmse' : res['scores']['min_rmse'] * 1000,
+			'maxrmse' : res['scores']['max_rmse'] * 1000,
+			'stdrmse' : res['scores']['std_rmse'] * 1000
 		}
 
 		if 'mean_val' in res['scores']:
@@ -821,10 +837,10 @@ if __name__ == '__main__':
 			n_l   = len(res['parameter_set']['legendre_polynomials'])
 			score = (-np.tanh(1.7*(ovf) - 4) + 1) / (t_err * v_err * n_l * (1 + 2*n_r))
 			point.update({
-				'mval'       : res['scores']['mean_val'],
-				'minval'     : res['scores']['min_val'],
-				'maxval'     : res['scores']['max_val'],
-				'stdval'     : res['scores']['std_val'],
+				'mval'       : res['scores']['mean_val'] * 1000,
+				'minval'     : res['scores']['min_val'] * 1000,
+				'maxval'     : res['scores']['max_val'] * 1000,
+				'stdval'     : res['scores']['std_val'] * 1000,
 				'diff'       : res['scores']['mean_val'] - res['scores']['mean_rmse'],
 				'overfit'    : ovf,
 				'score'      : score
@@ -948,6 +964,9 @@ if __name__ == '__main__':
 		'score'   : "Overall Score",
 		'diff'    : 'Validation Error Minus Training Error'
 	}
+
+	if run_interactive:
+		code.interact(local=locals())
 
 	if colormap is not None:
 		print("Using colormap: %s"%colormap)

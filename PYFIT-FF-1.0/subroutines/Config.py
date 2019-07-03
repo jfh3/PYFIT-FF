@@ -16,7 +16,7 @@ FILE_BUFFERING                     = 1
 LOG_PATH                           = 'input/log.txt'
 
 # The neural network file to load.
-NEURAL_NETWORK_FILE                = 'input/convergence-run-networks/705.nn.dat'
+NEURAL_NETWORK_FILE                = 'input/Feature_Selection/705.nn.dat'
 
 # --------------------------------------------------
 # Structural Parameter Calculation Configuration
@@ -97,10 +97,10 @@ NETWORK_BACKUP_INTERVAL            = 10000
 KEEP_BACKUP_HISTORY                = False
 
 # Network Loss Log File Path
-LOSS_LOG_PATH                      = 'input/convergence-run-networks/702.loss.txt'
+LOSS_LOG_PATH                      = 'input/Feature_Selection/loss.txt'
 
 # The file to log the validation loss in.
-VALIDATION_LOG_PATH                = 'input/convergence-run-networks/702.val.txt'
+VALIDATION_LOG_PATH                = 'input/Feature_Selection/val.txt'
 
 # Interval on which validation error should be calculated and
 # logged in the corresponding file.
@@ -120,7 +120,7 @@ PROGRESS_INTERVAL = 1
 TRAINING_SET_FILE                  = 'input/Feature_Selection/SET-ADAM-RM-BAD-CLUSTERS-06-14-19-LSPARAM-E-full.dat'
 
 # Where to save the neural network when done training it.
-NEURAL_NETWORK_SAVE_FILE           = 'input/saved_nn1.dat'
+NEURAL_NETWORK_SAVE_FILE           = 'input/Feature_Selection/out.nn.dat'
 
 # The file to store the E_VS_V data in.
 # Each line will be all volumes in order followed
