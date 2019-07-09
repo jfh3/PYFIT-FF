@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import matplotlib
 #matplotlib.use('Agg')
 
@@ -28,6 +30,7 @@ import os
 import sys
 import copy
 import subprocess
+import argparse
 
 def run(cmdline, _async=False, wd=None):
 	if wd != None:
@@ -209,27 +212,28 @@ def graph_correlations(matrix, fname, title, delta_mode=False):
 	ax.set_xticklabels(all_groups)
 	ax.set_yticklabels(all_groups)
 
-	# for m in range(matrix.shape[0]):
-	# 	for n in range(matrix.shape[1]):
-	# 		ax.text(n, m, '%i'%(int(round(100*matrix[m][n]))), ha="center", va="center", color="black", fontsize=8)
+	for m in range(matrix.shape[0]):
+		for n in range(matrix.shape[1]):
+			ax.text(n, m, '%i'%(int(round(100*matrix[m][n]))), ha="center", va="center", color="black", fontsize=2)
 
 	
 	plt.setp(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor")
 
 	for tick in ax.xaxis.get_major_ticks():
-		tick.label.set_fontsize(9.0)
+		tick.label.set_fontsize(3.0)
 
 	for tick in ax.yaxis.get_major_ticks():
-		tick.label.set_fontsize(9.0)
+		tick.label.set_fontsize(3.0)
 
 	fig.subplots_adjust(bottom=0.2)
 
 	plt.title(title)
 
-	plt.savefig(fname, dpi=250)
+	matplotlib.use('Agg')
+	plt.savefig(fname, dpi=300)
 
-	matplotlib.use("TkAgg")
-	plt.show()
+	#matplotlib.use("TkAgg")
+	#plt.show()
 
 # Note: The majority of the configuration that defines how things
 #        will run is defined in Config.py.
@@ -241,37 +245,85 @@ if __name__ == '__main__':
 	#     4) The default error to give to each subgroup when it is not the target.
 	#     5) The file to use as Config.py for the pyfit runs.
 
+	parser = argparse.ArgumentParser(
+		description="For the given training set, trains one network per structural subgroup. During each training, " +
+		"sets one target group to a lower error than the rest and determines the correlation between the other groups and " +
+		"this group."
+	)
+	parser.add_argument(
+		'-o', '--output-file', dest='opath', type=str, required=True, 
+		help='The directory to output files to. Must not exist when program is started.'
+	)
+	parser.add_argument(
+		'-t', '--training-set', dest='tfile', type=str, required=True, 
+		help='The training set file to read group names from and that is being used for training. Should also be set in config file.'
+	)
+	parser.add_argument(
+		'-e', '--error-target', dest='target_error', type=float, required=True, 
+		help='The target error for the group being trained to low error.'
+	)
+	parser.add_argument(
+		'-d', '--error-default', dest='default_error', type=float, required=True, 
+		help='The default error target for all groups except for the group being studied.'
+	)
+	parser.add_argument(
+		'-c', '--config-file', dest='config_file', type=str, required=True, 
+		help='The file to use as Config.py for all pyfit runs. Some values are overridden by this script.'
+	)
+	parser.add_argument(
+		'-p', '--pearson-correlation', dest='use_pearson', action='store_true',
+		help='Whether or not to use the Pearson correlation metric.'
+	)
+	parser.add_argument(
+		'-l', '--delta-correlation', dest='use_delta', action='store_true',
+		help='Whether or not to use the delta correlation metric.'
+	)
+	parser.add_argument(
+		'-s', '--skip-first', dest='skip_first', type=int, required=False, default=0,
+		help='The number of training iterations from the beginning to skip for all calculations.'
+	)
+	parser.add_argument(
+		'-i', '--training-iterations', dest='training_iterations', type=int, required=False, default=0,
+		help='The number of training iterations to use. Default is whatever is in the config file.'
+	)
+	parser.add_argument(
+		'-g', '--groups', dest='groups', type=str, required=False, nargs='*',
+		help='The specific groups to target for this run. The default is to use all groups.'
+	)
+
+	args = parser.parse_args(sys.argv[1:])
+
+	if args.groups == []:
+		args.groups = None
+
 	# Number of training iterations to skip from the beginning.
-	skip_first = 0
+	#skip_first = 0
 
-	opath = sys.argv[1]
+	#opath = sys.argv[1]
 
-	if opath[-1] != '/':
-		opath += '/'
+	if args.opath[-1] != '/':
+		args.opath += '/'
 
-	if os.path.isdir(opath):
+	if os.path.isdir(args.opath):
 		print("The output directory already exists.")
 		exit(1)
 
-	os.mkdir(opath)
+	os.mkdir(args.opath)
 
-	tfile = sys.argv[2]
-
-	if not os.path.isfile(tfile):
+	if not os.path.isfile(args.tfile):
 		print("The specified training input file does not exist.")
 		exit(1)
 
 
-	target_error  = float(sys.argv[3])
-	default_error = float(sys.argv[4])
 
-	config_file = sys.argv[5]
-
-	if not os.path.isfile(config_file):
+	if not os.path.isfile(args.config_file):
 		print("The specified config file does not exist.")
 		exit(1)
 
 
+
+	if not args.use_pearson and not args.use_delta:
+		print("Neither pearson, nor delta was specified.")
 
 	# We need to load the training set file and get a list of structural
 	# subgroups from it. Once this is complete, we run pyfit once for each
@@ -282,11 +334,14 @@ if __name__ == '__main__':
 	Util.init('log.txt')
 
 	# Load whichever training set is specified above.
-	training_set = TrainingSetFile(tfile)
+	training_set = TrainingSetFile(args.tfile)
 
-	all_groups = []
-	for struct_id in training_set.training_structures:
-		all_groups.append(training_set.training_structures[struct_id][0].group_name)
+	if args.groups is None:
+		all_groups = []
+		for struct_id in training_set.training_structures:
+			all_groups.append(training_set.training_structures[struct_id][0].group_name)
+	else:
+		all_groups = args.groups
 
 
 	# Filter out unique names.
@@ -296,7 +351,7 @@ if __name__ == '__main__':
 			tmp.append(g)
 
 	# We want everything to be sorted so that all results have consistent ordering.
-	all_groups = sorted(tmp)[:25]
+	all_groups = sorted(tmp)
 
 	print("Performing analysis for %i structural groups . . . "%len(all_groups))
 
@@ -306,69 +361,89 @@ if __name__ == '__main__':
 	result_file_paths = []
 	for group in all_groups:
 		# Generate a directory to do the pyfit run in.
-		run_dir  = opath   + 'pyfit_run_%s/'%group
+		run_dir  = args.opath   + 'pyfit_run_%s/'%group
 		out_file = run_dir + 'gerr.txt' 
 		os.mkdir(run_dir)
 
 		# Generate a config dictionary to use for the run.
+		
 		config_for_run = {
-			'DEFAULT_TARGET'   : '%f'%default_error,
+			'DEFAULT_TARGET'   : '%f'%args.default_error,
 			'GROUP_ERROR_FILE' : '\'gerr.txt\'',
-			'SUBGROUP_TARGETS' : '{\'%s\':%f}'%(group, target_error)
+			'SUBGROUP_TARGETS' : '{\'%s\':%f}'%(group, args.target_error)
 		}
+
+		if args.training_iterations != 0:
+			config_for_run['MAXIMUM_TRAINING_ITERATIONS'] = '%i'%args.training_iterations
 
 		print("Running Pyfit")
 		run_pyfit_with_config(
 			config_for_run,
 			'-t -u',
 			run_dir,
-			config_file_path=config_file
+			config_file_path=args.config_file
 		)
 
 		result_file_paths.append(out_file)
 
-
-	print("Calculating Pearson Correlations")
-	# We should now have a group error file for each subgroup.
-	# We need to load all of them and calculate pearson correlation for
-	# all of them.
-
-	pearson_correlations = np.ones((len(all_groups), len(all_groups)))
-
+	group_error_structs = {}
 	for i, group in enumerate(all_groups):
 		# Load the group error file for it.
 		error = load_group_error(result_file_paths[i])
+		group_error_structs[group] = error
 
-		# Iterate over every group and calculate the correlation
-		# between this group, and the other group.
+	if args.use_pearson:
+		print("Calculating Pearson Correlations")
+		# We should now have a group error file for each subgroup.
+		# We need to load all of them and calculate pearson correlation for
+		# all of them.
 
-		for j, other_group in enumerate(all_groups):
-			pearson_correlations[i][j] = pcc(error[group][skip_first:], error[other_group][skip_first:])
+		pearson_correlations = np.ones((len(all_groups), len(all_groups)))
 
-	
-	graph_correlations(pearson_correlations, 'pcc.png', "Pearson Correlation Matrix")
+		
 
-	tl.ndarray_to_file(pearson_correlations, 'pearson.mat')
+		for i, group in enumerate(all_groups):
+			# Load the group error file for it.
+			error = group_error_structs[group]
 
-	print("Calculating Delta Correlations")
+			# Iterate over every group and calculate the correlation
+			# between this group, and the other group.
 
-	delta_correlations = np.ones((len(all_groups), len(all_groups)))
+			for j, other_group in enumerate(all_groups):
+				pearson_correlations[i][j] = pcc(error[group][args.skip_first:], error[other_group][args.skip_first:])
 
-	# Unlike the pearson correlations, here we just consider
-	# the ratio of the everage error between the two.
-	for i, group in enumerate(all_groups):
-		# Load the group error file for it.
-		error = load_group_error(result_file_paths[i])
+		
+		graph_correlations(pearson_correlations, args.opath + 'pcc.png', "Pearson Correlation Matrix")
 
-		# Iterate over every group and calculate the correlation
-		# between this group, and the other group.
+		tl.ndarray_to_file(pearson_correlations, args.opath + 'pearson.mat')
 
-		for j, other_group in enumerate(all_groups):
-			other_delta = np.abs(error[other_group][skip_first:].mean() - default_error)
-			this_delta  = np.abs(error[group][skip_first:].mean()       - default_error)
-			delta_correlations[i][j] = other_delta / this_delta
 
-	graph_correlations(delta_correlations, 'delta.png', "Delta Correlation Matrix")
-	tl.ndarray_to_file(delta_correlations, 'delta.mat')
+	if args.use_delta:
+		print("Calculating Delta Correlations")
 
-	# plt.savefig(output_file, dpi=250)
+		delta_correlations = np.ones((len(all_groups), len(all_groups)))
+
+		# Unlike the pearson correlations, here we just consider
+		# the ratio of the everage error between the two.
+		for i, group in enumerate(all_groups):
+			# Load the group error file for it.
+			error = group_error_structs[group]
+
+			# Iterate over every group and calculate the correlation
+			# between this group, and the other group.
+
+			for j, other_group in enumerate(all_groups):
+				other_delta = np.abs(error[other_group][args.skip_first:].mean() - args.default_error)
+				this_delta  = np.abs(error[group][args.skip_first:].mean()       - args.default_error)
+				delta_correlations[i][j] = other_delta / this_delta
+
+		graph_correlations(delta_correlations, args.opath + 'delta.png', "Delta Correlation Matrix")
+		tl.ndarray_to_file(delta_correlations, args.opath + 'delta.mat')
+
+	with open(args.opath + 'data.json', 'w') as file:
+		tmp = {}
+		for k in group_error_structs:
+			tmp[k] = {}
+			for k2 in group_error_structs[k]:
+				tmp[k][k2] = group_error_structs[k][k2].tolist()
+		file.write(json.dumps(tmp))
