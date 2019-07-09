@@ -91,9 +91,6 @@ if __name__ == '__main__':
 		return new_net
 
 
-	n_desired = 1890
-	threshold = 21
-
 	r0_sets       = []
 	legendre_sets = []
 
@@ -132,7 +129,7 @@ if __name__ == '__main__':
 	for lset in legendre_sets:
 		for sigma in sigma_sets:
 			for r0 in r0_sets:
-				dir_name = '/home/ajr6/2019-06-28/deep-runs-final/idx_%05i'%(
+				dir_name = '/home/ajr6/2019-07-08/deep-runs-redo/idx_%05i'%(
 					idx
 				)
 				idx += 1
@@ -147,7 +144,7 @@ if __name__ == '__main__':
 				new_config["parameter-set"]["r_0_values"]           = r0
 
 				n_args = len(r0) * len(lset)
-				network = constrain_network([n_args, *base_network], n_desired, threshold)
+				network = constrain_network([n_args, *base_network], n_desired, threshold)[1:]
 
 				new_config["parameter-set"]["network_layers"] = network
 				configurations.append(new_config)

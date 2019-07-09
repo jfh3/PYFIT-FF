@@ -804,29 +804,38 @@ if __name__ == '__main__':
 		l_rng    -= np.array(res['parameter_set']['legendre_polynomials']).min()
 		l_density /= l_rng
 
+		def network_params(layers):
+			layers = [layers[0], *layers]
+			n_params = layers[0] * layers[1] + layers[1]
+			for i, l in enumerate(layers[1:-1]):
+				n_params += l * layers[i + 2] + layers[i + 2]
+
+			return n_params
+
 		point = {
-			'loc'     : loc,
-			'r'       : res['parameter_set']['r_0_values'],
-			'r#'      : len(res['parameter_set']['r_0_values']),
-			'rd'      : r_density,
-			'rm'      : np.array(res['parameter_set']['r_0_values']).mean(),
-			'rmin'    : np.array(res['parameter_set']['r_0_values']).min(),
-			'rmax'    : np.array(res['parameter_set']['r_0_values']).max(),
-			'l'       : res['parameter_set']['legendre_polynomials'],
-			'l#'      : len(res['parameter_set']['legendre_polynomials']),
-			'ld'      : l_density,
-			'lm'      : np.array(res['parameter_set']['legendre_polynomials']).mean(),
-			'lmin'    : np.array(res['parameter_set']['legendre_polynomials']).min(),
-			'lmax'    : np.array(res['parameter_set']['legendre_polynomials']).max(),
-			's'       : res['parameter_set']['gi_sigma'],
-			'fm'      : res['scores']['figure_of_merit'],
-			'ff'      : res['scores']['mean_ff_correlation'],
-			'fc'      : res['scores']['mean_fc_correlation'],
-			'mrmse'   : res['scores']['mean_rmse'] * 1000,
-			'nf'      : len(res['parameter_set']['r_0_values']) * len(res['parameter_set']['legendre_polynomials']),
-			'minrmse' : res['scores']['min_rmse'] * 1000,
-			'maxrmse' : res['scores']['max_rmse'] * 1000,
-			'stdrmse' : res['scores']['std_rmse'] * 1000
+			'loc'        : loc,
+			'r'          : res['parameter_set']['r_0_values'],
+			'r#'         : len(res['parameter_set']['r_0_values']),
+			'rd'         : r_density,
+			'rm'         : np.array(res['parameter_set']['r_0_values']).mean(),
+			'rmin'       : np.array(res['parameter_set']['r_0_values']).min(),
+			'rmax'       : np.array(res['parameter_set']['r_0_values']).max(),
+			'l'          : res['parameter_set']['legendre_polynomials'],
+			'l#'         : len(res['parameter_set']['legendre_polynomials']),
+			'ld'         : l_density,
+			'lm'         : np.array(res['parameter_set']['legendre_polynomials']).mean(),
+			'lmin'       : np.array(res['parameter_set']['legendre_polynomials']).min(),
+			'lmax'       : np.array(res['parameter_set']['legendre_polynomials']).max(),
+			's'          : res['parameter_set']['gi_sigma'],
+			'fit_params' : network_params(res['parameter_set']['network_layers']),
+			'fm'         : res['scores']['figure_of_merit'],
+			'ff'         : res['scores']['mean_ff_correlation'],
+			'fc'         : res['scores']['mean_fc_correlation'],
+			'mrmse'      : res['scores']['mean_rmse'] * 1000,
+			'nf'         : len(res['parameter_set']['r_0_values']) * len(res['parameter_set']['legendre_polynomials']),
+			'minrmse'    : res['scores']['min_rmse'] * 1000,
+			'maxrmse'    : res['scores']['max_rmse'] * 1000,
+			'stdrmse'    : res['scores']['std_rmse'] * 1000
 		}
 
 		if 'mean_val' in res['scores']:
@@ -962,7 +971,8 @@ if __name__ == '__main__':
 		'stdval'  : "Root Mean Squared Validation Error Standard Deviation",
 		'overfit' : "Validation Error to Training Error Ratio",
 		'score'   : "Overall Score",
-		'diff'    : 'Validation Error Minus Training Error'
+		'diff'    : 'Validation Error Minus Training Error',
+		'fit_params' : "Neural Network Paramter Count"
 	}
 
 	if run_interactive:

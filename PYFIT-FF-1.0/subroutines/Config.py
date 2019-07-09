@@ -16,20 +16,20 @@ FILE_BUFFERING                     = 1
 LOG_PATH                           = 'input/log.txt'
 
 # The neural network file to load.
-NEURAL_NETWORK_FILE                = 'input/Feature_Selection/705.nn.dat'
+NEURAL_NETWORK_FILE                = 'input/AB/group-fit-100-meV.nn.dat'
 
 # --------------------------------------------------
 # Structural Parameter Calculation Configuration
 # --------------------------------------------------
 
-POSCAR_DATA_FILE = 'input/Feature_Selection/SET-ADAM-RM-BAD-CLUSTERS-06-14-19-POSCAR-E-full.dat'
+POSCAR_DATA_FILE = 'input/AB/AB-POSCAR-E-full-NO-B00-B01-B02.dat'
 
 # The parameter file to output. This is what gets used for neural network
 # training during the next step (usually). If you want the program to train
 # on this file immediately after generating it, specify the same file for
 # the TRAINING_SET_FILE parameter and pass the --run-training flag to the
 # program.
-LSPARAM_FILE     = 'input/Feature_Selection/SET-ADAM-RM-BAD-CLUSTERS-06-14-19-LSPARAM-E-full.dat'
+LSPARAM_FILE     = 'input/AB/AB-LSPARAM-E-full-NO-B00-B01-B02.dat'
 
 # The file to store training data and neighbors lists in. If you don't specify this
 # it won't get written.
@@ -117,10 +117,10 @@ PROGRESS_INTERVAL = 1
 
 # The structure file that contains POSCAR structures
 # and DFT energies.
-TRAINING_SET_FILE                  = 'input/Feature_Selection/SET-ADAM-RM-BAD-CLUSTERS-06-14-19-LSPARAM-E-full.dat'
+TRAINING_SET_FILE                  = 'input/AB/AB-LSPARAM-E-full-NO-B00-B01-B02.dat'
 
 # Where to save the neural network when done training it.
-NEURAL_NETWORK_SAVE_FILE           = 'input/Feature_Selection/out.nn.dat'
+NEURAL_NETWORK_SAVE_FILE           = 'output/out.nn.dat'
 
 # The file to store the E_VS_V data in.
 # Each line will be all volumes in order followed
@@ -131,7 +131,7 @@ E_VS_V_FILE                        = 'E_vs_V.txt'
 E_VS_V_INTERVAL = 10000000
 
 # The ratio of training data to overall amount of data.
-TRAIN_TO_TOTAL_RATIO = 0.9
+TRAIN_TO_TOTAL_RATIO = 1.0
 
 
 # The weight to assign to any group not explicitely enumerated
@@ -148,7 +148,7 @@ WEIGHTS = {}
 # structural group if desired. This will allow you to train your network
 # to very high accuracy in a particular subgroup, while not caring muchx
 # about others.
-OBJECTIVE_FUNCTION = 'rmse'
+OBJECTIVE_FUNCTION = 'group-targets'
 
 # If set to true, the system will score groups below their target error as
 # having no error at all. This will allow groups to migrate down below 
@@ -158,6 +158,7 @@ UNWEIGHTED_NEGATIVE_ERROR = False
 # The file to store the subgroup error in. If you specify --group-error,
 # this will be graphed after the main error graph so that you can see how the 
 # error of each group varied throughout the training process.
+#GROUP_ERROR_FILE = 'output_test/pyfit_run_Si_A1/gerr.txt'
 GROUP_ERROR_FILE = 'group_error.txt'
 
 # This is how often the error per-group should be recorded.
@@ -166,16 +167,16 @@ GROUP_ERROR_RECORD_INTERVAL = 1
 # This is the default rmse value to target for subgroups if
 # OBJECTIVE_FUNCTION = 'group-targets'. This is overriden by 
 # any values explicitely specified in SUBGROUP_TARGETS.
-DEFAULT_TARGET = 0.014
+DEFAULT_TARGET = 0.1
 
 # The rmse target for each subgroup. This is only used if OBJECTIVE_FUNCTION = 'group-targets'
 SUBGROUP_TARGETS = {}
-# Example: SUBGROUP_TARGETS['Si_B1']= 0.004
+#SUBGROUP_TARGETS['Si_B1'] = 0.001
 
 # This is multiplied by the subgroup error at the end. This effectively
 # makes the parabola that defines the error for each group steaper
 # or more shallow.
-SUBGROUP_ERROR_COEFFICIENT = 1.0
+SUBGROUP_ERROR_COEFFICIENT = 1500.0
 
 # Standard NN learning rate.
 LEARNING_RATE = 0.05
@@ -188,4 +189,4 @@ OPTIMIZATION_ALGORITHM = 'LBFGS'
 MAX_LBFGS_ITERATIONS = 10
 
 # Maximum number of epochs to run through for training.
-MAXIMUM_TRAINING_ITERATIONS = 150
+MAXIMUM_TRAINING_ITERATIONS = 10

@@ -224,11 +224,3 @@ def ndarray_from_file(fpath):
 		arr   = np.frombuffer(data[typelen + 2 + ndim*8:], dtype=typename).reshape(shape)
 
 	return arr
-
-	
-
-if __name__ == '__main__':
-	if len(sys.argv) < 2:
-		print("Type a python expression in double quotes to test it.")
-	else:
-		print(*eval(sys.argv[1]))

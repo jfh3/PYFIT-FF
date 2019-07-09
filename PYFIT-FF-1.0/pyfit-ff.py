@@ -34,18 +34,6 @@ def ComputeStructureParameters(lammps_export_dir=None):
 	structural_parameters = GenerateStructuralParameters(poscar_data, neighborLists, neural_network)
 	
 
-	# We want a numpy array where each row is a gi and 
-	# each column is an atom.
-	all_params = np.zeros((len(structural_parameters[0][0]), poscar_data.n_atoms))
-
-	full_atom_idx = 0
-	for struct_idx, struct in enumerate(poscar_data.structures):
-		for atom_idx, atom in enumerate(struct.atoms):
-			all_params[:, full_atom_idx] = structural_parameters[struct_idx][atom_idx]
-			full_atom_idx += 1
-
-
-
 	WriteTrainingSet(
 		LSPARAM_FILE, 
 		neural_network.config, 
@@ -62,6 +50,49 @@ def ComputeStructureParameters(lammps_export_dir=None):
 		if base_path[-1] != '/':
 			base_path += '/'
 
+
+		# We want a numpy array where each row is a gi and 
+		# each column is an atom.
+		all_params = np.zeros((len(structural_parameters[0][0]), poscar_data.n_atoms))
+
+		mask = []
+
+		full_atom_idx = 0
+		for struct_idx, struct in enumerate(poscar_data.structures):
+			def orthogonality(a, b):
+				# Normalize them
+				a = a / np.linalg.norm(a)
+				b = b / np.linalg.norm(b)
+				return np.abs(np.linalg.norm(np.cross(a, b)) - 1)
+
+			# Make sure that the lattice vectors are orthogonal.
+			ortho  = orthogonality(struct.A1, struct.A2) < 1e-7
+			ortho &= orthogonality(struct.A2, struct.A3) < 1e-7
+			ortho &= orthogonality(struct.A1, struct.A3) < 1e-7
+
+			n_struct_params = len(structural_parameters[0][0])
+
+			for atom_idx, atom in enumerate(struct.atoms):
+				all_params[:, full_atom_idx] = structural_parameters[struct_idx][atom_idx]
+				full_atom_idx += 1
+				if ortho:
+					mask.append(True)
+				else:
+					mask.append(False)
+
+			
+
+		print("Original Shape: %s"%(str(all_params.shape)))
+
+		# I know how bad this is. It was written for some throw away code.
+		all_params = all_params[:, np.array(mask)]
+
+		print("Constrained Shape: %s"%(str(all_params.shape)))
+
+		scale = np.abs(all_params).mean(axis=0)
+		_min = scale.min()
+		_max = scale.max()
+		_rng = _max - _min
 
 		struct_idx = 0
 		for idx, struct in enumerate(poscar_data.structures):
@@ -81,6 +112,7 @@ def ComputeStructureParameters(lammps_export_dir=None):
 			n_struct_params = len(structural_parameters[0][0])
 
 			if ortho:
+
 				# The lattice vectors are othogonal so we can proceed.
 				data =  ''
 				data += 'ITEM: NUMBER OF ATOMS\n'
@@ -116,9 +148,7 @@ def ComputeStructureParameters(lammps_export_dir=None):
 
 				fpath = base_path + '%06i.dump'%(idx)
 				param_values_ = np.array(param_values_)
-				_min = param_values_.min()
-				_max = param_values_.max()
-				_rng = _max - _min
+				
 				for atom_idx, atom in enumerate(struct.atoms):
 					
 					new_data += '%03i 1 %f %f %f %f\n'%(
@@ -963,14 +993,16 @@ def TrainNetwork(force_cpu, randomize_nn, gpu_affinity=0):
 
 			loss_values[current_iteration] = last_loss
 
-			if loss_values[current_iteration] > 10.0:
-				if n_complete_re_randomizations > 5:
-					print("NETWORK IS UNSTABLE")
-					log("Network error went to infinity too many times, giving up.")
-				else:
-					log("Error exploded, randomizing")
-					n_complete_re_randomizations += 1
-					torch_net, optimizer = partial_randomize(torch_net, complete_reset=True)
+			if OBJECTIVE_FUNCTION != 'group-targets':
+				if loss_values[current_iteration] > 10.0:
+					if n_complete_re_randomizations > 5:
+						print("NETWORK IS UNSTABLE")
+						log("Network error went to infinity too many times, giving up.")
+						break
+					else:
+						log("Error exploded, randomizing")
+						n_complete_re_randomizations += 1
+						torch_net, optimizer = partial_randomize(torch_net, complete_reset=True)
 
 			bar.update(current_iteration + 1)
 
