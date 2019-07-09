@@ -17,6 +17,7 @@ from EvalNN              import GetTrainingSetInstance, RunNetwork
 from CFCorrelationCalc   import CFCorrelationCalc
 from CFHeatmap           import GenCFHeatmap
 from CFScatterPlots      import GenCFScatterPlots
+from scipy.optimize      import curve_fit
 
 import tl
 import Util
@@ -214,13 +215,13 @@ def graph_correlations(matrix, fname, title, delta_mode=False):
 
 	for m in range(matrix.shape[0]):
 		for n in range(matrix.shape[1]):
-			ax.text(n, m, '%i'%(int(round(100*matrix[m][n]))), ha="center", va="center", color="black", fontsize=2)
+			ax.text(n, m, '%i'%(int(round(100*matrix[m][n]))), ha="center", va="center", color="black", fontsize=1.5)
 
 	
 	plt.setp(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor")
 
 	for tick in ax.xaxis.get_major_ticks():
-		tick.label.set_fontsize(3.0)
+		tick.label.set_fontsize(2.5)
 
 	for tick in ax.yaxis.get_major_ticks():
 		tick.label.set_fontsize(3.0)
@@ -251,23 +252,23 @@ if __name__ == '__main__':
 		"this group."
 	)
 	parser.add_argument(
-		'-o', '--output-file', dest='opath', type=str, required=True, 
+		'-o', '--output-file', dest='opath', type=str,
 		help='The directory to output files to. Must not exist when program is started.'
 	)
 	parser.add_argument(
-		'-t', '--training-set', dest='tfile', type=str, required=True, 
+		'-t', '--training-set', dest='tfile', type=str,
 		help='The training set file to read group names from and that is being used for training. Should also be set in config file.'
 	)
 	parser.add_argument(
-		'-e', '--error-target', dest='target_error', type=float, required=True, 
+		'-e', '--error-target', dest='target_error', type=float,
 		help='The target error for the group being trained to low error.'
 	)
 	parser.add_argument(
-		'-d', '--error-default', dest='default_error', type=float, required=True, 
+		'-d', '--error-default', dest='default_error', type=float,
 		help='The default error target for all groups except for the group being studied.'
 	)
 	parser.add_argument(
-		'-c', '--config-file', dest='config_file', type=str, required=True, 
+		'-c', '--config-file', dest='config_file', type=str,
 		help='The file to use as Config.py for all pyfit runs. Some values are overridden by this script.'
 	)
 	parser.add_argument(
@@ -277,6 +278,10 @@ if __name__ == '__main__':
 	parser.add_argument(
 		'-l', '--delta-correlation', dest='use_delta', action='store_true',
 		help='Whether or not to use the delta correlation metric.'
+	)
+	parser.add_argument(
+		'-u', '--slope-correlation', dest='use_slope', action='store_true',
+		help='Whether or not to calculate the linear fit slope as a correlation metric.'
 	)
 	parser.add_argument(
 		'-s', '--skip-first', dest='skip_first', type=int, required=False, default=0,
@@ -290,11 +295,104 @@ if __name__ == '__main__':
 		'-g', '--groups', dest='groups', type=str, required=False, nargs='*',
 		help='The specific groups to target for this run. The default is to use all groups.'
 	)
+	parser.add_argument(
+		'-r', '--pair', dest='pair', type=str, required=False, nargs='*',
+		help='Create a pair scatterplot of the value of error for one group against the other.'
+	)
+	parser.add_argument(
+		'-a', '--graph', dest='graph', type=str, required=False, default=None,
+		help='Graph the group error as a function of iteration for this group instead of running any calculations. Must also specify -y.'
+	)
+
+	parser.add_argument(
+		'-y', '--error-file', dest='error_file', type=str, required=False, default=None,
+		help='The file to read error data from when graphing.'
+	)
+
+	parser.add_argument(
+		'-w', '--highlight', dest='highlight', type=str, required=False, nargs='*',
+		help='A list of groups to highlight when graphing.'
+	)
+
 
 	args = parser.parse_args(sys.argv[1:])
 
 	if args.groups == []:
 		args.groups = None
+
+	if args.highlight is None:
+		args.highlight = []
+
+	if args.graph is not None:
+		if args.error_file is None:
+			print("You must specify a -y/--error-file argument when specifying -a/--graph.")
+			parser.print_help()
+			exit()
+
+		from mpldatacursor import datacursor
+		import warnings
+		warnings.filterwarnings("ignore")
+		matplotlib.use("GTK3Agg")
+
+		# Load the file and show the graph.
+		with open(args.error_file, 'r') as file:
+			data = json.loads(file.read())
+
+		group_names = [k for k in data[args.graph]]
+
+		x_rng = range(len(data[args.graph][args.graph]))
+
+		for group in group_names:
+			y_data = data[args.graph][group]
+
+			if group == args.graph or group in args.highlight:
+				plt.scatter(x_rng, y_data, s=70, label=group, marker="x", zorder=100000)
+			else:
+				plt.scatter(x_rng, y_data, s=4, label=group)
+
+		datacursor(formatter='{label}'.format)
+		plt.xlabel("Iteration")
+		plt.ylabel("Group Error")
+
+		plt.title("Error vs. Iteration")
+		
+		plt.show()
+		exit()
+
+	if args.pair is not None:
+		if args.error_file is None:
+			print("You must specify a -y/--error-file argument when specifying -r/--pair.")
+			parser.print_help()
+			exit()
+
+		from mpldatacursor import datacursor
+		import warnings
+		warnings.filterwarnings("ignore")
+		matplotlib.use("GTK3Agg")
+
+		# Load the file and show the graph.
+		with open(args.error_file, 'r') as file:
+			data = json.loads(file.read())
+
+		for other_group in args.pair[1:]:
+			plt.scatter(data[args.pair[0]][args.pair[0]], data[args.pair[0]][other_group], s=4, label=other_group)
+
+		datacursor(formatter='{label}'.format)
+		plt.xlabel(args.pair[0])
+		plt.ylabel("Error in Another Group")
+
+		plt.title("")
+		
+		plt.show()
+		exit()
+
+
+	if args.error_file is not None:
+		if args.graph is None:
+			print("The -y/--error-file argument can only be used in conjunction with the -a/--graph argument.")
+			parser.print_help()
+			exit()
+
 
 	# Number of training iterations to skip from the beginning.
 	#skip_first = 0
@@ -413,7 +511,7 @@ if __name__ == '__main__':
 				pearson_correlations[i][j] = pcc(error[group][args.skip_first:], error[other_group][args.skip_first:])
 
 		
-		graph_correlations(pearson_correlations, args.opath + 'pcc.png', "Pearson Correlation Matrix")
+		graph_correlations(pearson_correlations, args.opath + 'pcc.eps', "Pearson Correlation Matrix")
 
 		tl.ndarray_to_file(pearson_correlations, args.opath + 'pearson.mat')
 
@@ -433,12 +531,39 @@ if __name__ == '__main__':
 			# between this group, and the other group.
 
 			for j, other_group in enumerate(all_groups):
-				other_delta = np.abs(error[other_group][args.skip_first:].mean() - args.default_error)
-				this_delta  = np.abs(error[group][args.skip_first:].mean()       - args.default_error)
+				other_delta = error[other_group][args.skip_first:].mean() - args.default_error
+				this_delta  = error[group][args.skip_first:].mean()       - args.default_error
 				delta_correlations[i][j] = other_delta / this_delta
 
-		graph_correlations(delta_correlations, args.opath + 'delta.png', "Delta Correlation Matrix")
+		graph_correlations(delta_correlations, args.opath + 'delta.eps', "Delta Correlation Matrix")
 		tl.ndarray_to_file(delta_correlations, args.opath + 'delta.mat')
+
+	if args.use_slope:
+		print("Calculating Linear Fit Slopes")
+
+		slope_correlations = np.ones((len(all_groups), len(all_groups)))
+
+		# Unlike the pearson correlations, here we just consider
+		# the ratio of the everage error between the two.
+		for i, group in enumerate(all_groups):
+			# Load the group error file for it.
+			error = group_error_structs[group]
+
+			# Iterate over every group and calculate the correlation
+			# between this group, and the other group.
+
+			for j, other_group in enumerate(all_groups):
+				y = error[other_group][args.skip_first:]
+				x = error[group][args.skip_first:]
+				model = lambda x, m, b: m*x + b
+				res, cov = curve_fit(model, x, y)
+				if res[0] < 0.0:
+					slope_correlations[i][j] = max(res[0], -1.0)
+				else:
+					slope_correlations[i][j] = min(res[0], 1.0)
+
+		graph_correlations(slope_correlations, args.opath + 'slope.eps', "Slope Correlation Matrix")
+		tl.ndarray_to_file(slope_correlations, args.opath + 'slope.mat')
 
 	with open(args.opath + 'data.json', 'w') as file:
 		tmp = {}
