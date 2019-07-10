@@ -13,10 +13,10 @@ CONFIG_FNAME                       = __file__
 FILE_BUFFERING                     = 1
 
 # File to use for writing log information.
-LOG_PATH                           = 'input/log.txt'
+LOG_PATH                           = 'output/log.txt'
 
 # The neural network file to load.
-NEURAL_NETWORK_FILE                = 'input/AB/group-fit-100-meV.nn.dat'
+NEURAL_NETWORK_FILE                = 'input/AB/best-hyperparameters-24.nn.dat'
 
 # --------------------------------------------------
 # Structural Parameter Calculation Configuration
@@ -29,7 +29,7 @@ POSCAR_DATA_FILE = 'input/AB/AB-POSCAR-E-full-NO-B00-B01-B02.dat'
 # on this file immediately after generating it, specify the same file for
 # the TRAINING_SET_FILE parameter and pass the --run-training flag to the
 # program.
-LSPARAM_FILE     = 'input/AB/AB-LSPARAM-E-full-NO-B00-B01-B02.dat'
+LSPARAM_FILE     = 'input/AB/AB-LSPARAM-E-full-NO-B00-B01-B02-best-hyperparameters-24.dat'
 
 # The file to store training data and neighbors lists in. If you don't specify this
 # it won't get written.
@@ -50,15 +50,15 @@ E_SHIFT = 0.795023
 # If the difference in the loss between each subsequent training iteration is
 # less than FLAT_ERROR_STOP for FLAT_ERROR_ITERATIONS, the training will stop
 # before reaching MAXIMUM_TRAINING_ITERATIONS.
-FLAT_ERROR_STOP       = 1e-7
-FLAT_ERROR_ITERATIONS = 10
+FLAT_ERROR_STOP       = 1e-15
+FLAT_ERROR_ITERATIONS = 1000
 
 # When a plateau in the error is reached, based on the FLAT_ERROR_STOP and
 # FLAT_ERROR_ITERATIONS conditions, this is the maximum number of times to
 # perform an annealing step. In this context, that means adding a small random
 # number to all weights in order to temporarily increase error, but potentially
 # break out of a local minima. 
-PLATEAU_ANNEALING_MAX_ITERATIONS = 10
+PLATEAU_ANNEALING_MAX_ITERATIONS = 0
 
 # This is the amount to reduce the learning rate by each time a 
 # plateau in the error is reached.
@@ -87,24 +87,24 @@ OVERFIT_INCREASE_MAX_ITERATIONS = 10000
 
 # The directory to backup neural network files in at the
 # interval specified below.
-NETWORK_BACKUP_DIR                 = 'nn_backup/'
+NETWORK_BACKUP_DIR                 = 'output/nn_backup/'
 
 # Interval to backup the neural network file on.
 NETWORK_BACKUP_INTERVAL            = 10000
 
 # If True, all backups are kept. If False, only the last backup 
 # is kept.
-KEEP_BACKUP_HISTORY                = False
+KEEP_BACKUP_HISTORY                = True
 
 # Network Loss Log File Path
-LOSS_LOG_PATH                      = 'input/Feature_Selection/loss.txt'
+LOSS_LOG_PATH                      = 'output/loss.txt'
 
 # The file to log the validation loss in.
-VALIDATION_LOG_PATH                = 'input/Feature_Selection/val.txt'
+VALIDATION_LOG_PATH                = 'output/val.txt'
 
 # Interval on which validation error should be calculated and
 # logged in the corresponding file.
-VALIDATION_INTERVAL = 25
+VALIDATION_INTERVAL = 10
 
 # Whether or not to ensure that the validation set is sampled
 # equally for every structural group. This prevents the random
@@ -117,21 +117,21 @@ PROGRESS_INTERVAL = 1
 
 # The structure file that contains POSCAR structures
 # and DFT energies.
-TRAINING_SET_FILE                  = 'input/AB/AB-LSPARAM-E-full-NO-B00-B01-B02.dat'
+TRAINING_SET_FILE                  = 'input/AB/AB-LSPARAM-E-full-NO-B00-B01-B02-best-hyperparameters-24.dat'
 
 # Where to save the neural network when done training it.
-NEURAL_NETWORK_SAVE_FILE           = 'output/out.nn.dat'
+NEURAL_NETWORK_SAVE_FILE           = 'input/AB/best-hyperparameters-24-trained-1000.nn.dat'
 
 # The file to store the E_VS_V data in.
 # Each line will be all volumes in order followed
 # immediately by all energies in order.
-E_VS_V_FILE                        = 'E_vs_V.txt'
+E_VS_V_FILE                        = 'output/E_vs_V.txt'
 
 # Interval at which energy vs. volume data is exported.
 E_VS_V_INTERVAL = 10000000
 
 # The ratio of training data to overall amount of data.
-TRAIN_TO_TOTAL_RATIO = 1.0
+TRAIN_TO_TOTAL_RATIO = 0.9
 
 
 # The weight to assign to any group not explicitely enumerated
@@ -148,7 +148,7 @@ WEIGHTS = {}
 # structural group if desired. This will allow you to train your network
 # to very high accuracy in a particular subgroup, while not caring muchx
 # about others.
-OBJECTIVE_FUNCTION = 'group-targets'
+OBJECTIVE_FUNCTION = 'rmse'
 
 # If set to true, the system will score groups below their target error as
 # having no error at all. This will allow groups to migrate down below 
@@ -159,7 +159,7 @@ UNWEIGHTED_NEGATIVE_ERROR = False
 # this will be graphed after the main error graph so that you can see how the 
 # error of each group varied throughout the training process.
 #GROUP_ERROR_FILE = 'output_test/pyfit_run_Si_A1/gerr.txt'
-GROUP_ERROR_FILE = 'group_error.txt'
+GROUP_ERROR_FILE = 'output/group_error.txt'
 
 # This is how often the error per-group should be recorded.
 GROUP_ERROR_RECORD_INTERVAL = 1
@@ -189,4 +189,4 @@ OPTIMIZATION_ALGORITHM = 'LBFGS'
 MAX_LBFGS_ITERATIONS = 10
 
 # Maximum number of epochs to run through for training.
-MAXIMUM_TRAINING_ITERATIONS = 10
+MAXIMUM_TRAINING_ITERATIONS = 256
