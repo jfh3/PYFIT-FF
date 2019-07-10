@@ -112,19 +112,22 @@ if __name__ == '__main__':
 		struct = training_set.training_structures[struct_id]
 		name   = struct[0].group_name
 
-		target_group = None
-		if name in args.lgroups:
-			target_group = left_group_data
-		elif name in args.rgroups:
-			target_group = right_group_data
+		structure_params = [atom.structure_params for atom in struct]
+		params_per_atom  = len(structure_params[0])
 
-		if target_group is not None:
-			structure_params = [atom.structure_params for atom in struct]
-			params_per_atom  = len(structure_params[0])
-			if name in target_group:
-				target_group[name].extend(structure_params)
+		if name in args.lgroups:
+			if name in left_group_data:
+				left_group_data[name].extend(structure_params)
 			else:
-				target_group[name] = structure_params
+				left_group_data[name] = structure_params
+		
+		if name in args.rgroups:
+			if name in right_group_data:
+				right_group_data[name].extend(structure_params)
+			else:
+				right_group_data[name] = structure_params
+			
+			
 		
 
 
