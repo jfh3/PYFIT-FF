@@ -82,6 +82,11 @@ if __name__ == '__main__':
 		'it doesn\'t exist.'
 	)
 
+	parser.add_argument(
+		'-m', '--max-atoms', dest='max_atoms', type=int, default=0,
+		help='The maximum number of atoms to process for a group.'
+	)
+
 	args = parser.parse_args(sys.argv[1:])
 
 	# Make sure the output directory exists.
@@ -128,7 +133,22 @@ if __name__ == '__main__':
 				right_group_data[name] = structure_params
 			
 			
-		
+	if args.max_atoms != 0:
+		# We need to select a random subset of atoms to avoid using all of the
+		# system memory.
+
+		for kleft, kright in zip(left_group_data, right_group_data):
+			l = left_group_data[kleft]
+			if len(l) > args.max_atoms:
+				choice_indices = np.random.choice(range(len(l)), args.max_atoms, replace=False)
+				selection      = np.array(l)[choice_indices].tolist()
+				left_group_data[kleft] = selection
+
+			r = right_group_data[kright]
+			if len(r) > args.max_atoms:
+				choice_indices = np.random.choice(range(len(r)), args.max_atoms, replace=False)
+				selection      = np.array(r)[choice_indices].tolist()
+				right_group_data[kright] = selection
 
 
 	# Now we need to build data structures that are applicable for two things.
@@ -141,25 +161,17 @@ if __name__ == '__main__':
 	# up in two parallel arrays, one for each group. This will be used for
 	# calculating self correlations.
 
-	left_self_correlation_arrays  = {}
-	right_self_correlation_arrays = {}
+	left_self_correlations  = []
+	right_self_correlations = []
 
 	for kleft, kright in zip(left_group_data, right_group_data):
 		# Setup the left array.
 		data = left_group_data[kleft]
-		l, r = construct_self_correlation_arrays(data, params_per_atom)
-
-		# We now have two arrays, sufficient for calculation of self 
-		# correlation for this particular group.
-		left_self_correlation_arrays[kleft] = [l, r]
+		left_self_correlations.append(pearson(*construct_self_correlation_arrays(data, params_per_atom)))
 
 		# Setup the left array.
 		data = right_group_data[kright]
-		l, r = construct_self_correlation_arrays(data, params_per_atom)
-
-		# We now have two arrays, sufficient for calculation of self 
-		# correlation for this particular group.
-		right_self_correlation_arrays[kright] = [l, r]
+		right_self_correlations.append(pearson(*construct_self_correlation_arrays(data, params_per_atom)))
 
 	# Now that the self correlation arrays are ready, we need to setup
 	# the arrays for calculating the correlation between one group and 
@@ -199,8 +211,8 @@ if __name__ == '__main__':
 		result['right_group'] = kright
 
 		cross_correlation      = pearson(*combo_arrays[idx])
-		left_self_correlation  = pearson(*left_self_correlation_arrays[kleft])
-		right_self_correlation = pearson(*right_self_correlation_arrays[kright])
+		left_self_correlation  = left_self_correlations[idx]
+		right_self_correlation = right_self_correlations[idx]
 
 		result['cross']      = cross_correlation
 		result['left_self']  = left_self_correlation

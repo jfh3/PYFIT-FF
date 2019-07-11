@@ -56,6 +56,29 @@ def walk_dir_recursive(directory, max_depth, **kwargs):
 	locations     = []
 	file_contents = []
 
+	paths, contents, status = _inner_walk_dir_recursive(
+		directory, max_depth, 1,
+		extension_mode, target
+	)
+
+	stats['top_level_dirs_searched'] += 1
+	stats['max_depth_searched']       = max([
+		stats['max_depth_searched'], 
+		status['max_depth_searched']
+	])
+
+	stats['dirs_searched'] += status['dirs_searched']
+	stats['matches']       += status['matches']
+	stats['read_failures'] += status['read_failures']
+
+	if [paths, contents] == [None, None]:
+		# This directory doesn't have any matches.
+		# Do nothing.
+		pass
+	else:
+		locations.append(paths)
+		file_contents.append(contents)
+
 	for item in os.listdir(directory):
 		proper_item = os.path.join(directory, item)
 		if os.path.isdir(proper_item):
@@ -63,8 +86,6 @@ def walk_dir_recursive(directory, max_depth, **kwargs):
 				proper_item, max_depth, 1,
 				extension_mode, target
 			)
-
-
 
 			stats['top_level_dirs_searched'] += 1
 			stats['max_depth_searched']       = max([

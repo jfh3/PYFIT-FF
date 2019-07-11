@@ -92,7 +92,17 @@ if __name__ == '__main__':
 		help='The template file to use for submitting slurm jobs.'
 	)
 
+	parser.add_argument(
+		'-m', '--max-atoms', dest='max_atoms', type=int, default=0,
+		help='The maximum number of atoms to process for a group.'
+	)
+
+	
+
 	args = parser.parse_args(sys.argv[1:])
+
+	if args.max_atoms == 0:
+		args.max_atoms = 2**32 - 10
 
 	if not os.path.isdir(args.odir):
 		try:
@@ -118,6 +128,8 @@ if __name__ == '__main__':
 		print("If -p/--subprocess-mode is specified, -n/--n-procs must also be specified.")
 		exit(1)
 
+
+
 	# Load the training file and build a list of groups.
 
 	Util.init('log.txt')
@@ -128,6 +140,9 @@ if __name__ == '__main__':
 		all_groups.append(training_set.training_structures[struct_id][0].group_name)
 
 	all_groups = np.unique(all_groups).tolist()
+	tmp        = np.array(all_groups)
+	np.random.shuffle(tmp)
+	all_groups = tmp.tolist()
 
 	# If the user wants only a random subset, get that subset.
 
@@ -140,19 +155,23 @@ if __name__ == '__main__':
 	lidx, ridx = unique_combos(len(all_groups))
 	names = [(all_groups[l], all_groups[r]) for l, r in zip(lidx, ridx)]
 
+	print("Evaluating %i combinations"%len(names))
+
+
 	if args.proc_mode:
 		n_complete = 0
 		completed  = []
 		running    = []
+		failures   = 0
 
 		while n_complete < len(names):
 			for idx in range(len(names)):
 				if len(running) == args.n_procs:
 					break
 				if idx not in completed:
-					print("Starting %i"%idx)
-					cmd = 'python3 structure-lsp-correlation.py -t %s -l %s -r %s -o %s'%(
-						args.tfile, names[idx][0], names[idx][1], args.odir
+					print("Starting %05i"%idx)
+					cmd = 'python3 structure-lsp-correlation.py -t %s -l %s -r %s -o %s -m %i'%(
+						args.tfile, names[idx][0], names[idx][1], args.odir, args.max_atoms
 					)
 
 					if names[idx][0] == names[idx][1]:
@@ -160,24 +179,36 @@ if __name__ == '__main__':
 						exit(1)
 					completed.append(idx)
 					proc = run(cmd, _async=True)
-					running.append(proc)
+					running.append((proc, names[idx][0], names[idx][1], idx))
 
 			remove = None
 			for proc in running:
-				if proc.poll() is not None:
-					print('Process done')
-					n_complete += 1
-					# This process is done, add its index to the completed list
-					# and remove it from the list of those currently running.
-					
+				if proc[0].poll() is not None:
+					fname  = '%s%s_vs_%s.json'%(args.odir, proc[1], proc[2])
 					remove = proc
+					if os.path.isfile(fname):
+						n_complete += 1
+					else:
+						print("Process %05i failed, rescheduling . . . "%proc[3])
+						failures += 1
+
+						if failures > 5:
+							print("Too many processes failed, decreasing the number of available processes.")
+							args.n_procs -= 1
+
+							if args.n_procs == 0:
+								args.n_procs += 1
+						# The process didn't write its output file.
+						# This means it basically failed, reschedule it.
+						completed.remove(proc[3])
 					break
 
 			if remove is not None:
-				print("Removing from list")
 				running.remove(remove)
 
 			time.sleep(0.1)
+
+		print("Done (%05i failures)"%failures)
 
 
 
