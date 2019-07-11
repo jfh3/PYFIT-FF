@@ -1,0 +1,8 @@
+python3 matrix_vis.py -m test_out/cross.mat --title "Cross Correlation (Modified)" -l test_out/labels.json --number-grid --number-format "'%1.1f'%v" --number-font 1.5 -q -f cross.png --save-dpi 500 --x-font 3 --min-val -1.0 --max-val 1.0 --label-format "v.split('_')[1]" --value-mod "(v if v >= 0.72 else 0.0)"
+
+
+python3 matrix_vis.py -m test_out/relative.mat --title "Relative Cross Correlation" -l test_out/labels.json --number-grid --number-format "'%1.1f'%v" --number-font 1.5 -q -f relative.png --save-dpi 500 --x-font 3 --min-val -1.4 --max-val 1.4 --label-format "v.split('_')[1]"
+
+python3 matrix_vis.py -m test_out/cross.mat --title "Cross Correlation" -l test_out/labels.json --number-grid --number-format "'%1.1f'%v" --number-font 1.5 -q -f cross.png --save-dpi 500 --x-font 3 --min-val -1.0 --max-val 1.0 --label-format "v.split('_')[1]"
+
+python3 matrix_vis.py -m test_out/relative.mat --title "Relative Cross Correlation (Modified)" -l test_out/labels.json --number-grid --number-format "'%1.1f'%v" --number-font 1.5 -q -f relative.png --save-dpi 500 --x-font 3 --min-val -1.4 --max-val 1.4 --label-format "v.split('_')[1]" --value-mod "(v if v >= 0.9 else 0.0)"
