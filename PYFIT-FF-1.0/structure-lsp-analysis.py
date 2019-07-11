@@ -142,6 +142,13 @@ if __name__ == '__main__':
 	tl.ndarray_to_file(cross_matrix, args.output_directory + 'cross.mat')
 	tl.ndarray_to_file(relative_matrix, args.output_directory + 'relative.mat')
 
+	labels = {
+		'x': all_names,
+		'y': all_names
+	}
+
+	with open(args.output_directory + 'labels.json', 'w') as file:
+		file.write(json.dumps(labels))
 
 
 
