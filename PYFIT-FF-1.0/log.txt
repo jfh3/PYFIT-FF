@@ -1,2 +1,0 @@
-Loading Training Set File
-	Path = input/AB/AB-LSPARAM-E-full-NO-B00-B01-B02-best-hyperparameters-24.dat

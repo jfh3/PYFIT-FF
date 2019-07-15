@@ -144,18 +144,6 @@ if __name__ == '__main__':
 	)
 
 	parser.add_argument(
-		'-r', '--return', dest='return', type=str, nargs='*', 
-		help='What to copy back to the current directory when the job is done.'
-	)
-
-	parser.add_argument(
-		'-f', '--script-file', dest='script_copy', type=str, 
-		default='enki/slurm.sh',
-		help='Where to save the script file that will be executed on enki. ' +
-		'(on the local machine).'
-	)
-
-	parser.add_argument(
 		'-s', '--slurm-template', dest='slurm_template', type=str, 
 		default='enki/enki_template.sh', 
 		help='The file to use as a template sbatch script.'
@@ -227,9 +215,11 @@ if __name__ == '__main__':
 	script = script.replace('{{{time}}}',       str(args.time))
 	script = script.replace('{{{command}}}', ' '.join(args.command))
 
+	script_name = 'enki_run_script_tmp.sh'
+
 	# Write the script to a temp file, copy it to enki and run it.
 	try:
-		with open(args.script_copy, 'w') as file:
+		with open(script_name, 'w') as file:
 			file.write(script)
 	except:
 		print("Could not create the script file on local machine.")
@@ -237,13 +227,16 @@ if __name__ == '__main__':
 
 
 	run('sshpass -p "%s" scp %s ajr6@enki.nist.gov:%s'%(
-		password, args.script_copy, args.working_directory
+		password, script_name, args.working_directory
 	))
 
 	# The file is now on enki, run it through ssh.
 
-	script_path = args.working_directory + args.script_copy
+	script_path = args.working_directory + script_name
 
 	run_enki('chmod +x %s'%script_path, password)
-	run_enki('./%s'%args.script_copy, password, wd=args.working_directory)
+
+	run_enki('./%s'%script_name, password, wd=args.working_directory)
+
+
 

@@ -16,7 +16,7 @@ FILE_BUFFERING                     = 1
 LOG_PATH                           = 'output/log.txt'
 
 # The neural network file to load.
-NEURAL_NETWORK_FILE                = 'input/AB/best-hyperparameters-24.nn.dat'
+NEURAL_NETWORK_FILE                = 'input/AB/best-hyperparameters-20-trained-1000-tmp.nn.dat'
 
 # --------------------------------------------------
 # Structural Parameter Calculation Configuration
@@ -29,7 +29,7 @@ POSCAR_DATA_FILE = 'input/AB/AB-POSCAR-E-full-NO-B00-B01-B02.dat'
 # on this file immediately after generating it, specify the same file for
 # the TRAINING_SET_FILE parameter and pass the --run-training flag to the
 # program.
-LSPARAM_FILE     = 'input/AB/AB-LSPARAM-E-full-NO-B00-B01-B02-best-hyperparameters-24.dat'
+LSPARAM_FILE     = 'input/AB/AB-LSPARAM-E-full-NO-B00-B01-B02-best-hyperparameters-20.dat'
 
 # The file to store training data and neighbors lists in. If you don't specify this
 # it won't get written.
@@ -117,10 +117,10 @@ PROGRESS_INTERVAL = 1
 
 # The structure file that contains POSCAR structures
 # and DFT energies.
-TRAINING_SET_FILE                  = 'input/AB/AB-LSPARAM-E-full-NO-B00-B01-B02-best-hyperparameters-24.dat'
+TRAINING_SET_FILE                  = 'input/AB/AB-LSPARAM-E-full-NO-B00-B01-B02-best-hyperparameters-20.dat'
 
 # Where to save the neural network when done training it.
-NEURAL_NETWORK_SAVE_FILE           = 'input/AB/best-hyperparameters-24-trained-1000.nn.dat'
+NEURAL_NETWORK_SAVE_FILE           = 'input/AB/best-hyperparameters-20-trained-1000-tmp.nn.dat'
 
 # The file to store the E_VS_V data in.
 # Each line will be all volumes in order followed
@@ -186,7 +186,7 @@ LEARNING_RATE = 0.05
 OPTIMIZATION_ALGORITHM = 'LBFGS'
 
 # Maximum number of iterations for an LBFGS optimization step.
-MAX_LBFGS_ITERATIONS = 10
+MAX_LBFGS_ITERATIONS = 15
 
 # Maximum number of epochs to run through for training.
 MAXIMUM_TRAINING_ITERATIONS = 256
