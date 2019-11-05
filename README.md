@@ -15,6 +15,8 @@ If ITRAIN_FORCE==TRUE then
  
 ## Dependencies
 
+This code has been tested on linux and macOS however assuming the dependencies below are met the code should run on windows OS as well. 
+
 - PyTorch
 - Python 3.x
 - numpy
