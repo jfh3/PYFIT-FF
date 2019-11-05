@@ -13,11 +13,18 @@ If ITRAIN_FORCE==TRUE then
 
 # Output files
  
+## Dependencies
 
-# Dependence 
-1) PyTorch
-2) Python 3.x
-3) numpy
+- PyTorch
+- Python 3.x
+- numpy
+- A Unix OS of some kind.
+
+Usually the following command line will suffice:
+
+```bash
+sudo pip3 install torch torchvision numpy
+```
 
 # Theory 
 
