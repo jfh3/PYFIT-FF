@@ -1,8 +1,7 @@
-# PYFIT-FF
+# PYFIT-FF (Description)
 Authors: James Hickman (NIST) and Adam Robinson (GMU) 
 Description: 
 This code uses pytorch to train a Neural network to reproduce a single component system's potential energy surface for use in classical molecular dynamics simulations by approximating energies obtained from density functional theory (DFT) calculations
-
 
 
 # Input files
@@ -16,8 +15,12 @@ If ITRAIN_FORCE==TRUE then
  
 
 # Dependence 
+1) PyTorch
+2) Python 3.x
+3) numpy
 
-PyTorch
-Python 3.x
-numpy
-A Unix OS of some kind.
+# Theory 
+
+
+A description of the local structural parameters currently implemented can be found at the following link: 
+https://www.nature.com/articles/s41467-019-10343-5
