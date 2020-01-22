@@ -24,7 +24,6 @@ Once the dependencies are met then PYFIT can be installed using the following in
 	- cd ~/bin/
 	- ln -s PYFIT-FF/src/pyfit.py  PYFIT 
 	- Note: because pyfit.py has the line #!/usr/bin/env python3 it can be run like executable and therefore your system will find PYFIT in ~/bin and add it to the PATH  
-
 3) Run PYFIT using the provided example to get started 
 	- cd PYFIT-FF/example/
 	- pyfit input.json 
@@ -45,9 +44,6 @@ Once the dependencies are met then PYFIT can be installed using the following in
 3) Use the following command to activate this conda enviroment on your local machine (
 	- sfdsfdklglds
 	- NOTE: I typically put this command in my ~/.bashrc so that it activates automatically and is essentally my default python implementation
-
- 
-
 
 
 ## Install dependencies 

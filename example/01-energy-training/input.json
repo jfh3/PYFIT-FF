@@ -1,0 +1,12 @@
+{
+"nn_file_path"			:	"nn0.dat",
+"dataset_path"			:	"data-set.dat",
+"max_iter"				:	100,
+"lambda_rmse"			:	1.0,
+"lambda_l1"				:	0.0,
+"lambda_l2"				:	0.00001,
+"lambda_dU"				:	0.0,
+"u_shift"				:	0.795023,
+"dump_poscars"			:	false,
+"learning_rate"			:	0.05
+}

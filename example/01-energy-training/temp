@@ -1,0 +1,52 @@
+--------------------------------------------------------------
+-------------------------PYFIT-FF-----------------------------
+--------------------------------------------------------------
+RUN PARAMETERS:
+	 input_file          	:	input.json	
+	 start_time          	:	2019-11-14-H11-M28-S34	
+	 run_path            	:	/home/james/bin/PYFIT-FF/examples/01-energy-training/	
+	 num_threads         	:	6	
+	 cuda_avail          	:	False	
+DEFAULT PARAMETERS:
+	 RMSE_TOL            	:	1e-07	
+	 RMSE_FINAL          	:	0.0	
+	 RMSE_MAX            	:	10.0	
+	 N_ITER_SAVE         	:	250	
+	 N_ITER_VAL          	:	250	
+	 FAST_PINN_FIT       	:	True	
+	 FORCE_DX            	:	0.01	
+	 WRITE_LSP           	:	False	
+	 TRAIN_EDGES         	:	True	
+	 FRACTION_TRAIN      	:	0.8	
+	 EXPECTED_KEYS       	:	['nn_file_path', 'dataset_path', 'train_forces', 'max_iter', 'l2_reg_param', 'e_shift', 'learning_rate']	
+READING INPUT PARAMETERS IN JSON FILE:
+	 nn_file_path        	:	nn0.dat	
+	 dataset_path        	:	data-set.dat	
+	 force_train_list    	:	['Si_B15']	
+	 max_iter            	:	100	
+	 l2_reg_param        	:	1e-05	
+	 e_shift             	:	0.795023	
+	 learning_rate       	:	0.05	
+READING NEURAL NETWORK FILE:
+	 lsp_type            	:	5	
+	 pot_type            	:	NN	
+	 lsp_shift           	:	0.0	
+	 activation          	:	1	
+	 num_species         	:	1	
+	 species             	:	Si	
+	 atomic_weight       	:	28.0855	
+	 randomize_nn        	:	False	
+	 max_rand_wb         	:	0.5	
+	 cutoff_dist         	:	4.5	
+	 cutoff_range        	:	1.0	
+	 lsp_sigma           	:	1.0	
+	 lsp_lg_poly         	:	[0, 1, 2, 4, 6]	
+	 lsp_ro_val          	:	[2.0, 2.286, 2.571, 2.857, 3.143, 3.429, 3.714, 4.0]	
+	 ibaseline           	:	False	
+	 bop_param           	:	[10.917617, 5.331839, 3.753038, 1.219086, 0.130215, 0.92121, 0.883955, 0.631915]	
+	 nn_layers           	:	[40, 24, 24, 1]	
+	 num_fit_param       	:	1609	
+READING DATASET FILE:
+	 n_structs           	:	1665	
+	 n_atoms             	:	34798	
+<classes.Structure object at 0x7fbb677645f8>
