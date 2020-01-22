@@ -11,6 +11,7 @@
 	* The regression algorithm is trained to interpolate between various pre-computed DFT configurational energies U_DFT_j by minimization of some objective (for exmaple, RMSE=sqrt(sum((U_j-U_DFT_j)^2/N_j)))
 	* Once trained the potential is released to the public to be used in classical atomistic simulations such as molecular dynamics (MD) or Monte-Carlo (MC)
 		- Inside the training region the ML potential can have accuracy on the order of DFT itself (<2 meV) but is generally many orders of magnetude faster and has much better scaling to larger systems
+		- Outside the training region all purely mathematically ML potential are subject to un-physical extrpolation and therefore should only be used within the region of configuration space for which they trained 
 
 # PYFIT-FF 
 
