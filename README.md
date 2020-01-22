@@ -5,9 +5,37 @@ This code uses pytorch to train a Neural network to reproduce a single component
 
 # Installation
 
-This code has been tested on linux and macOS however assuming the dependencies below are met the code should run on windows OS as well. 
+This code has been tested on linux and macOS systems, however, assuming the following dependencies are met for your python implementation then the code should run on windows OS as well.
 
-## Installation option-1: conda (recommended)  
+Nessesary dependencies (see below for dependency installation instructions):  
+
+- PyTorch
+- Python 3.x
+- Numpy
+
+Once the dependencies are met then PYFIT can be installed using the following 
+
+1) Use the following command to get the PYFIT-FF source code from Github
+ 	- git clone https://github.com/jfh3/PYFIT-FF
+ 	- This will make a directory called "PYFIT-FF" on your machine 
+
+2) Use the following commands to make PYFIT executable from any directory  
+ 	- mv PYFIT-FF ~/bin
+	- cd ~/bin/
+	- ln -s PYFIT-FF/src/pyfit.py  PYFIT 
+	
+3) Run PYFIT using the provided example to get started 
+	- cd PYFIT-FF/example/
+	- pyfit input.json 
+	
+Note: because pyfit.py has the line #!/usr/bin/env python3 This will then act like an executable 
+
+
+	
+	
+Note techincally PYFIT can be run directly from
+
+## Installation dependenceies option-1: conda (recommended)  
 
 1) First install "conda" on your machine (conda is a popular open source python package management system)
  	- The conda installation process is well documented at the following link 
@@ -20,13 +48,6 @@ This code has been tested on linux and macOS however assuming the dependencies b
 	- sfdsfdklglds
 	- NOTE: I typically put this command in my ~/.bashrc so that it activates automatically and is essentally my default python implementation
 
-2) Get the PYFIT-FF source code from Github, this is done using the following command
- 	- git clone https://github.com/jfh3/PYFIT-FF
-3) This will make a directory called "PYFIT-FF" on your machine
-4) This can be stored in ~/bin/  
- 	- mv PYFIT-FF ~/bin
-	- cd ~/bin/
-	- ln -s PYFIT-FF/src/pyfit.py ~/bin/PYFIT 
  
 
 
@@ -34,10 +55,6 @@ This code has been tested on linux and macOS however assuming the dependencies b
 ## Install dependencies 
 
 
-- PyTorch
-- Python 3.x
-- numpy
-- A Unix OS of some kind.
 
 Usually the following command line will suffice:
 
@@ -46,7 +63,6 @@ sudo pip3 install torch torchvision numpy
 On a linux machine the following commands will allow to to run pyfit from anywhere on your computer using 
 
 
-Note: This will then act almost like an executable because pyfit.py has the line #!/usr/bin/env python3
 
 
 # Terminology 
