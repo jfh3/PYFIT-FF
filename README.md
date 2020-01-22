@@ -9,17 +9,24 @@ This code has been tested on linux and macOS however assuming the dependencies b
 
 ## Installation option-1: conda (recommended)  
 
-1) Install the python open source package management system "conda" on your machine 
- 	- The installation process is well documented at the following link 
+1) First install "conda" on your machine (conda is a popular open source python package management system)
+ 	- The conda installation process is well documented at the following link 
  	- https://docs.conda.io/projects/conda/en/latest/user-guide/install/
+	- for more information on conda see the following: https://www.youtube.com/watch?v=23aQdrS58e0&t=327s
+2) Use the following commands to create a conda enviroment with the Python 3.x and PyTorch (numpy will be installed automatically as part of this process) 
+	- sfdsfdklglds
+
+3) Use the following command to activate this conda enviroment on your local machine (
+	- sfdsfdklglds
+	- NOTE: I typically put this command in my ~/.bashrc so that it activates automatically and is essentally my default python implementation
 
 2) Get the PYFIT-FF source code from Github, this is done using the following command
- 	-git clone https://github.com/jfh3/PYFIT-FF
+ 	- git clone https://github.com/jfh3/PYFIT-FF
 3) This will make a directory called "PYFIT-FF" on your machine
 4) This can be stored in ~/bin/  
- 	-mv PYFIT-FF ~/bin
-	-cd ~/bin/
-	-ln -s PYFIT-FF/src/pyfit.py ~/bin/PYFIT 
+ 	- mv PYFIT-FF ~/bin
+	- cd ~/bin/
+	- ln -s PYFIT-FF/src/pyfit.py ~/bin/PYFIT 
  
 
 
