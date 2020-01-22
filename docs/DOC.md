@@ -9,11 +9,11 @@
 			- [Purja-Pun and Mishin](https://www.nature.com/articles/s41467-019-10343-5) 
 			- [Behler-Parrinello](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.98.146401) 
 			- [SOAP](https://journals.aps.org/prb/abstract/10.1103/PhysRevB.87.184115) 
-	* This LSP vector is then used as an input to a Machine learning (ML) regression algorithm (neural network, Gaussian process, etc) which maps from the LSP vector to atomic energy for atom-i (i.e. Gi --> regression --> u_i). The configurational potential energy of the jth structure of atoms (i.e. the jth POSCAR file) is then predicted to be U_j=sum(u_i)
-	* The regression algorithm is trained to interpolate between various pre-computed DFT configurational energies U_DFT_j by minimization of some objective (for exmaple, RMSE=sqrt(sum((U_j-U_DFT_j)^2/N_j)))
+	* This LSP vector is then used as an input to a Machine learning (ML) regression algorithm (neural network, Gaussian process, etc) which maps from the LSP vector to atomic energy for atom-i (i.e. Gi --> regression --> u_i). The confrontational potential energy of the jth structure of atoms (i.e. the jth POSCAR file) is then predicted to be U_j=sum(u_i)
+	* The regression algorithm is trained to interpolate between various pre-computed DFT confrontational energies U_DFT_j by minimization of some objective (for example, RMSE=sqrt(sum((U_j-U_DFT_j)^2/N_j)))
 	* Once trained the potential is released to the public to be used in classical atomistic simulations such as molecular dynamics (MD) or Monte-Carlo (MC)
-		- Inside the training region the ML potential can have accuracy on the order of DFT itself (<2 meV) but is generally many orders of magnetude faster and has much better scaling to larger systems
-		- Outside the training region all purely mathematically ML potential are subject to un-physical extrpolation and therefore should only be used within the region of configuration space for which they trained 
+		- Inside the training region the ML potential can have accuracy on the order of DFT itself (<2 meV) but is generally many orders of magnitude faster and has much better scaling to larger systems
+		- Outside the training region all purely mathematically ML potential are subject to un-physical extrapolation and therefore should only be used within the region of configuration space for which they trained 
 
 
 # Terminology 
