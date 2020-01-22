@@ -3,6 +3,28 @@ Authors: James Hickman (NIST) and Adam Robinson (GMU)
 Description: 
 This code uses pytorch to train a Neural network to reproduce a single component system's potential energy surface for use in classical molecular dynamics simulations by approximating energies obtained from density functional theory (DFT) calculations
 
+# Getting started 
+
+## Install dependencies (option-1: conda)  
+
+
+
+
+## Install dependencies 
+
+This code has been tested on linux and macOS however assuming the dependencies below are met the code should run on windows OS as well. 
+
+- PyTorch
+- Python 3.x
+- numpy
+- A Unix OS of some kind.
+
+Usually the following command line will suffice:
+
+sudo pip3 install torch torchvision numpy
+
+
+
 # Terminology 
 The following phrases are helpful for understanding the code 
 + LSP="local structure parameter" (sometimes called Gi's) (each atom gets a LSP, these are the NN inputs)
@@ -12,10 +34,11 @@ PYFIT-FF requires two input files
 
 1) A json file with the following input parameters (typically called input.json)
 
+NOTE: See examples directory for 
 
 + "nn_file_path"			:	"nn0.dat",
 + "dataset_path"			:	"data-set.dat",
-"max_iter"			:	100,
++ "max_iter"			:	100,
 "lambda_rmse"			:	1.0,
 "lambda_l1"			:	0.0,
 "lambda_l2"			:	0.00001,
@@ -52,20 +75,7 @@ Because we train to DFT energies for a given configuration (i.e. given POSCAR fi
 
 # Output files
  
-## Dependencies
 
-This code has been tested on linux and macOS however assuming the dependencies below are met the code should run on windows OS as well. 
-
-- PyTorch
-- Python 3.x
-- numpy
-- A Unix OS of some kind.
-
-Usually the following command line will suffice:
-
-```bash
-sudo pip3 install torch torchvision numpy
-```
 
 
 
