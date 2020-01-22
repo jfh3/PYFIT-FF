@@ -6,12 +6,14 @@
 
 + Description: 
 	- This code uses the automatic differentiation and optimization library [PYTORCH](https://pytorch.org/) to train neural network (NN) interatomic potentials by interpolating energies obtained from density functional theory (DFT) calculations. 
-	- The general idea behind all machine learning interatomic potentials is the following
-		*  A given atom's local atomic environment is quantified as a vector of fixed length (i.e. a "descriptor" or "fingerprint" vector). This is done using some set of analytic functions known as local structural parameters (LSP) (Note: there are many choices for LSP formula in the literature)
-		* This LSP vector is then used as an input to a Machine learning (ML) regression algorithm that maps from the LSP to atomic energy u_i. The energy of the jth  configuration of atoms is then simply U_j=sum(u_i)
-		* The regression algorithm is trained to reproduce the energy landscape predicted by DFT through the minimization of some objective (i.e sqrt(sum((U_j-U_DFT_j)^2/N_j)))
+	- The general idea behind all machine learning interatomic potentials is the following:
+		* The local atomic environment of the i-th atom (atom-i) is quantified as a vector of fixed length (i.e. a "descriptor" or "fingerprint" vector). This is done using some set of analytic functions known as local structural parameters (LSP)
+			* In PYFIT the LSP vector is denoted Gi (for atom-i)
+			* Note: there are many choices for LSP formula in the literature but 
+		* This LSP vector is then used as an input to a Machine learning (ML) regression algorithm that maps from the LSP to atomic energy (i.e. Gi --> regression --> u_i). The configurational potential energy of the jth configuration of atoms (i.e. the jth POSCAR file) is then predicted to be U_j=sum(u_i)
+		* The regression algorithm is trained to reproduce the energy landscape predicted by DFT through the minimization of some objective (i.e RMSE=sqrt(sum((U_j-U_DFT_j)^2/N_j)))
 		* Once trained the potential is released to the public to be used in classical atomistic simulations such as molecular dynamics (MD) or Monte-Carlo (MC)
-	- PYFIT-FF is a tool for training such potentials but for the special case in whihc the regression function is a feed-forward artifical nerual network. The main benefits of PYFIT over other NN potentials training tools are the following: 
+	- PYFIT-FF is a tool for training such potentials but for the special case in which the regression function is a feed-forward artifical nerual network. The main benefits of PYFIT over other NN potentials training tools are the following: 
 		* Highly portable 
 		* Fast 
 		* Flexible
@@ -22,8 +24,7 @@
 
 + Single component mathematical NN training using the local atomic environment descriptors developed by [Purja-Pun and Mishin](https://www.nature.com/articles/s41467-019-10343-5) 
 
-
-## Planned update
+## Planned updates
 
 We are actively working on extending the PYFIT functionality to the following cases (in more or less chronological order) 
 
@@ -37,8 +38,6 @@ We are actively working on extending the PYFIT functionality to the following ca
 If you use PYFIT-FF to generate an interatomic potential used in a publication please used the relevant citation
 	
 
-
-
 # Installation
 
 Necessary dependencies (see below for dependency installation instructions):  
@@ -51,17 +50,22 @@ Once the dependencies are met then PYFIT can be installed using the following in
 
 1) Use the following command to get the PYFIT-FF source code from Github
  	- git clone https://github.com/jfh3/PYFIT-FF
-	- Alternatively you can use the green "clone or download" button on https://github.com/jfh3/PYFIT-FF
+	- Alternatively you can  manually use the green "clone or download" button on https://github.com/jfh3/PYFIT-FF
  	- This will make a directory called "PYFIT-FF" on your machine 
 
-2) Use the following commands to make PYFIT executable from any directory  
+2) Use the following commands to make PYFIT executable from any directory on your machine  
  	- mv PYFIT-FF ~/bin
 	- cd ~/bin/
 	- ln -s PYFIT-FF/src/pyfit.py  PYFIT 
-	- Note: because pyfit.py has the line #!/usr/bin/env python3 it can be run like executable and therefore your system will find PYFIT in ~/bin and add it to the PATH  
+
+Once these commands are run your system should automatically find the link to PYFIT in ~/bin/ and add it to the PATH which can then be called from the command line. Because pyfit.py has the line #!/usr/bin/env python3 it can be run like executable 
+
 3) Run PYFIT using the provided example to get started 
 	- cd PYFIT-FF/example/
-	- pyfit input.json 
+	- PYFIT input.json 
+	- Note: The command "PYFIT input.json" points the link in ~/bin/ and executes the program. An alternative is to run pyfit directly from the /src/ directory 
+		* cd PYFIT-FF/src/
+		* python3.7 pyfit.py input.json 
 
 + Additional comments 
 	- This code has been tested on Linux and macOS systems, however, assuming the following dependencies are met for your python implementation then the code should run on windows OS as well.
