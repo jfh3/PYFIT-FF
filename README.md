@@ -14,8 +14,7 @@ Nessesary dependencies (see below for dependency installation instructions):
 
 Once the dependencies are met then PYFIT can be installed using the following instructions 
 
-
-HELOO
+this is another test
 
 1) Use the following command to get the PYFIT-FF source code from Github
  	- git clone https://github.com/jfh3/PYFIT-FF
