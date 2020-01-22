@@ -3,12 +3,15 @@ Authors: James Hickman (NIST) and Adam Robinson (GMU)
 Description: 
 This code uses pytorch to train a Neural network to reproduce a single component system's potential energy surface for use in classical molecular dynamics simulations by approximating energies obtained from density functional theory (DFT) calculations
 
-# Getting started 
+# Installation
 
 This code has been tested on linux and macOS however assuming the dependencies below are met the code should run on windows OS as well. 
 
-## Install dependencies (option-1: conda)  
+## Installation option-1: conda (recommended)  
 
+1) Install the python open source package management system "conda" on your machine 
+	-The installation process is well documented at the following link 
+	-https://docs.conda.io/projects/conda/en/latest/user-guide/install/
 
 
 
