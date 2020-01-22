@@ -13,6 +13,10 @@ This code has been tested on linux and macOS however assuming the dependencies b
  	- The installation process is well documented at the following link 
  	- https://docs.conda.io/projects/conda/en/latest/user-guide/install/
 
+2) Get the PYFIT-FF source code from Github
+ 	- git clone https://github.com/git/git
+
+
 
 
 ## Install dependencies 
