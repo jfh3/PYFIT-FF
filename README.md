@@ -16,7 +16,7 @@ Once the dependencies are met then PYFIT can be installed using the following in
 
 1) Use the following command to get the PYFIT-FF source code from Github
  	- git clone https://github.com/jfh3/PYFIT-FF
-	- or manually use the green "download or clone" button on https://github.com/jfh3/PYFIT-FF
+	- Alternativly you can use the green "clone or download" button on https://github.com/jfh3/PYFIT-FF
  	- This will make a directory called "PYFIT-FF" on your machine 
 
 2) Use the following commands to make PYFIT executable from any directory  
