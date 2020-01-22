@@ -17,18 +17,18 @@ If ITRAIN_FORCE==TRUE then
 # Structure objects in PYFIT
 
 + object attributes 
-- sid			= structure ID (integer)
-- comment		= comment line in POSCAR (string)
-- scale_factor	= universal scaling factor  (float) 
-- a1				= supercell lattice vector-1 (3x1 np array)
-- a2				= supercell lattice vector-2
-- a3				= supercell lattice vector-3
-- V				= supercell volume 
-- N      		= total number of atoms 
-- E				= total energy of structure 
-- v				= volume per atom
-- e				= energy oer atom
-- species		= list of species in structure
+	- sid			= structure ID (integer)
+	- comment		= comment line in POSCAR (string)
+	- scale_factor	= universal scaling factor  (float) 
+	- a1			= supercell lattice vector-1 (3x1 np array)
+	- a2			= supercell lattice vector-2
+	- a3			= supercell lattice vector-3
+	- V				= supercell volume 
+	- N      		= total number of atoms 
+	- E				= total energy of structure 
+	- v				= volume per atom
+	- e				= energy oer atom
+	- species		= list of species in structure
 
 
 
