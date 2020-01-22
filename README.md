@@ -2,10 +2,10 @@
 
 ## Summary
 
-+ Authors: James Hickman (NIST) and Adam Robinson (GMU) 
++ __Authors__: James Hickman (NIST) and Adam Robinson (GMU) 
 	* Please send any relevant questions or comments to james.hickman@nist.gov 
 
-+ Description: 
++ __Description__: 
 	- PYFIT-FF is a tool for training feed-forward artifical nerual network interatomic potentials. This is done by utalizing the automatic differentiation and optimization library [PYTORCH](https://pytorch.org/) for the optimization process
 	-  The main benefits of PYFIT over other NN potentials training tools are the following: 
 		* Highly portable 
@@ -13,7 +13,7 @@
 		* Fast 
 		* Flexible
 		* Open Source
-	- __NOTE__: This README file only contains information on how to install and use PYFIT-FF. For more detailed information see (PYFIT-FF/docs/DOC.md), generally the information in DOC.md would like to get inside the code and modify it.
+	- __NOTE__: This README file only contains information on how to install and use PYFIT-FF. For more detailed information see (PYFIT-FF/docs/DOC.md), generally the information in DOC.md would be useful if you want to get inside the code and modify it.
 
 ## Current functionality
 
