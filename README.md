@@ -1,3 +1,17 @@
+# Background: Machine learning interatomic potentials 
+
+- The general idea behind most machine learning (ML) interatomic potentials is the following:
+	* The local atomic environment (i.e. neighbor list (NBL)) of the i-th atom is quantified as a vector of fixed length (i.e. a structural "descriptor" or "fingerprint" vector). This is done using some set of analytic functions known as local structural parameters (LSP)
+		* In PYFIT the LSP vector is denoted Gi (for atom-i)
+		* Note: there are many choices for LSP descriptor formula in the literature but the following are popular choices  
+			- [Purja-Pun and Mishin](https://www.nature.com/articles/s41467-019-10343-5) 
+			- [Behler-Parrinello](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.98.146401) 
+			- [SOAP](https://journals.aps.org/prb/abstract/10.1103/PhysRevB.87.184115) 
+	* This LSP vector is then used as an input to a Machine learning (ML) regression algorithm (neural network, Gaussian process, etc) which maps from the LSP vector to atomic energy for atom-i (i.e. Gi --> regression --> u_i). The configurational potential energy of the jth structure of atoms (i.e. the jth POSCAR file) is then predicted to be U_j=sum(u_i)
+	* The regression algorithm is trained to interpolate between various pre-computed DFT configurational energies U_DFT_j by minimization of some objective (for exmaple, RMSE=sqrt(sum((U_j-U_DFT_j)^2/N_j)))
+	* Once trained the potential is released to the public to be used in classical atomistic simulations such as molecular dynamics (MD) or Monte-Carlo (MC)
+		- Inside the training region the ML potential can have accuracy on the order of DFT itself (<2 meV) but is generally many orders of magnetude faster and has much better scaling to larger systems
+
 # PYFIT-FF 
 
 ## Summary 
@@ -5,15 +19,8 @@
 - Authors: James Hickman (NIST) and Adam Robinson (GMU) 
 
 + Description: 
-	- This code uses the automatic differentiation and optimization library [PYTORCH](https://pytorch.org/) to train neural network (NN) interatomic potentials by interpolating energies obtained from density functional theory (DFT) calculations. 
-	- The general idea behind all machine learning interatomic potentials is the following:
-		* The local atomic environment of the i-th atom (atom-i) is quantified as a vector of fixed length (i.e. a "descriptor" or "fingerprint" vector). This is done using some set of analytic functions known as local structural parameters (LSP)
-			* In PYFIT the LSP vector is denoted Gi (for atom-i)
-			* Note: there are many choices for LSP formula in the literature but 
-		* This LSP vector is then used as an input to a Machine learning (ML) regression algorithm that maps from the LSP to atomic energy (i.e. Gi --> regression --> u_i). The configurational potential energy of the jth configuration of atoms (i.e. the jth POSCAR file) is then predicted to be U_j=sum(u_i)
-		* The regression algorithm is trained to reproduce the energy landscape predicted by DFT through the minimization of some objective (i.e RMSE=sqrt(sum((U_j-U_DFT_j)^2/N_j)))
-		* Once trained the potential is released to the public to be used in classical atomistic simulations such as molecular dynamics (MD) or Monte-Carlo (MC)
-	- PYFIT-FF is a tool for training such potentials but for the special case in which the regression function is a feed-forward artifical nerual network. The main benefits of PYFIT over other NN potentials training tools are the following: 
+	- PYFIT-FF is a tool for training ML potentials but for the special case in which the regression function is a feed-forward artifical nerual network. To acheive this the code uses the automatic differentiation and optimization library [PYTORCH](https://pytorch.org/) for the optimization process
+	-  The main benefits of PYFIT over other NN potentials training tools are the following: 
 		* Highly portable 
 		* Fast 
 		* Flexible
@@ -35,7 +42,7 @@ We are actively working on extending the PYFIT functionality to the following ca
 
 ## Citing PYFIT-FF 
 
-If you use PYFIT-FF to generate an interatomic potential used in a publication please used the relevant citation
+If you use PYFIT-FF to generate an interatomic potential used in a publication please use the relevant citation
 	
 
 # Installation
