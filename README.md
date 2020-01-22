@@ -14,9 +14,14 @@ The code require two input files
 If ITRAIN_FORCE==TRUE then 
 
 
-# Structure objects in PYFIT
 
-+ object attributes 
+# Primary data structures in PYFIT-FF
+
+## Structure objects 
+
+Because we train to DFT energies for a given configuration (i.e. given POSCAR file). The information for a each structur is stored in a PYFIT structure object which has the following attributes  
+
++ structure object attributes 
 	- sid			= structure ID (integer)
 	- comment		= comment line in POSCAR (string)
 	- scale_factor	= universal scaling factor  (float) 
@@ -29,7 +34,6 @@ If ITRAIN_FORCE==TRUE then
 	- v				= volume per atom
 	- e				= energy oer atom
 	- species		= list of species in structure
-
 
 
 
