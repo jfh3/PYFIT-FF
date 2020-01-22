@@ -1,7 +1,8 @@
 # PYFIT-FF 
 - Authors: James Hickman (NIST) and Adam Robinson (GMU) 
 + Description: 
-	- This code uses pytorch to train a Neural network to reproduce a single component system's potential energy surface for use in classical molecular dynamics simulations by approximating energies obtained from density functional theory (DFT) calculations
+	- This code uses pytorch to train a Neural network interatomic potential to reproduce a single component system's potential energy surface for use in classical molecular dynamics simulations by approximating energies obtained from density functional theory (DFT) calculations
+	
 
 # Installation
 
@@ -11,7 +12,7 @@ Nessesary dependencies (see below for dependency installation instructions):
 - Python 3.x
 - Numpy
 
-Once the dependencies are met then PYFIT can be installed using the following 
+Once the dependencies are met then PYFIT can be installed using the following instructions 
 
 1) Use the following command to get the PYFIT-FF source code from Github
  	- git clone https://github.com/jfh3/PYFIT-FF
@@ -31,7 +32,7 @@ Once the dependencies are met then PYFIT can be installed using the following
 	- This code has been tested on linux and macOS systems, however, assuming the following dependencies are met for your python implementation then the code should run on windows OS as well.
 	- Note techincally PYFIT can be run directly from
 
-## Installation dependenceies option-1: conda (recommended)  
+## Dpendenceies installation option-1: conda (recommended)  
 
 1) First install "conda" on your machine (conda is a popular open source python package management system)
  	- The conda installation process is well documented at the following link 
@@ -113,16 +114,15 @@ Because we train to DFT energies for a given configuration (i.e. given POSCAR fi
  
 
 
+# Future updates
 
-
-# TODO
-
-+ implement force fitting (maybe)
-+ add PINN training functionally to current PYFIT code
-
+	- multicomponent neural network interatomic potentials using Mishin descriptors
+	- implement Behler-Parrinello descriptors
+	- single component PINN interatomic potential training
+	- multicomponent component PINN interatomic potential training
+	- implement force fitting for select potential options (maybe)
 
 # Theory 
-
 
 A description of the local structural parameters currently implemented can be found at the following link: 
 https://www.nature.com/articles/s41467-019-10343-5
