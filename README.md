@@ -5,8 +5,13 @@
 - Authors: James Hickman (NIST) and Adam Robinson (GMU) 
 
 + Description: 
-	- This code uses the automatic differentiation and optimization library [PYTORCH](https://pytorch.org/) to train neural network (NN) inter-atomic potentials by interpolating energies obtained from density functional theory (DFT) calculations. 
-	- The main benefits of PYFIT over other NN potentials training tools are 
+	- This code uses the automatic differentiation and optimization library [PYTORCH](https://pytorch.org/) to train neural network (NN) interatomic potentials by interpolating energies obtained from density functional theory (DFT) calculations. 
+	- The general idea behind all machine learning interatomic potentials is the following
+		*  A given atom's local atomic environment is quantified as a vector of fixed length (i.e. a "descriptor" or "fingerprint" vector). This is done using some set of analytic functions known as local structural parameters (LSP) (Note: there are many choices for LSP formula in the literature)
+		* This LSP vector is then used as an input to a Machine learning (ML) regression algorithm that maps from the LSP to atomic energy u_i. The energy of the jth  configuration of atoms is then simply U_j=sum(u_i)
+		* The regression algorithm is trained to reproduce the energy landscape predicted by DFT through the minimization of some objective (i.e sqrt(sum((U_j-U_DFT_j)^2/N_j)))
+		* Once trained the potential is released to the public to be used in classical atomistic simulations such as molecular dynamics (MD) or Monte-Carlo (MC)
+	- PYFIT-FF is a tool for training such potentials but for the special case in whihc the regression function is a feed-forward artifical nerual network. The main benefits of PYFIT over other NN potentials training tools are the following: 
 		* Highly portable 
 		* Fast 
 		* Flexible
@@ -15,21 +20,21 @@
 
 ## Current functionality
 
-+ Single component NN training using the local atomic environment descriptors developed by [Purja-Pun and Mishin](https://www.nature.com/articles/s41467-019-10343-5) 
++ Single component mathematical NN training using the local atomic environment descriptors developed by [Purja-Pun and Mishin](https://www.nature.com/articles/s41467-019-10343-5) 
+
 
 ## Planned update
 
-We are actively working on 
+We are actively working on extending the PYFIT functionality to the following cases (in more or less chronological order) 
 
-+ multicomponent neural network inter-atomic potentials using Mishin descriptors
-+ implement Behler-Parrinello descriptors
-+ single component PINN inter-atomic potential training
-+ multicomponent component PINN inter-atomic potential training
-+ implement force fitting for select potential options (maybe)
++ single component PINN interatomic potential training
++ multicomponent neural network interatomic potentials using the [Purja-Pun and Mishin](https://www.nature.com/articles/s41467-019-10343-5) descriptors 
++ multicomponent neural network interatomic potentials using the Behler-Parrinello descriptors
++ multicomponent component PINN interatomic potential training
 
 ## Citing PYFIT-FF 
 
-If you use PYFIT-FF to generate an inter-atomic potential used in a publication please used the relevant citation
+If you use PYFIT-FF to generate an interatomic potential used in a publication please used the relevant citation
 	
 
 
