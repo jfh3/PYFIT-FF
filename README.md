@@ -5,6 +5,8 @@ This code uses pytorch to train a Neural network to reproduce a single component
 
 # Getting started 
 
+This code has been tested on linux and macOS however assuming the dependencies below are met the code should run on windows OS as well. 
+
 ## Install dependencies (option-1: conda)  
 
 
@@ -12,7 +14,6 @@ This code uses pytorch to train a Neural network to reproduce a single component
 
 ## Install dependencies 
 
-This code has been tested on linux and macOS however assuming the dependencies below are met the code should run on windows OS as well. 
 
 - PyTorch
 - Python 3.x
