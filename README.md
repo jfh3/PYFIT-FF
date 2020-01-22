@@ -1,6 +1,6 @@
 # PYFIT-FF: 
 
-##Summary
+## Summary
 
 + Authors: James Hickman (NIST) and Adam Robinson (GMU) 
 	* Please send any relevant questions or comments to james.hickman@nist.gov 
@@ -30,9 +30,9 @@ We are actively working on extending the PYFIT functionality to the following ca
 
 ## Citing PYFIT-FF 
 
-If you use PYFIT-FF to generate an interatomic potential used in a publication please use the relevant citation (see PYFIT-FF/docs/cite.bib for relevant bibtex entries)
+If you use PYFIT-FF to generate an interatomic potential used in a publication please use the relevant citation 
+	- see PYFIT-FF/docs/cite.bib for relevant bibtex entries
 	
-
 # Installation
 
 Necessary dependencies (see below for dependency installation instructions):  
