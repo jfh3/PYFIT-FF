@@ -6,14 +6,14 @@
 	* Please send any relevant questions or comments to james.hickman@nist.gov 
 
 + Description: 
-	- PYFIT-FF is a tool for training feed-forward artifical nerual network interatomic potentials. This is acheived via the automatic differentiation and optimization library [PYTORCH](https://pytorch.org/) for the optimization process
+	- PYFIT-FF is a tool for training feed-forward artifical nerual network interatomic potentials. This is done by utalizing the automatic differentiation and optimization library [PYTORCH](https://pytorch.org/) for the optimization process
 	-  The main benefits of PYFIT over other NN potentials training tools are the following: 
 		* Highly portable 
 		* Simple
 		* Fast 
 		* Flexible
 		* Open Source
-	- This README file only contains information on how to install and use PYFIT-FF. For more detailed information see (PYFIT-FF/docs/DOC.md)
+	- __NOTE__: This README file only contains information on how to install and use PYFIT-FF. For more detailed information see (PYFIT-FF/docs/DOC.md), generally the information in DOC.md would like to get inside the code and modify it.
 
 ## Current functionality
 
@@ -66,7 +66,15 @@ Once these commands are run your system should automatically find the link to PY
 	- This code has been tested on Linux and macOS systems, however, assuming the following dependencies are met for your python implementation then the code should run on windows OS as well.
 	- Note technically PYFIT can be run directly from
 
-## Dependencies installation option-1: conda (recommended)  
+
+## Dependencies installation option-1:    
+
+On a linux machine the dependencies can be installed using 
+
+sudo pip3 install torch torchvision numpy
+
+
+## Dependencies installation option-2: conda (recommended)  
 
 1) First install "conda" on your machine (conda is a popular open source python package management system)
  	- The conda installation process is well documented at the following link 
@@ -80,15 +88,9 @@ Once these commands are run your system should automatically find the link to PY
 	- NOTE: I typically put this command in my ~/.bashrc so that it activates automatically and is essentally my default python implementation
 
 
-## Install dependencies 
+## Input files 
 
 
-
-Usually the following command line will suffice:
-
-sudo pip3 install torch torchvision numpy
-
-On a Linux machine the following commands will allow to to run PYFIT from anywhere on your computer using 
  set.dat",
 + "max_iter"			:	100,
 "lambda_rmse"			:	1.0,
