@@ -3,6 +3,9 @@ Authors: James Hickman (NIST) and Adam Robinson (GMU)
 Description: 
 This code uses pytorch to train a Neural network to reproduce a single component system's potential energy surface for use in classical molecular dynamics simulations by approximating energies obtained from density functional theory (DFT) calculations
 
+# Terminology 
+The following phrases are helpful for understanding the code 
++ LSP="local structure parameter" (sometimes called Gi's) (each atom gets a LSP, these are the NN inputs)
 
 # Input files
 The code require two input files 
