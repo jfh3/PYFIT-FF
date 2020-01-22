@@ -13,9 +13,14 @@ This code has been tested on linux and macOS however assuming the dependencies b
  	- The installation process is well documented at the following link 
  	- https://docs.conda.io/projects/conda/en/latest/user-guide/install/
 
-2) Get the PYFIT-FF source code from Github
- 	- git clone https://github.com/git/git
-
+2) Get the PYFIT-FF source code from Github, this is done using the following command
+ 	-git clone https://github.com/jfh3/PYFIT-FF
+3) This will make a directory called "PYFIT-FF" on your machine
+4) This can be stored in ~/bin/  
+ 	-mv PYFIT-FF ~/bin
+	-cd ~/bin/
+	-ln -s PYFIT-FF/src/pyfit.py ~/bin/PYFIT 
+ 
 
 
 
@@ -33,7 +38,6 @@ sudo pip3 install torch torchvision numpy
 
 On a linux machine the following commands will allow to to run pyfit from anywhere on your computer using 
 
-ln -s PYFIT-FF/src/pyfit.py ~/bin/PYFIT 
 
 Note: This will then act almost like an executable because pyfit.py has the line #!/usr/bin/env python3
 
