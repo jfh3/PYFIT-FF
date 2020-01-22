@@ -12,9 +12,9 @@ PYFIT-FF requires two input files
 
 1) A json file with the following input parameters (typically called input.json)
 
-{
-"nn_file_path"			:	"nn0.dat",
-"dataset_path"			:	"data-set.dat",
+
++ "nn_file_path"			:	"nn0.dat",
++ "dataset_path"			:	"data-set.dat",
 "max_iter"			:	100,
 "lambda_rmse"			:	1.0,
 "lambda_l1"			:	0.0,
@@ -23,7 +23,7 @@ PYFIT-FF requires two input files
 "u_shift"			:	0.795023,
 "dump_poscars"			:	false,
 "learning_rate"			:	0.05
-}
+
 
 2) The DFT database file which contains POSCAR files, DFT energies
 
