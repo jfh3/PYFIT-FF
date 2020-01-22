@@ -1,4 +1,4 @@
-# PYFIT-FF (Description)
+# PYFIT-FF 
 - Authors: James Hickman (NIST) and Adam Robinson (GMU) 
 + Description: 
 	- This code uses pytorch to train a Neural network to reproduce a single component system's potential energy surface for use in classical molecular dynamics simulations by approximating energies obtained from density functional theory (DFT) calculations
@@ -21,7 +21,7 @@ Once the dependencies are met then PYFIT can be installed using the following
  	- mv PYFIT-FF ~/bin
 	- cd ~/bin/
 	- ln -s PYFIT-FF/src/pyfit.py  PYFIT 
-	- Because pyfit.py has the line #!/usr/bin/env python3 it can be run like executable and therefore your system will find PYFIT in ~/bin and add it to the PATH  
+	- Note: because pyfit.py has the line #!/usr/bin/env python3 it can be run like executable and therefore your system will find PYFIT in ~/bin and add it to the PATH  
 
 3) Run PYFIT using the provided example to get started 
 	- cd PYFIT-FF/example/
