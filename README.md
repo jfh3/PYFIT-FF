@@ -8,11 +8,24 @@ The following phrases are helpful for understanding the code
 + LSP="local structure parameter" (sometimes called Gi's) (each atom gets a LSP, these are the NN inputs)
 
 # Input files
-The code require two input files 
-1) The DFT database file which contains POSCAR files, DFT energies and optionally DFT forces 
-2) An input
-If ITRAIN_FORCE==TRUE then 
+PYFIT-FF requires two input files 
 
+1) A json file with the following input parameters (typically called input.json)
+
+{
+"nn_file_path"			:	"nn0.dat",
+"dataset_path"			:	"data-set.dat",
+"max_iter"			:	100,
+"lambda_rmse"			:	1.0,
+"lambda_l1"			:	0.0,
+"lambda_l2"			:	0.00001,
+"lambda_dU"			:	0.0,
+"u_shift"			:	0.795023,
+"dump_poscars"			:	false,
+"learning_rate"			:	0.05
+}
+
+2) The DFT database file which contains POSCAR files, DFT energies
 
 
 # Primary data structures in PYFIT-FF
@@ -53,6 +66,14 @@ Usually the following command line will suffice:
 ```bash
 sudo pip3 install torch torchvision numpy
 ```
+
+
+
+# TODO
+
++ implement force fitting (maybe)
++ add PINN training functionally to current PYFIT code
+
 
 # Theory 
 
