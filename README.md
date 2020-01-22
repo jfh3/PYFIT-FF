@@ -114,13 +114,13 @@ Because we train to DFT energies for a given configuration (i.e. given POSCAR fi
  
 
 
-# Future updates
+# Future planned updates
 
-	- multicomponent neural network interatomic potentials using Mishin descriptors
-	- implement Behler-Parrinello descriptors
-	- single component PINN interatomic potential training
-	- multicomponent component PINN interatomic potential training
-	- implement force fitting for select potential options (maybe)
+- multicomponent neural network interatomic potentials using Mishin descriptors
+- implement Behler-Parrinello descriptors
+- single component PINN interatomic potential training
+- multicomponent component PINN interatomic potential training
+- implement force fitting for select potential options (maybe)
 
 # Theory 
 
