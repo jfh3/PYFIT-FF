@@ -24,6 +24,11 @@ Usually the following command line will suffice:
 
 sudo pip3 install torch torchvision numpy
 
+On a linux machine the following commands will allow to to run pyfit from anywhere on your computer using 
+
+ln -s PYFIT-FF/src/pyfit.py ~/bin/PYFIT 
+
+Note: This will then act almost like an executable because pyfit.py has the line #!/usr/bin/env python3
 
 
 # Terminology 
