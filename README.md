@@ -10,8 +10,8 @@ This code has been tested on linux and macOS however assuming the dependencies b
 ## Installation option-1: conda (recommended)  
 
 1) Install the python open source package management system "conda" on your machine 
-	-The installation process is well documented at the following link 
-	-https://docs.conda.io/projects/conda/en/latest/user-guide/install/
+ - The installation process is well documented at the following link 
+ - https://docs.conda.io/projects/conda/en/latest/user-guide/install/
 
 
 
