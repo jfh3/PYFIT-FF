@@ -16,6 +16,8 @@ def write_header():
 
 
 
+
+
 def log(x,tab=0):
 	str_out=''
 	if(str(type(x))=="<class 'list'>"):
@@ -64,7 +66,7 @@ def write_NN(nn,step):
 
 def write_poscar(x):
 	# x=structure object
-	if(str(type(x))!="<class 'classes.Structure'>"): raise ValueError("expected structure object but got something else")
+	if(str(type(x))!="<class 'dataset.Structure'>"): raise ValueError("EXPECTED STRUCTURE OBJECT BUT GOT SOMETHING ELSE")
 	#WRITE POSCAR FOR GIVE STRUCTURE
 	with open(run_path+str(x.comment)+'-'+str(x.sid)+'.POSCAR', 'w') as f:
 		f.write('%s\n' % (x.comment))
@@ -74,12 +76,12 @@ def write_poscar(x):
 		f.write('%1.10f %1.10f %1.10f \n' % (x.a3[0],x.a3[1],x.a3[2]))  
 		f.write('%s \n' % (x.species))  
 		f.write('%d \n' % (x.N))  
-		string='cartesian' if(x.is_cartesian) else 'direct'
+		string='cartesian' #if(x.is_cartesian) else 'direct'
 		f.write('%s\n' % (string))
 		for ri in x.positions:
 			f.write('%1.10f %1.10f %1.10f \n' % (ri[0],ri[1],ri[2]))  
-	#WRITE FORCES TO IF AVAILABLE
-	if(x.forces_avail):
-		with open(run_path+str(x.comment)+'-'+str(x.sid)+'.FORCES', 'w') as f:
-			for ri in x.forces:
-				f.write('%1.10f %1.10f %1.10f \n' % (ri[0],ri[1],ri[2]))  
+	# #WRITE FORCES TO IF AVAILABLE
+	# if(x.forces_avail):
+	# 	with open(run_path+str(x.comment)+'-'+str(x.sid)+'.FORCES', 'w') as f:
+	# 		for ri in x.forces:
+	# 			f.write('%1.10f %1.10f %1.10f \n' % (ri[0],ri[1],ri[2]))  

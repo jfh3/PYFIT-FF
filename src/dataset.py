@@ -1,120 +1,73 @@
+
 import 	numpy 		as 		np
-import 	writer
 import  torch
 
 dtype		=	torch.FloatTensor
 if(torch.cuda.is_available()): dtype = torch.cuda.FloatTensor
 
+class Dataset:
+	def __init__(self):
+		self.structures={};  #structure[SID]  --> structure_objects
+		self.group_sids={}   #group_sids[GID] --> list of SID
+		self.Na=0;
+		self.Ns=0;
 
-class Neural_Network:
-	def __init__(self, lines):
-		#STORE NN HEADER LINES IN DICTIONARY
-		
-		info={}	
-		if(int(lines[0][0])==5): pot_type='NN'
-		if(int(lines[0][0])==6): pot_type='PINN'
-		if(int(lines[0][0])==7): pot_type='BOP'
-		
-		info['lsp_type']		=	 int(lines[0][0])
-		info['pot_type']		=	 str(pot_type)
-		info['lsp_shift']		=	 float(lines[0][1])
-		info['activation']		=	 int(lines[0][2])
-		info['num_species']		=	 int(lines[1][0])
-		info['species']			=	 str(lines[2][0])
 
-		info['atomic_weight']	=	 float(lines[2][1])
-		info['randomize_nn']	=	 bool(int(lines[3][0]))
-		info['max_rand_wb']		=	 float(lines[3][1])
-		info['cutoff_dist']		=	 float(lines[3][2])
-		info['cutoff_range']	=	 float(lines[3][3])
-		info['lsp_sigma']		=	 float(lines[3][4])
-		info['lsp_lg_poly']		=	 list(map(int,lines[4][1:]))	#map converts str list to int list
-		info['lsp_ro_val']		=	 list(map(float,lines[5][1:]))	#map converts str list to float list
-		info['ibaseline']		=	 bool(int(lines[6][0]))
-		info['bop_param']		=	 list(map(float,lines[6][1:]))  
-		info['nn_layers']		=	 list(map(int,lines[7][1:]))  
+	def sort_group_sids(self): 
+		for i in self.group_sids.keys():
+			self.group_sids[i]=[item[1] for item in sorted(self.group_sids[i])]	 
 
-		#DETERMINE NUMBER OF FITITNG PARAM AND RANDOMIZE IF NEEDED
-		nfit=0; layers=info['nn_layers']
-		for i in range(1,len(layers)):  nfit=nfit+layers[i-1]*layers[i]+layers[i]
-		info['num_fit_param']	 =	nfit
-		if(info['randomize_nn']==True): 
-			WB	=	np.random.uniform(-nn_info['max_rand_wb'],nn_info['max_rand_wb'],nfit)
-		else:
-			WB	=	np.array(lines[8:]).astype(np.float)[:,0]
 
-		#SOME ERROR CHECKS 
-		if(info['num_species']  != 1):						
-			raise ValueError("NUM_SPECIES != 1 IN EURAL NETWORK FILE")
-		if(len(info['nn_layers'])  != int(lines[7][0])):	
-			raise ValueError("NUMBER OF LAYERS IN NEURAL NETWORK FILE IS INCORRECT")
-		if(len(WB) != info['num_fit_param']):				
-			raise ValueError("INCORRECT NUMBER OF FITTING PARAMETERS")
-		if(int(lines[0][0]) not in [5,6,7]):				
-			raise ValueError("REQUESTED POT_TYPE="+str(int(lines[0][0]))+" NOT AVAILABLE")
-		if( info['pot_type']=='PINN_BOP' and info['nn_layers'][-1]!=8): 
-			raise ValueError("ERROR: NN OUTPUT DIMENSION INCORRECT")
-		if( info['pot_type']=='NN' and info['nn_layers'][-1]!=1): 
-			raise ValueError("ERROR: NN OUTPUT DIMENSION INCORRECT")
+	def build_arrays(self,SB): 
 
-		#DEFINE OBJECT
-		self.info = info					 
-		#self.WB = WB.tolist()    #long vector with all weights and biases (only used for writing)
-		self.submatrices=self.extract_submatrices(WB)
-		writer.write_NN(self,step=0)													#save a copy of the initial NN 
+		#ALL MODELS NEED THE FOLLOWING 
+		U1=[]; N1=[]; V1=[]; Gis=[] 
+		R1=torch.zeros(self.Ns,self.Na).type(dtype); #Ns X Na 
+		j=0; k=0
+		for structure in self.structures.values():
+				U1.append(structure.U)
+				N1.append(structure.N)
+				V1.append(structure.v)
+				for Gi in structure.lsps:
+					Gis.append(Gi)
+					R1[j][k]=1
+					k=k+1
+				j=j+1
 
-	#TAKES AN ARRAY OF NP.ARRAY SUBMATRICES AND RETURNS A LONG VECTOR W OF WEIGHTS AND BIAS  
-	def matrix_combine(self):
-		W=[]
-		TMP=self.submatrices
-		for l in range(0,len(TMP)):
-			for j in range(0,len(TMP[l][0])): #len(w1[0])=number of columns
-				for i in range(0,len(TMP[l])): #build down the each row then accros
-					W.append(TMP[l][i][j].item())
-		TMP=0.0
-		return W
 
-	#TAKES A LONG VECTOR W OF WEIGHTS AND BIAS AND RETURNS WEIGHT AND BIAS SUBMATRICES
-	def extract_submatrices(self,WB):
-		submatrices=[]; K=0
-		W=np.array(WB)
-		nn_layers=self.info['nn_layers']
-		for i in range(0,len(nn_layers)-1):
-			#FORM RELEVANT SUB MATRIX FOR LAYER-N
-			Nrow=nn_layers[i+1]; Ncol=nn_layers[i] #+1
-			w=np.array(W[K:K+Nrow*Ncol].reshape(Ncol,Nrow).T) #unpack/ W 
-			K=K+Nrow*Ncol; #print i,k0,K
-			Nrow=nn_layers[i+1]; Ncol=1; #+1
-			b=np.transpose(np.array([W[K:K+Nrow*Ncol]])) #unpack/ W 
-			K=K+Nrow*Ncol; #print i,k0,K
-			submatrices.append(w); submatrices.append(b)
+			Gis=torch.tensor(Gis).type(dtype);
+			nn_out=SB['nn'].ANN(Gis)
+			U1=torch.tensor(np.transpose([U1])).type(dtype);
+			N1=torch.tensor(np.transpose([N1])).type(dtype);
 
-		#CONVERT TO TORCH TENSORS
-		for i in range(0,len(submatrices)):
-				submatrices[i]=torch.tensor(submatrices[i]).type(dtype)
-				writer.log(" 	SUBMATRIX SHAPE		:	"+str(submatrices[i].shape))
 
-		return submatrices
+		if(SB['pot_type'] == "NN"):
+			for structure in self.structures.values():
+					for Gi in structure.lsps:
+						Gis.append(Gi)
 
-	def unset_grad(self):
-		for i in self.submatrices:	i.requires_grad = False
 
-	def set_grad(self):
-		if(info['pot_type']=='NN'):
-			for i in self.submatrices:	i.requires_grad = True
+		exit()
 
-	#GIVEN AN INPUT MATRIX EVALUATE THE NN
-	def ANN(self,x):
-		# print(type(self.submatrices[0]))
-		M1=torch.tensor([np.ones(len(x))]).type(dtype)
-		out=x.mm(torch.t(self.submatrices[0]))+torch.t((self.submatrices[1]).mm(M1))
-		for i in range(2,int(len(self.submatrices)/2+1)):
-			j=2*(i-1)
-			out=torch.sigmoid(out)	
-			if(self.info['activation']==1):
-				out=out-0.5	
-			out=out.mm(torch.t(self.submatrices[j]))+torch.t((self.submatrices[j+1]).mm(M1))
-		return out 
+# def construct_matrices(SB):
+
+# 	if(SB['pot_type'] != "NN"): raise ValueError("REQUESTED MODEL NOT CODED YET");
+
+
+
+
+# 		U2=R1.mm(nn_out)
+# 		u2=U2/N1
+# 		u1=U1/N1
+
+# 		print(Gis.shape,nn_out.shape,R1.shape,U1.shape,U2.shape)
+
+# 		RMSE=(((u1-u2)**2.0).sum()/len(u1))**0.5
+# 		print(RMSE)
+
+
+
+
 
 
 class Structure:
@@ -245,3 +198,72 @@ class Structure:
 				for i in gis:
 					str1=str1+' %14.12f '%i
 				writer.write_LSP(str1)
+
+
+
+
+
+
+
+# def construct_matrices(SB):
+
+# 	if(SB['pot_type'] != "NN"): raise ValueError("REQUESTED MODEL NOT CODED YET");
+
+
+# 	if(SB['pot_type'] == "NN"):
+
+# 		U1=[]; N1=[]; V1=[]; Gis=[] #DFT
+# 		Na=0
+# 		for i in SB['training_SIDS']: 	Na=Na+SB['structures'][i].N
+
+# 		# print(SB['training_SIDS'])
+# 		R1=torch.zeros(len(SB['training_SIDS']),int(Na)).type(dtype); #REDUCTION TENSOR 
+# 		j=0; k=0
+# 		for i in SB['training_SIDS']:
+# 				# print(i)	
+# 				# print(SB['structures'][i].U)
+# 				U1.append(SB['structures'][i].U)
+# 				N1.append(SB['structures'][i].N)
+# 				V1.append(SB['structures'][i].v)
+
+# 				for Gi in SB['structures'][i].lsps:
+# 					Gis.append(Gi)
+# 					R1[j][k]=1
+# 					k=k+1
+# 				j=j+1
+# 				Na=Na+SB['structures'][i].N
+
+# 		Gis=torch.tensor(Gis).type(dtype);
+# 		nn_out=SB['nn'].ANN(Gis)
+# 		U1=torch.tensor(np.transpose([U1])).type(dtype);
+# 		N1=torch.tensor(np.transpose([N1])).type(dtype);
+
+
+# 		U2=R1.mm(nn_out)
+# 		u2=U2/N1
+# 		u1=U1/N1
+
+# 		print(Gis.shape,nn_out.shape,R1.shape,U1.shape,U2.shape)
+
+# 		RMSE=(((u1-u2)**2.0).sum()/len(u1))**0.5
+# 		print(RMSE)
+
+# 		#for i in range(0,len(V1)):
+# 		#	print(V1[i],u1[i].item(), u2[i].item())
+# 			# #print(R1.shape) 
+# 			# #exit()
+# 			# y1=[]; k=0; Ninv1=[];  i=0; grp_weighs1=[]; grp_weighs2=[]; x1=[];
+# 			# if(FAST_FIT != True):  
+# 			# 	V_N=[]; v11=[]; SID11=[];  SID1=[]; GID=[];
+# 			# for i1 in bin_j2: #loop over structures
+# 			# 	#print(bin_j2); exit()
+# 			# 	if(FAST_FIT): ID_KEY.append(i1)
+# 			# 	y1.append(structs[i1][1]) #vector of structure energies
+# 			# 	V_N.append(structs[i1][3])
+# 			# 	SID1.append(structs[i1][4])
+# 			# 	GID.append(structs[i1][2])
+# 			# 	Ninv1.append(1.0/structs[i1][0]) #vector of 1/N for each structure
+
+# 				#if(structs[i1][2] 
+
+

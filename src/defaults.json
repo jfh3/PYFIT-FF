@@ -1,0 +1,25 @@
+{
+"max_iter"				:	0,
+"fraction_train" 		:	0.8,
+"re_randomize" 			:	false,
+
+"learning_rate"			:	0.05,
+"lambda_rmse"			:	1.0,
+"lambda_dU"				:	0.0,
+"lambda_l1"				:	0.0,
+"lambda_l2"				:	0.00001,
+
+"rmse_tol"				:	0.000000001,	
+"rmse_final" 			:	0.0,		
+"rmse_max" 				:	10.0,			
+"save_every" 			:	250,
+
+"u_shift"				:	0.0,
+"train_edges" 			:	true,	
+
+"dump_poscars"			:	false,
+"write_lsp"				:	false,
+
+"test_set_gids"			: 	["GRP-DC-P-UNPERTURBED+ISO","GRP-DC-P-UNPERTURBED+ISO+SMALL"],		
+"n_rand_GIDS"			:	0							 
+}

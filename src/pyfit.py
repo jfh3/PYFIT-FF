@@ -20,29 +20,33 @@ writer.write_header()
 #CHECK THAT A FILE WAS PROVIDED BY USER
 if(len(argv)!=2):	raise ValueError("no input file or too many command line arguments provided")
 
-#SB=SNOWBALL DICTIONARY THAT ACCUMULATED EVERYTHING
-SB={};		SB['input_file']=argv[1]
+#SB=SNOWBALL (i.e DICTIONARY THAT ACCUMULATED EVERYTHING)(SB != sackville baggins) 
+SB={};		
+SB['input_file']=argv[1]
 
-##GET RUN PARAMETER AND DEFAULTS (see src/util.py)
-util.get_run_parameters(SB)			 
-util.get_defaults(SB)			 
-
+##GET RUN PARAMETER 
+util.get_run_parameters(SB)	
 
 #READ INPUT FILES
 reader.read_input(SB)			#READ INPUT FILE AND ADD INFO TO SB
-reader.read_nn_file(SB)			#READ NN FILE AND ADD INFO TO SB 
+reader.read_pot_file(SB)		#READ NN FILE AND ADD INFO TO SB 
 reader.read_database(SB);		#READ DATABASES AND ADD INFO TO SB 
 
-#COMPUTE NEIGHBORLIST (NBL) AND LSP FOR ALL STRUCTURES
-util.compute_all_nbls(SB)			
-util.compute_all_lsps(SB)	
- 
+#WRITE POSCAR IF DESIRED 
+if(SB['dump_poscars']):	util.dump_poscars(SB)
 
+
+#COMPUTE NEIGHBORLIST (NBL) AND LSP FOR ALL STRUCTURES
+util.compute_all_nbls(SB)	
+util.compute_all_lsps(SB)	
 util.partition_data(SB)
+
+exit()
+
+
 util.construct_matrices(SB)
 
 # print(SB['test_SIDS'])
-exit()
 
 
 

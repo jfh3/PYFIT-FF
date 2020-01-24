@@ -1,13 +1,8 @@
 {
-"nn_file_path"			:	"nn1.dat",
+"pot_type"				:	"NN",
+"pot_file"				:	"nn1.dat",
 "dataset_path"			:	"data-set.dat",
 "max_iter"				:	100,
-"lambda_rmse"			:	1.0,
-"lambda_l1"				:	0.0,
-"lambda_l2"				:	0.00001,
-"lambda_dU"				:	0.0,
-"u_shift"				:	0.795023,
-"dump_poscars"			:	false,
-"test_set"				: 	[],
-"learning_rate"			:	0.05
+"u_shift"            	:	0.795023,	
+"re_randomize" 			:	true 
 }
