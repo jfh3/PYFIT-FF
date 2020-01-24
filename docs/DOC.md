@@ -31,14 +31,15 @@ Because we train to DFT energies for a given configuration (i.e. given POSCAR fi
 	- sid			= structure ID (integer)
 	- comment		= comment line in POSCAR (string)
 	- scale_factor	= universal scaling factor  (float) 
-	- a1			= supercell lattice vector-1 (3x1 np array)
-	- a2			= supercell lattice vector-2
-	- a3			= supercell lattice vector-3
-	- V				= supercell volume 
-	- N      		= total number of atoms 
-	- E				= total energy of structure 
-	- v				= volume per atom
-	- e				= energy oer atom
-	- species		= list of species in structure
+	- a1			= supercell lattice vector-1  (3,) np array
+	- a2			= supercell lattice vector-2  (3,) np array
+	- a3			= supercell lattice vector-3  (3,) np array
+	- V				= supercell volume (float)
+	- N      		= total number of atoms (int)
+	- E				= total energy of structure (float)
+	- v				= volume per atom (float)
+	- e				= energy oer atom (float)
+	- species		= list of species in structure (str or list of string)
+	- positions		= Nx3 np array with all atomic positions 
 
 

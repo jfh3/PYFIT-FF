@@ -1,4 +1,4 @@
-from  	os 		import  	path,getcwd 
+from  	os 			import  	path,getcwd 
 from	datetime	import		datetime
 from 	string		import 		Template
 from 	json		import		dump
@@ -43,6 +43,7 @@ def write_LSP(str1):
 		f.write('%s \n' % (str1)); #print("\t",str_out);
 
 def write_NN(nn,step):
+	WB=nn.matrix_combine()
 	with open(run_path+prefix+"-NN-"+str(step)+".dat", 'w') as f:
 		f.write(' %d %f %d\n' % 		(nn.info['lsp_type']	,		nn.info['lsp_shift'],	 	nn.info['activation']))
 		f.write(' %d \n' % 				(nn.info['num_species']	))
@@ -57,7 +58,7 @@ def write_NN(nn,step):
 		f.write('\n %d'	%  (len(nn.info['nn_layers'])))
 		for i in nn.info['nn_layers']:	f.write(' %d'%  (i))
 		f.write('\n')
-		for i in nn.WB:	f.write('%16.8e %8.4f\n'%  (i,0.0))
+		for i in WB:	f.write('%16.8e %8.4f\n'%  (i,0.0))
 		f.write('\n')
 
 

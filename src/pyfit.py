@@ -20,44 +20,40 @@ writer.write_header()
 #CHECK THAT A FILE WAS PROVIDED BY USER
 if(len(argv)!=2):	raise ValueError("no input file or too many command line arguments provided")
 
-#SNOWBALL DICTIONARY TO ACCUMULATED EVERYTHING
-params={};		params['input_file']=argv[1]
+#SB=SNOWBALL DICTIONARY THAT ACCUMULATED EVERYTHING
+SB={};		SB['input_file']=argv[1]
 
 ##GET RUN PARAMETER AND DEFAULTS (see src/util.py)
-util.get_run_parameters(params)			 
-util.get_defaults(params)			 
+util.get_run_parameters(SB)			 
+util.get_defaults(SB)			 
 
 
 #READ INPUT FILES
-reader.read_input(params)			#READ INPUT FILE AND ADD INFO TO PARAMS
-reader.read_nn_file(params)			#READ NN FILE AND ADD INFO TO PARAMS 
-reader.read_database(params);		#READ DATABASES AND ADD INFO TO PARAMS 
+reader.read_input(SB)			#READ INPUT FILE AND ADD INFO TO SB
+reader.read_nn_file(SB)			#READ NN FILE AND ADD INFO TO SB 
+reader.read_database(SB);		#READ DATABASES AND ADD INFO TO SB 
 
-#COMPUTE NEIGHBOR LIST AND LSP
-util.compute_all_nbls(params)			#update all structure objects by computing neighbor lists
+#COMPUTE NEIGHBORLIST (NBL) AND LSP FOR ALL STRUCTURES
+util.compute_all_nbls(SB)			
+util.compute_all_lsps(SB)	
+ 
+
+util.partition_data(SB)
+util.construct_matrices(SB)
+
+# print(SB['test_SIDS'])
 exit()
 
-# if(params['train_edges']): 	util.find_outliers_iso_forest(params)	 
-# if(params['train_edges']): 	util.find_outliers_circle(params)	 
-#exit()
-
-
-# exit()
 
 
 
-util.compute_all_lsps(params)			#update all structure objects by computing LSP
-
-
-
-
-#if(params['train_edges']): 	util.find_outliers_1(params)	 
-if(params['train_edges']): 	util.find_outliers_1(params)	 
+#if(SB['train_edges']): 	util.find_outliers_1(SB)	 
+if(SB['train_edges']): 	util.find_outliers_1(SB)	 
 
 exit()
 
 #FORM TRAINING AND TEST SET 
-util.split_data_train_validation(params)
+util.split_data_train_validation(SB)
 
 exit()
 # #COMPUTE LSP
@@ -65,10 +61,10 @@ exit()
 #FORM DATA
 
 
-print(params['nn'])
+print(SB['nn'])
 exit()
 
-# params['nn_file_path']);	params.update(nn.info);		#READ NN FILE 
+# SB['nn_file_path']);	SB.update(nn.info);		#READ NN FILE 
 
 
 # #READ DATASET FILE

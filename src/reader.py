@@ -7,13 +7,13 @@ from 	numpy		import 		array,random
 from	classes		import		Neural_Network,Structure
 import 	util
 
-def read_input(params): 
-	file_path=params['input_file']
+def read_input(SB): 
+	file_path=SB['input_file']
 	if(path.exists(file_path)):
 		writer.log("READING INPUT PARAMETERS IN JSON FILE:");
 		with open(file_path, "r") as read_file:		#READ USER INPUT FILE
 			input_data = load(read_file)
-		writer.log_dict(input_data);	params.update(input_data) 
+		writer.log_dict(input_data);	SB.update(input_data) 
 	else:
 		raise ValueError("INPUT_FILE="+str(file_path)+" DOESNT EXIST")
 
@@ -25,8 +25,8 @@ def read_input(params):
 	# 	raise ValueError(error)
 #	# return data
 
-def read_nn_file(params): 
-	file_path=params['nn_file_path'];
+def read_nn_file(SB): 
+	file_path=SB['nn_file_path'];
 	writer.log("READING NEURAL NETWORK FILE:")
 	if(path.exists(file_path)):
 		input_file = open( file_path, "r" );  lines=[]
@@ -38,12 +38,12 @@ def read_nn_file(params):
 	else: 
 		raise ValueError("NN_FILE="+str(file_path)+" DOESNT EXIST")
 	writer.log_dict(nn.info);
-	params.update(nn.info)
-	params['nn']=nn					
+	SB.update(nn.info)
+	SB['nn']=nn					
 	return nn
 
-def read_database(params): 
-	file_path=params['dataset_path']
+def read_database(SB): 
+	file_path=SB['dataset_path']
 	writer.log("READING DATASET FILE:");  										\
 	#returns a list of objects of Class Structure
 	structures={};  SID=0;  		N_atoms=0; new_structure=True;
@@ -63,7 +63,7 @@ def read_database(params):
 			if(counter>6):
 				if(counter==6+1+Natom+1): 				#see dataset examples for format
 					N_atoms+=Natom
-					structures[SID]=Structure(lines,SID,params); 	#send lines to Structure class to create object
+					structures[SID]=Structure(lines,SID,SB); 	#send lines to Structure class to create object
 					GID=str(structures[SID].comment)	#name of structural groups '%35s'%
 					if( GID not in group_sids.keys()):
 						group_sids[GID]=[]
@@ -83,14 +83,14 @@ def read_database(params):
 	writer.log_dict(dataset_info);	
 	writer.write_group_summary(group_info)
 
-	#UPDATE PARAMS DICT
-	params.update(dataset_info)
-	params['group_info']=group_info
-	params['group_sids']=group_sids
-	params['structures']=structures
+	#UPDATE SB DICT
+	SB.update(dataset_info)
+	SB['group_info']=group_info
+	SB['group_sids']=group_sids
+	SB['structures']=structures
 
-	if(params['dump_poscars']):
-		util.dump_poscars(params)			 
+	if(SB['dump_poscars']):
+		util.dump_poscars(SB)			 
 
 
  

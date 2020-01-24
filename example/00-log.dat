@@ -1,0 +1,72 @@
+-------------------------------------------------------------- 
+-------------------------PYFIT-FF----------------------------- 
+-------------------------------------------------------------- 
+RUN PARAMETERS: 
+	  input_file          	:	input.json	 
+	  start_time          	:	2020-01-23-H00-M49-S27	 
+	  run_path            	:	/home/james/bin/PYFIT/PYFIT-FF/example/	 
+	  num_threads         	:	6	 
+	  cuda_avail          	:	False	 
+	  dtype               	:	<class 'torch.FloatTensor'>	 
+DEFAULT PARAMETERS: (NOTE: see src/util.py to modify defaults) 
+	  rmse_tol            	:	1e-07	 
+	  rmse_final          	:	0.0	 
+	  rmse_max            	:	10.0	 
+	  i_save_every        	:	250	 
+	  write_lsp           	:	False	 
+	  train_edges         	:	True	 
+	  n_rand_GIDS         	:	0	 
+	  fraction_train      	:	1.0	 
+READING INPUT PARAMETERS IN JSON FILE: 
+	  nn_file_path        	:	nn1.dat	 
+	  dataset_path        	:	data-set.dat	 
+	  max_iter            	:	100	 
+	  lambda_rmse         	:	1.0	 
+	  lambda_l1           	:	0.0	 
+	  lambda_l2           	:	1e-05	 
+	  lambda_dU           	:	0.0	 
+	  u_shift             	:	0.795023	 
+	  dump_poscars        	:	False	 
+	  test_set            	:	[]	 
+	  learning_rate       	:	0.05	 
+READING NEURAL NETWORK FILE: 
+ 	SUBMATRIX SHAPE		:	torch.Size([24, 40]) 
+ 	SUBMATRIX SHAPE		:	torch.Size([24, 1]) 
+ 	SUBMATRIX SHAPE		:	torch.Size([24, 24]) 
+ 	SUBMATRIX SHAPE		:	torch.Size([24, 1]) 
+ 	SUBMATRIX SHAPE		:	torch.Size([16, 24]) 
+ 	SUBMATRIX SHAPE		:	torch.Size([16, 1]) 
+ 	SUBMATRIX SHAPE		:	torch.Size([1, 16]) 
+ 	SUBMATRIX SHAPE		:	torch.Size([1, 1]) 
+	  lsp_type            	:	5	 
+	  pot_type            	:	NN	 
+	  lsp_shift           	:	0.0	 
+	  activation          	:	1	 
+	  num_species         	:	1	 
+	  species             	:	Si	 
+	  atomic_weight       	:	28.0855	 
+	  randomize_nn        	:	False	 
+	  max_rand_wb         	:	0.25	 
+	  cutoff_dist         	:	4.5	 
+	  cutoff_range        	:	0.978124	 
+	  lsp_sigma           	:	1.0	 
+	  lsp_lg_poly         	:	[0, 1, 2, 4, 6]	 
+	  lsp_ro_val          	:	[2.25, 2.5, 2.75, 3.0, 3.25, 3.5, 3.75, 4.0]	 
+	  ibaseline           	:	True	 
+	  bop_param           	:	[12.1692, 6.17263, 3.11471, 0.755675, 0.404939, 0.036124, 0.650018, 0.57289]	 
+	  nn_layers           	:	[40, 24, 24, 16, 1]	 
+	  num_fit_param       	:	2001	 
+READING DATASET FILE: 
+	  n_structs           	:	245	 
+	  n_atoms             	:	490	 
+COMPUTING NEIGHBOR LIST (NBL):	 
+	NBL CONSTRUCTION TIME (SEC)	=	0.510037899017334	 
+COMPUTING LOCAL STRUCTURE PARAMETERS (LSP):	 
+	LSP CONSTRUCTION TIME (SEC)	=	0.33882880210876465	 
+PARTITIONING DATA: 
+	TOTAL NUMBER OF CONFIGS	: 	245	 
+	TEST SET (UNTRAINED): 
+	N_train_structures	: 	245	 
+	N_val_structures	: 	0	 
+	N_test_structures	: 	0	 
+	N_combined		: 	245	 
