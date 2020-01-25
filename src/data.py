@@ -1,12 +1,14 @@
 
 import 	numpy 		as 		np
 import  torch
+# import  models
 
 dtype		=	torch.FloatTensor
 if(torch.cuda.is_available()): dtype = torch.cuda.FloatTensor
 
 class Dataset:
-	def __init__(self):
+	def __init__(self,name):
+		self.name=name
 		self.structures={};  #structure[SID]  --> structure_objects
 		self.group_sids={}   #group_sids[GID] --> list of SID
 		self.Na=0;
@@ -21,49 +23,72 @@ class Dataset:
 	def build_arrays(self,SB): 
 
 		#ALL MODELS NEED THE FOLLOWING 
-		U1=[]; N1=[]; V1=[]; Gis=[] 
-		R1=torch.zeros(self.Ns,self.Na).type(dtype); #Ns X Na 
-		j=0; k=0
+		u1=[]; v1=[]; N1=[]; 	#DFT STUFF
+		self.R1=torch.zeros(self.Ns,self.Na).type(dtype); j=0; k=0 # REDUCTION MATRIX: Ns X Na 
 		for structure in self.structures.values():
-				U1.append(structure.U)
+				u1.append(structure.u)
+				v1.append(structure.v)
 				N1.append(structure.N)
-				V1.append(structure.v)
-				for Gi in structure.lsps:
-					Gis.append(Gi)
-					R1[j][k]=1
-					k=k+1
+				for i in range(0,structure.N):
+				 	self.R1[j][k]=1
+				 	k=k+1
 				j=j+1
 
-
-			Gis=torch.tensor(Gis).type(dtype);
-			nn_out=SB['nn'].ANN(Gis)
-			U1=torch.tensor(np.transpose([U1])).type(dtype);
-			N1=torch.tensor(np.transpose([N1])).type(dtype);
-
+		self.u1=torch.tensor(np.transpose([u1])).type(dtype);
+		self.N1=torch.tensor(np.transpose([N1])).type(dtype);
 
 		if(SB['pot_type'] == "NN"):
+			Gis=[] 
 			for structure in self.structures.values():
-					for Gi in structure.lsps:
-						Gis.append(Gi)
+				for Gi in structure.lsps:	Gis.append(Gi)
+			self.Gis=torch.tensor(Gis).type(dtype);
+			self.M1=torch.tensor([np.ones(len(self.Gis))]).type(dtype)
 
 
-		exit()
+	# #GIVEN AN INPUT MATRIX EVALUATE THE NN
+	# def NN_eval(self,nn):
+	# 	# print(type(self.submatrices[0]))
+	# 	out=(self.Gis).mm(torch.t(nn.submatrices[0]))+torch.t((nn.submatrices[1]).mm(self.M1))
+	# 	for i in range(2,int(len(nn.submatrices)/2+1)):
+	# 		j=2*(i-1)
+	# 		out=torch.sigmoid(out)	
+	# 		if(nn.info['activation']==1):
+	# 			out=out-0.5	
+	# 		out=out.mm(torch.t(nn.submatrices[j]))+torch.t((nn.submatrices[j+1]).mm(self.M1))
+	# 	return out 
 
-# def construct_matrices(SB):
 
-# 	if(SB['pot_type'] != "NN"): raise ValueError("REQUESTED MODEL NOT CODED YET");
+	#APPLY THE MODEL TO DATASET
+	def evaluate_model(self,SB):
+		#set_name=dateset object name
+		if(SB['pot_type']=='NN'):
+			#nn_out=self.NN_eval(SB['nn'])
+			nn_out=SB['nn'].NN_eval(self)
+
+			self.u2=(self.R1).mm(nn_out)/self.N1
+
+	# def report(self,SB):
+
+		
+
+
+	def compute_objective(self,SB):
+		self.evaluate_model(SB)
 
 
 
+		OB1=(((self.u1-self.u2)**2.0).sum()/self.Ns)**0.5 
+		#print(OB1)
+		#exit()
+		OB=OB1
+		return OB
 
-# 		U2=R1.mm(nn_out)
-# 		u2=U2/N1
-# 		u1=U1/N1
+	# 	return u2
 
-# 		print(Gis.shape,nn_out.shape,R1.shape,U1.shape,U2.shape)
 
-# 		RMSE=(((u1-u2)**2.0).sum()/len(u1))**0.5
-# 		print(RMSE)
+	# 	#exit()
+
+
 
 
 

@@ -1,13 +1,10 @@
 import  writer
-from 	torch	import	get_num_threads,cuda,FloatTensor
 import	numpy	as 		np
 import 	time
 import  random
-import	dataset
-# import	torch
-import	matplotlib.pyplot as plt
+# import	computer
 from 	os		import  path 
-
+import  data
 
 def get_run_parameters(SB):
 	#GET MISCELANEOUS RUN PARAMETERS
@@ -18,12 +15,10 @@ def get_run_parameters(SB):
 	writer.log_dict(SB)
 
 
-
 def dump_poscars(SB):
 	for structure in SB['full_set'].structures.values(): 
 		writer.write_poscar(structure)
 		#structure.compute_nbl_for_structure(SB); 
-
 
 #COMPUTE NBL 
 def compute_all_nbls(SB):
@@ -43,9 +38,9 @@ def compute_all_lsps(SB):
 
 def partition_data(SB):
 
-	test_set=dataset.Dataset() #INITIALIZE FULL DATASET OBJECT
-	training_set=dataset.Dataset() #INITIALIZE FULL DATASET OBJECT
-	validation_set=dataset.Dataset() #INITIALIZE FULL DATASET OBJECT
+	test_set=data.Dataset("test") #INITIALIZE FULL DATASET OBJECT
+	training_set=data.Dataset("train") #INITIALIZE FULL DATASET OBJECT
+	validation_set=data.Dataset("validate") #INITIALIZE FULL DATASET OBJECT
 
 	writer.log("PARTITIONING DATA:")
 
@@ -76,52 +71,64 @@ def partition_data(SB):
 	for GID in SB['full_set'].group_sids.keys(): 
 		if(GID in SB['test_set_gids']): 
 			writer.log(["		GID		: ",GID])
+			#test_set.group_sids[GID]= SB['full_set'].group_sids[GID] 
 			for SID in SB['full_set'].group_sids[GID]:
-				test_set.structures[SID]= SB['full_set'].structures[SID] 
+				test_set.structures[SID]= SB['full_set'].structures[SID]
+				test_set.Ns+=1;		test_set.Na+=SB['full_set'].structures[SID].N
+
 	remainder=[] #whats left (use for train+val)
 
 	for SID in SB['full_set'].structures.keys(): 
 		if(SID not in test_set.structures.keys()):
 			remainder.append(SID)
 
-	# print(remainder)
 
-	# print(SB['full_set'].group_sids)
-
-	test_set.build_arrays(SB)
-	# print(test_set.structures)
-	exit()
-
-		
 	#-------------------------------------
 	#TRAIN-VALIDATION-SET (TRAIN+INTERPOLATION SET)
 	#-------------------------------------
 	#TRAINING SIDS (LIST OF DICTIONARY KEYS)a
 	train_indices=np.random.choice(len(remainder),int(fraction_train*len(remainder)), replace=False).tolist() #keys for training structures
 	for i in train_indices: 
-		training_SIDS.append(remainder[i])
+		training_set.structures[remainder[i]]= SB['full_set'].structures[remainder[i]] 
+		training_set.Ns+=1;		
+		training_set.Na+=SB['full_set'].structures[remainder[i]].N
+
 
 	# #ADD MIN/MAX VOLUME STRUCTURES IN EACH GROUP TO TRAINING SET
 	if(train_edges):
 		sid_2_add=[]  
-		for i in SB['group_sids'].values(): sid_2_add.append(i[0]);  sid_2_add.append(i[-1])  #already sorted by volume 
+		for i in SB['full_set'].group_sids.values(): sid_2_add.append(i[0]);  sid_2_add.append(i[-1])  #already sorted by volume 
 		#print(sid_2_add)
 		for SID in sid_2_add: 
-			if(SID not in training_SIDS and SID not in test_SIDS): training_SIDS.append(SID)
+			if(SID not in training_set.structures.keys() and SID not in test_set.structures.keys()):  
+				training_set.structures[SID]= SB['full_set'].structures[SID] 
+				training_set.Ns+=1;		
+				training_set.Na+=SB['full_set'].structures[SID].N
+
 
 	# #VALIDATION SID
 	for SID in remainder: 
-		if(SID not in training_SIDS): validation_SIDS.append(SID)
+		if(SID not in training_set.structures.keys()):  
+			validation_set.structures[SID]= SB['full_set'].structures[SID] 
+			validation_set.Ns+=1;		
+			validation_set.Na+=SB['full_set'].structures[SID].N
 
-	if(SB['n_structs'] != len(training_SIDS)+len(validation_SIDS)+len(test_SIDS)):
+
+
+	if(SB['full_set'].Ns != training_set.Ns+test_set.Ns+validation_set.Ns):
 		raise ValueError("LOST A STUCTURE IN DATA PARTITIONING");
 
-	if(test_SIDS==[]): test_SIDS=validation_SIDS #not ideal but test_SIDS cant be empty
-	writer.log(["	N_train_structures	: ",len(training_SIDS)])
-	writer.log(["	N_val_structures	: ",len(validation_SIDS)])
-	writer.log(["	N_test_structures	: ",len(test_SIDS)])
-	writer.log(["	N_combined		: ",len(training_SIDS)+len(validation_SIDS)+len(test_SIDS)])
+	# if(test_SIDS==[]): test_SIDS=validation_SIDS #not ideal but test_SIDS cant be empty
+	writer.log(["	N_train_structures	: ",training_set.Ns])
+	writer.log(["	N_val_structures	: ",validation_set.Ns])
+	writer.log(["	N_test_structures	: ",test_set.Ns])
+	writer.log(["	N_combined		: ",training_set.Ns+test_set.Ns+validation_set.Ns])
 
-	SB['test_SIDS']=test_SIDS
-	SB['validation_SIDS']=validation_SIDS
-	SB['training_SIDS']=training_SIDS
+	test_set.build_arrays(SB)
+	training_set.build_arrays(SB)
+	validation_set.build_arrays(SB)
+
+	SB['test_set']=test_set
+	SB['training_set']=training_set
+	SB['validation_set']=validation_set
+

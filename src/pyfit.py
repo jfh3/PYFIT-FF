@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
 #Authors: James Hickman (NIST) and Adam Robinson (GMU)
 
-
+from 	time 		import		time,sleep
 from	sys			import		argv
-import 	torch
+
+#import 	torch
 import  numpy		as			np
 
 import  reader
 import  writer
 import	util
-
+import  torch.optim as optim
+# import  models
 
 #-------------------------------------------------------------------------
 #PART-1: SETUP
@@ -26,25 +28,79 @@ SB['input_file']=argv[1]
 
 ##GET RUN PARAMETER 
 util.get_run_parameters(SB)	
-
 #READ INPUT FILES
 reader.read_input(SB)			#READ INPUT FILE AND ADD INFO TO SB
 reader.read_pot_file(SB)		#READ NN FILE AND ADD INFO TO SB 
 reader.read_database(SB);		#READ DATABASES AND ADD INFO TO SB 
 
 #WRITE POSCAR IF DESIRED 
-if(SB['dump_poscars']):	util.dump_poscars(SB)
-
+if(SB['dump_poscars']):	util.dump_poscars(SB)()
 
 #COMPUTE NEIGHBORLIST (NBL) AND LSP FOR ALL STRUCTURES
 util.compute_all_nbls(SB)	
 util.compute_all_lsps(SB)	
 util.partition_data(SB)
 
+
+#-------------------------------------------------------------------------
+#PART-1: Train
+#-------------------------------------------------------------------------
+
+t				=	0;  
+max_iter		=	SB['max_iter']
+training_set	=	SB['training_set']
+SB['nn'].set_grad()
+
+#WRITE INITIAL DATA
+#util.chkpnt(t); t=t+1  
+
+if(max_iter==0): exit()	 #DONT START LOOP
+
+#HARDED-CODED TO USE LBFGS (SEEMS TO BE THE BEST) 
+if(SB['pot_type']=='NN'):
+	optimizer=optim.LBFGS(SB['nn'].submatrices, lr=SB['learning_rate']) 
+
+def closure():
+	global loss,RMSE
+	optimizer.zero_grad(); loss=0.0 
+	loss=training_set.compute_objective(SB)
+	loss.backward();
+	#print(t,loss.item())
+	RMSE=loss.item()
+	return loss
+
+
+
+#OPTIMIZATION LOOP
+start=time(); RMSE=1
+while(t<max_iter): #and RMSE>0.132299): # and RMSE>RMSE_FINAL and ISTOP==False): 
+
+	optimizer.step(closure)
+
+	print(t,RMSE)
+
+	# if(t%ISAVE==0):  
+	# 	chkpnt(t)
+
+	# if(t%2==0):  #WRITE TO ERROR EVERY N STEPS AND CHECK STOPPING CRITERION
+	# 	with open(errlogfile, 'a') as out:
+	# 		out.write('%4d %10f %10f %10f %10f %10f %10f %10f %10f \n' % (t,OB1,OB2,OBL1,OBL2,OBAVE,OBSTD,OBC,time()-start ))
+
+
+	# 	if(np.absolute(RMSE_LAST-RMSE)<RMSE_DELTA): 
+	# 		ISTOP=True; print("STOPPING CRITERION MET")
+
+	# 	RMSE_LAST=RMSE
+
+	t=t+1
+
+print('FITTING TIME:',time()-start)
+# t=111111 #FOR CONSISTANT FILE NAMING
+# chkpnt(t) #WRITE FINAL DATA
+
 exit()
 
 
-util.construct_matrices(SB)
 
 # print(SB['test_SIDS'])
 

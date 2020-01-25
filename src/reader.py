@@ -4,10 +4,9 @@ from 	json		import		load
 from  	os 			import  	path 
 import  writer		 
 from 	numpy		import 		array,random
-# import	classes		#import		Neural_Network,Structure
-import 	models
-import 	dataset
 
+import 	neural
+import  data
 
 def read_input(SB): 
 
@@ -52,12 +51,12 @@ def read_pot_file(SB):
 				parts=line.strip().split() 			#rm /n 
 				if(len(parts)==1):	parts=parts[0]	#dont save single numbers as arrays
 				if(parts!=[]): lines.append(parts)
-			pot=models.NN_Pot(lines,SB) 				#send lines to NN class to create NN object
+			pot=neural.NN(lines,SB) 				#send lines to NN class to create NN object
 		else: 
 			raise ValueError("NN_FILE="+str(file_path)+" DOESNT EXIST")
 		writer.log_dict(pot.info);
 		SB.update(pot.info)
-		SB['pot']=pot					
+		SB['nn']=pot					
 	#return nn
 
 
@@ -65,7 +64,7 @@ def read_database(SB):
 	file_path=SB['dataset_path']
 	writer.log("READING DATASET FILE:");  		 
 
-	full_set=dataset.Dataset() #INITIALIZE FULL DATASET OBJECT
+	full_set=data.Dataset("full") #INITIALIZE FULL DATASET OBJECT
 
 	SID=0;  new_structure=True;
 	if(path.exists(file_path)):
@@ -84,7 +83,7 @@ def read_database(SB):
 			if(counter>6):
 				if(counter==6+1+Natom+1): 				#see dataset examples for format
 					full_set.Na+=Natom
-					full_set.structures[SID]=dataset.Structure(lines,SID,SB); 	#create structure object
+					full_set.structures[SID]=data.Structure(lines,SID,SB); 	#create structure object
 					GID=str(full_set.structures[SID].comment)	
 					if( GID not in full_set.group_sids.keys()):
 						full_set.group_sids[GID]=[]

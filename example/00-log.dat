@@ -5,12 +5,12 @@ RUN PARAMETERS:
 	  input_file          	:	input.json	 
 	  src_path            	:	/home/james/bin/PYFIT/PYFIT-FF/src	 
 	  run_path            	:	/home/james/bin/PYFIT/PYFIT-FF/example/	 
-	  start_time          	:	2020-01-24-H15-M01-S59	 
+	  start_time          	:	2020-01-25-H14-M49-S19	 
 READING DEFAULT PARAMETERS USING FILE:	/home/james/bin/PYFIT/PYFIT-FF/src/defaults.json	 
 	  max_iter            	:	0	 
-	  fraction_train      	:	0.8	 
+	  fraction_train      	:	1.0	 
 	  re_randomize        	:	False	 
-	  learning_rate       	:	0.05	 
+	  learning_rate       	:	0.25	 
 	  lambda_rmse         	:	1.0	 
 	  lambda_dU           	:	0.0	 
 	  lambda_l1           	:	0.0	 
@@ -23,17 +23,17 @@ READING DEFAULT PARAMETERS USING FILE:	/home/james/bin/PYFIT/PYFIT-FF/src/defaul
 	  train_edges         	:	True	 
 	  dump_poscars        	:	False	 
 	  write_lsp           	:	False	 
-	  test_set_gids       	:	['GRP-DC-P-UNPERTURBED+ISO', 'GRP-DC-P-UNPERTURBED+ISO+SMALL']	 
+	  test_set_gids       	:	['']	 
 	  n_rand_GIDS         	:	0	 
 OVERWRITING SELECT DEFAULTS USING INPUT FILE:	input.json	 
 	  pot_type            	:	NN	 
 	  pot_file            	:	nn1.dat	 
-	  dataset_path        	:	data-set.dat	 
-	  max_iter            	:	100	 
+	  dataset_path        	:	train.dat	 
+	  max_iter            	:	10	 
 	  u_shift             	:	0.795023	 
 	  re_randomize        	:	True	 
 READING NEURAL NETWORK FILE: 
-	 RANDOMIZING NN MIN/MAX	=	0.25	 
+	 RANDOMIZING NN MIN/MAX	=	0.250001	 
 	 matrix_shape		:	torch.Size([24, 40]) 
 	 matrix_shape		:	torch.Size([24, 1]) 
 	 matrix_shape		:	torch.Size([24, 24]) 
@@ -50,7 +50,7 @@ READING NEURAL NETWORK FILE:
 	  species             	:	Si	 
 	  atomic_weight       	:	28.0855	 
 	  randomize_nn        	:	False	 
-	  max_rand_wb         	:	0.25	 
+	  max_rand_wb         	:	0.250001	 
 	  cutoff_dist         	:	4.5	 
 	  cutoff_range        	:	0.978124	 
 	  lsp_sigma           	:	1.0	 
@@ -61,13 +61,15 @@ READING NEURAL NETWORK FILE:
 	  nn_layers           	:	[40, 24, 24, 16, 1]	 
 	  num_fit_param       	:	2001	 
 READING DATASET FILE: 
-	TOTAL NUMBER OF STRUCTURES:	245	 
-	TOTAL NUMBER OF ATOMS:		490	 
+	TOTAL NUMBER OF STRUCTURES:	3644	 
+	TOTAL NUMBER OF ATOMS:		24035	 
 COMPUTING NEIGHBOR LIST (NBL):	 
-	NBL CONSTRUCTION TIME (SEC)	=	0.4353313446044922	 
+	NBL CONSTRUCTION TIME (SEC)	=	7.1983115673065186	 
 COMPUTING LOCAL STRUCTURE PARAMETERS (LSP):	 
-	LSP CONSTRUCTION TIME (SEC)	=	0.31397533416748047	 
+	LSP CONSTRUCTION TIME (SEC)	=	11.72664213180542	 
 PARTITIONING DATA: 
 	TEST SET (UNTRAINED): 
-		GID		: 	GRP-DC-P-UNPERTURBED+ISO	 
-		GID		: 	GRP-DC-P-UNPERTURBED+ISO+SMALL	 
+	N_train_structures	: 	3644	 
+	N_val_structures	: 	0	 
+	N_test_structures	: 	0	 
+	N_combined		: 	3644	 

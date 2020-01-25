@@ -1,9 +1,9 @@
 {
 "max_iter"				:	0,
-"fraction_train" 		:	0.8,
+"fraction_train" 		:	1.0,
 "re_randomize" 			:	false,
 
-"learning_rate"			:	0.05,
+"learning_rate"			:	0.25,
 "lambda_rmse"			:	1.0,
 "lambda_dU"				:	0.0,
 "lambda_l1"				:	0.0,
@@ -20,6 +20,6 @@
 "dump_poscars"			:	false,
 "write_lsp"				:	false,
 
-"test_set_gids"			: 	["GRP-DC-P-UNPERTURBED+ISO","GRP-DC-P-UNPERTURBED+ISO+SMALL"],		
+"test_set_gids"			: 	[""],		
 "n_rand_GIDS"			:	0							 
 }
