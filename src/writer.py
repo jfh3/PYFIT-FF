@@ -21,19 +21,19 @@ def write_E_vs_V(data,t):
 		for i in range(0,len(data.v1)): #loop over structures
 			f.write('%10f %10f %10f %5d %40s \n' % (data.v1[i],data.u1[i],data.u2[i],data.SIDS1[i],data.GIDS1[i]))	
 
-def write_stats(name,t,RMSE,MAE,MED_AE,STD_AE,MAX_AE):
+def write_stats(name,t,RMSE,MAE,MED_AE,STD_AE,MAX_AE,RMS_DU):
 	with open(run_path+prefix+"-stats-"+str(name)+".dat", 'a') as f:
-		f.write('%10f %10f %10f %10f %10f %10f \n' % (t,RMSE,MAE,MED_AE,STD_AE,MAX_AE))	
+		f.write('%10f %10f %10f %10f %10f %10f %10f \n' % (t,RMSE,MAE,MED_AE,STD_AE,MAX_AE,RMS_DU))	
 
 
-def log(x,tab=0):
+def log(x,tab=0,name="-log.dat"):
 	str_out=''
 	if(str(type(x))=="<class 'list'>"):
 		#res += '%50s\n'%str(x[i])
 		for i in range(0,len(x)): str_out=str_out+'%s	'%str(x[i])
 	else:
 		str_out=str(x)
-	with open(run_path+prefix+"-log.dat", 'a') as f:
+	with open(run_path+prefix+name, 'a') as f:
 		if(tab==1):	
 			f.write('\t  %s \n' % (str_out)); print("\t",str_out);
 		else:		

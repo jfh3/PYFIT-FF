@@ -1,19 +1,17 @@
 {
-"max_iter"		:	1000,
+"max_iter"		:	10000,
 "fraction_train"	:	0.8,
-"re_randomize"		:	true,
+"re_randomize"		:	false,
 
-"learning_rate"		:	0.25,
-"lambda_rmse"		:	1.0,
-"lambda_dU"		:	1.0,
-"lambda_l1"		:	0.0,
-"lambda_l2"		:	0.0,
-"xtanhx"		:	true,
+"learning_rate"		:	0.1,
+"lambda_E1"		:	1.0,
+"lambda_dU"		:	2.0,
+"lambda_l1"		:	0.001,
+"lambda_l2"		:	0.001,
+"rmse_xtanhx"		:	0.0,
 
-"rmse_tol"		:	0.000000001,	
-"rmse_final" 		:	0.0,		
-"rmse_max" 		:	10.0,			
-"save_every" 		:	100,
+"rmse_tol"		:	0.0000075,	
+"save_every" 		:	10,
 
 "u_shift"		:	0.795023,
 "train_edges" 		:	true,	
@@ -22,5 +20,5 @@
 "write_lsp"		:	false,
 
 "test_set_gids"		: 	[],		
-"n_rand_GIDS"		:	10					 
+"n_rand_GIDS"		:	5					 
 }

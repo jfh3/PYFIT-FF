@@ -37,8 +37,8 @@ class NN:
 
 		if(info['randomize_nn']==True or SB['re_randomize']): 
 			writer.log(["	 RANDOMIZING NN MIN/MAX	=",info['max_rand_wb']])
-			#WB	=	np.random.uniform(-info['max_rand_wb'],info['max_rand_wb'],nfit)
-			WB	=	np.random.normal(0.0,info['max_rand_wb'],nfit)
+			WB	=	np.random.uniform(-info['max_rand_wb'],info['max_rand_wb'],nfit)
+			#WB	=	np.random.normal(0.0,info['max_rand_wb'],nfit)
 		else:
 			WB	=	np.array(lines[8:]).astype(np.float)[:,0]
 

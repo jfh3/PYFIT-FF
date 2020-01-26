@@ -87,7 +87,8 @@ def partition_data(SB):
 			while(k<=SB['n_rand_GIDS']):
 				rand_GID=random.choice(list(SB['full_set'].group_sids.keys()))
 				print(rand_GID)
-				if(rand_GID not in SB['test_set_gids'] ):
+				#if(rand_GID not in SB['test_set_gids'] ):
+				if(rand_GID not in SB['test_set_gids'] and "DC" not in rand_GID ): #REMOVE
 					SB['test_set_gids'].append(rand_GID)
 					k=k+1
 

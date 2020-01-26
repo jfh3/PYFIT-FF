@@ -69,7 +69,10 @@ class Dataset:
 			MED_AE=torch.median((((self.u1-self.u2)**2.0)**0.5))
 			STD_AE=torch.std(((self.u1-self.u2)**2.0)**0.5) 
 			MAX_AE=torch.max(((self.u1-self.u2)**2.0)**0.5) 
-			writer.write_stats(self.name,t,RMSE,MAE,MED_AE,STD_AE,MAX_AE)
+			RMS_DU=0.5*((self.u1.view(self.u1.shape[0],1)-self.u1.view(1,self.u1.shape[0])) \
+				-(self.u2.view(self.u2.shape[0],1)-self.u2.view(1,self.u2.shape[0]))) 
+			RMS_DU=(torch.mean(RMS_DU**2.0)**0.5)
+			writer.write_stats(self.name,t,RMSE,MAE,MED_AE,STD_AE,MAX_AE,RMS_DU)
 
 			
 
@@ -77,32 +80,30 @@ class Dataset:
 	def compute_objective(self,SB):
 		self.evaluate_model(SB)
 
+		#OBJECTIVE TERM-1 (RMSE OR MAE)
 		err=1000.0*(self.u1-self.u2) #convert to meV
-		if(SB['xtanhx']): #MAE>1 and MSE<1
+		TMP=(torch.mean(err**2.0)**0.5)
+		RMSE=TMP.item() #NOT USED IN OBJ 
+		#err=torch.exp(-(self.u1+4.63)/1.0)*err
+		if(RMSE<SB['rmse_xtanhx']): #RMAE>1 and RMSE<1
+			OBE1=SB['lambda_E1']*(torch.mean(err*torch.tanh(err))) #**0.5
+			#OBE1=SB['lambda_E1']*(torch.mean(torch.tanh(err)*torch.tanh(err))) #**0.5
 
-			OBE1=SB['lambda_rmse']*torch.mean(err*torch.tanh(err))
 		else:
-			OBE1=SB['lambda_rmse']*torch.mean(err**2.0)
+			OBE1=SB['lambda_E1']*TMP
 
-	
-# 		#RMSE
-# 		OB_RMSE=SB['lambda_rmse']*(((self.u1-self.u2)**2.0).sum()/self.Ns)**0.5 
+		#OBJECTIVE TERM-2 (DIFF)
+		OB_DU=torch.tensor(0.0)
+		if(SB['lambda_dU']>0): 
+			DIFF1=1000.0*0.5*((self.u1.view(self.u1.shape[0],1)-self.u1.view(1,self.u1.shape[0])) \
+			-(self.u2.view(self.u2.shape[0],1)-self.u2.view(1,self.u2.shape[0]))) 
+			if(RMSE<SB['rmse_xtanhx']): #RMAE>1 and RMSE<1
+				OB_DU=SB['lambda_dU']*(torch.mean(DIFF1*torch.tanh(DIFF1))) #**0.5
+				#OB_DU=SB['lambda_dU']*(torch.mean(torch.tanh(DIFF1)*torch.tanh(DIFF1))) #**0.5
+			else:
+				OB_DU=SB['lambda_dU']*(torch.mean(DIFF1**2.0)**0.5)
 
-
-# 		#DIFFERENCE MATRIX
-# 		DIFF1=0.5*((self.u1.view(self.u1.shape[0],1)-self.u1.view(1,self.u1.shape[0])) \ 
-# 			-(self.u2.view(self.u2.shape[0],1)-self.u2.view(1,self.u2.shape[0])))**2.0)	
-# 		#DIFF2=(grp_w2**0.5)*torch.t(DIFF1)
-# 		OB_DIFF=SB['lambda_rmse']*DIFF2.sum()
-
-
-# 		OB_DIFF=(((self.u1-self.u2)**2.0).sum()/self.Ns)**0.5 
-
-
-# lambda_dU
-
-
-		#L1 AND L2 REG ON NN FITTING PARAM
+		#OBJECTIVE TERMS 3 AND 4:  L1 AND L2 REG ON NN FITTING PARAM
 		OBL1=0.0; OBL2=0.0
 		if(SB['pot_type']=='NN'):
 			#L1 REGULARIZATION
@@ -117,7 +118,7 @@ class Dataset:
 			OBL2=SB['lambda_l2']*S
 
 	
-		return [OBE1,OBL1,OBL2]
+		return [RMSE,OBE1,OB_DU,OBL1,OBL2]
 
 
 
