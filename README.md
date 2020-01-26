@@ -1,6 +1,6 @@
 # PYFIT-FF: 
 
-## Summary
+## summary
 
 + __Authors__: James Hickman (NIST) and Adam Robinson (GMU) 
 	* Please send any relevant questions or comments to james.hickman@nist.gov 
