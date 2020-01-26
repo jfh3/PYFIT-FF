@@ -4,7 +4,7 @@ import  torch
 
 dtype		=	torch.FloatTensor
 if(torch.cuda.is_available()): dtype = torch.cuda.FloatTensor
-
+#S
 class NN:
 	#USED FOR ANN,PINN, PNN
 	def __init__(self, lines, SB):
