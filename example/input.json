@@ -1,9 +1,5 @@
 {
 "pot_type"		:	"NN",
 "pot_file"		:	"nn1.dat",
-"dataset_path"		:	"train.dat",
-"max_iter"		:	1000,
-"u_shift"		:	0.795023,
-"test_set_gids"		: 	[],			
-"re_randomize"		:	true 
+"dataset_path"		:	"train.dat"
 }
