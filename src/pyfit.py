@@ -84,7 +84,8 @@ while(t<max_iter): #and RMSE>0.132299): # and RMSE>RMSE_FINAL and ISTOP==False):
 	#	SB['xtanhx']=True
 	optimizer.step(closure)
 
-	writer.log([t,OBE1,OBL1,OBL2])
+
+	writer.log(['%10.7s'%str(t),'%10.7s'%str(OBE1),'%10.7s'%str(OBL1),'%10.7s'%str(OBL2)])
 
 	if(t%SB['save_every']==0):  util.chkpnt(SB,t);   
 

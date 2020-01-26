@@ -1,7 +1,7 @@
 {
-"max_iter"		:	0,
+"max_iter"		:	1000,
 "fraction_train"	:	0.8,
-"re_randomize"		:	false,
+"re_randomize"		:	true,
 
 "learning_rate"		:	0.25,
 "lambda_rmse"		:	1.0,
@@ -13,9 +13,9 @@
 "rmse_tol"		:	0.000000001,	
 "rmse_final" 		:	0.0,		
 "rmse_max" 		:	10.0,			
-"save_every" 		:	5,
+"save_every" 		:	100,
 
-"u_shift"		:	0.0,
+"u_shift"		:	0.795023,
 "train_edges" 		:	true,	
 
 "dump_poscars"		:	false,
