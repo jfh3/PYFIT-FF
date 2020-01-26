@@ -84,7 +84,7 @@ def read_database(SB):
 				if(counter==6+1+Natom+1): 				#see dataset examples for format
 					full_set.Na+=Natom
 					full_set.structures[SID]=data.Structure(lines,SID,SB); 	#create structure object
-					GID=str(full_set.structures[SID].comment)	
+					GID=str(full_set.structures[SID].gid)	
 					if( GID not in full_set.group_sids.keys()):
 						full_set.group_sids[GID]=[]
 					full_set.group_sids[GID].append([full_set.structures[SID].v,SID])

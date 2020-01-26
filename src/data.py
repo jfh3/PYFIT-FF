@@ -1,8 +1,7 @@
 
-import 	numpy 		as 		np
+import	numpy	as	np
 import  torch
-# import  models
-
+import	writer
 dtype		=	torch.FloatTensor
 if(torch.cuda.is_available()): dtype = torch.cuda.FloatTensor
 
@@ -23,17 +22,21 @@ class Dataset:
 	def build_arrays(self,SB): 
 
 		#ALL MODELS NEED THE FOLLOWING 
-		u1=[]; v1=[]; N1=[]; 	#DFT STUFF
+		u1=[]; v1=[]; N1=[]; self.SIDS1=[]; self.GIDS1=[]	#DFT STUFF
 		self.R1=torch.zeros(self.Ns,self.Na).type(dtype); j=0; k=0 # REDUCTION MATRIX: Ns X Na 
 		for structure in self.structures.values():
 				u1.append(structure.u)
 				v1.append(structure.v)
 				N1.append(structure.N)
+				self.SIDS1.append(structure.sid)
+				self.GIDS1.append(structure.gid)
+
 				for i in range(0,structure.N):
 				 	self.R1[j][k]=1
 				 	k=k+1
 				j=j+1
 
+		self.v1=torch.tensor(np.transpose([v1])).type(dtype);
 		self.u1=torch.tensor(np.transpose([u1])).type(dtype);
 		self.N1=torch.tensor(np.transpose([N1])).type(dtype);
 
@@ -45,19 +48,6 @@ class Dataset:
 			self.M1=torch.tensor([np.ones(len(self.Gis))]).type(dtype)
 
 
-	# #GIVEN AN INPUT MATRIX EVALUATE THE NN
-	# def NN_eval(self,nn):
-	# 	# print(type(self.submatrices[0]))
-	# 	out=(self.Gis).mm(torch.t(nn.submatrices[0]))+torch.t((nn.submatrices[1]).mm(self.M1))
-	# 	for i in range(2,int(len(nn.submatrices)/2+1)):
-	# 		j=2*(i-1)
-	# 		out=torch.sigmoid(out)	
-	# 		if(nn.info['activation']==1):
-	# 			out=out-0.5	
-	# 		out=out.mm(torch.t(nn.submatrices[j]))+torch.t((nn.submatrices[j+1]).mm(self.M1))
-	# 	return out 
-
-
 	#APPLY THE MODEL TO DATASET
 	def evaluate_model(self,SB):
 		#set_name=dateset object name
@@ -67,26 +57,68 @@ class Dataset:
 
 			self.u2=(self.R1).mm(nn_out)/self.N1
 
-	# def report(self,SB):
 
-		
+
+
+	def report(self,SB,t):
+		if(self.Ns!=0):
+			self.evaluate_model(SB)
+			writer.write_E_vs_V(self,t)
+			RMSE=(((self.u1-self.u2)**2.0).sum()/self.Ns)**0.5 
+			MAE=(((self.u1-self.u2)**2.0)**0.5).sum()/self.Ns
+			MED_AE=torch.median((((self.u1-self.u2)**2.0)**0.5))
+			STD_AE=torch.std(((self.u1-self.u2)**2.0)**0.5) 
+			MAX_AE=torch.max(((self.u1-self.u2)**2.0)**0.5) 
+			writer.write_stats(self.name,t,RMSE,MAE,MED_AE,STD_AE,MAX_AE)
+
+			
 
 
 	def compute_objective(self,SB):
 		self.evaluate_model(SB)
 
+		err=1000.0*(self.u1-self.u2) #convert to meV
+		if(SB['xtanhx']): #MAE>1 and MSE<1
+
+			OBE1=SB['lambda_rmse']*torch.mean(err*torch.tanh(err))
+		else:
+			OBE1=SB['lambda_rmse']*torch.mean(err**2.0)
+
+	
+# 		#RMSE
+# 		OB_RMSE=SB['lambda_rmse']*(((self.u1-self.u2)**2.0).sum()/self.Ns)**0.5 
 
 
-		OB1=(((self.u1-self.u2)**2.0).sum()/self.Ns)**0.5 
-		#print(OB1)
-		#exit()
-		OB=OB1
-		return OB
-
-	# 	return u2
+# 		#DIFFERENCE MATRIX
+# 		DIFF1=0.5*((self.u1.view(self.u1.shape[0],1)-self.u1.view(1,self.u1.shape[0])) \ 
+# 			-(self.u2.view(self.u2.shape[0],1)-self.u2.view(1,self.u2.shape[0])))**2.0)	
+# 		#DIFF2=(grp_w2**0.5)*torch.t(DIFF1)
+# 		OB_DIFF=SB['lambda_rmse']*DIFF2.sum()
 
 
-	# 	#exit()
+# 		OB_DIFF=(((self.u1-self.u2)**2.0).sum()/self.Ns)**0.5 
+
+
+# lambda_dU
+
+
+		#L1 AND L2 REG ON NN FITTING PARAM
+		OBL1=0.0; OBL2=0.0
+		if(SB['pot_type']=='NN'):
+			#L1 REGULARIZATION
+			S=0
+			for i in range(0,len(SB['nn'].submatrices)): S=S+((SB['nn'].submatrices[i]**2.0)**0.5).sum()
+			OBL1=SB['lambda_l1']*S
+
+			#L2 REGULARIZATION 
+			S=0
+			for i in range(0,len(SB['nn'].submatrices)): S=S+(SB['nn'].submatrices[i]**2).sum()
+			#LAMBDA_L2_REG=1*(-np.tanh(6*(t-25)/100)+1)*0.5+0.00001
+			OBL2=SB['lambda_l2']*S
+
+	
+		return [OBE1,OBL1,OBL2]
+
 
 
 
@@ -99,17 +131,18 @@ class Structure:
 	def __init__(self,lines,sid,SB):
 		#print(lines)
 		SF=float(lines[1])	#SCALING FACTOR
-		self.sid			= sid
-		self.comment		= str(lines[0])
+		self.sid		= sid
+		self.gid		= str(lines[0])
+
 		self.scale_factor	= SF
-		self.a1				= SF*(np.array(lines[2]).astype(np.float))
-		self.a2				= SF*(np.array(lines[3]).astype(np.float))
-		self.a3				= SF*(np.array(lines[4]).astype(np.float))
-		self.V				= np.absolute(np.dot(self.a1,np.cross(self.a2,self.a3)))
+		self.a1			= SF*(np.array(lines[2]).astype(np.float))
+		self.a2			= SF*(np.array(lines[3]).astype(np.float))
+		self.a3			= SF*(np.array(lines[4]).astype(np.float))
+		self.V			= np.absolute(np.dot(self.a1,np.cross(self.a2,self.a3)))
 		self.N      		= int(lines[5])
-		self.U				= float(lines[-1])+self.N*SB['u_shift'] #+ (self.n_atoms * e_shift)
-		self.v				= self.V/self.N
-		self.u				= self.U/self.N
+		self.U			= float(lines[-1])+self.N*SB['u_shift'] #+ (self.n_atoms * e_shift)
+		self.v			= self.V/self.N
+		self.u			= self.U/self.N
 		self.species		= SB['species']  #TODO THIS NEEDS TO BE FIXED (GENERALIZE TO BINARY)
 
 		if((np.array(lines[7:-1]).astype(np.float)).shape[1] != 3):
@@ -163,7 +196,7 @@ class Structure:
 				mask      = (rij > 1e-5) & (rij < Rc)
 				neighbors = periodic_structure[mask]
 				if(neighbors.shape[0]==0): 
-					raise Exception("ATOM HAS NO NEIGHBORS",self.sid,self.comment)
+					raise Exception("ATOM HAS NO NEIGHBORS",self.sid,self.gid)
 
 				#convert to difference vectors for neightbors relative to ri
 				neighbor_vecs = neighbors - ri 						
@@ -223,72 +256,3 @@ class Structure:
 				for i in gis:
 					str1=str1+' %14.12f '%i
 				writer.write_LSP(str1)
-
-
-
-
-
-
-
-# def construct_matrices(SB):
-
-# 	if(SB['pot_type'] != "NN"): raise ValueError("REQUESTED MODEL NOT CODED YET");
-
-
-# 	if(SB['pot_type'] == "NN"):
-
-# 		U1=[]; N1=[]; V1=[]; Gis=[] #DFT
-# 		Na=0
-# 		for i in SB['training_SIDS']: 	Na=Na+SB['structures'][i].N
-
-# 		# print(SB['training_SIDS'])
-# 		R1=torch.zeros(len(SB['training_SIDS']),int(Na)).type(dtype); #REDUCTION TENSOR 
-# 		j=0; k=0
-# 		for i in SB['training_SIDS']:
-# 				# print(i)	
-# 				# print(SB['structures'][i].U)
-# 				U1.append(SB['structures'][i].U)
-# 				N1.append(SB['structures'][i].N)
-# 				V1.append(SB['structures'][i].v)
-
-# 				for Gi in SB['structures'][i].lsps:
-# 					Gis.append(Gi)
-# 					R1[j][k]=1
-# 					k=k+1
-# 				j=j+1
-# 				Na=Na+SB['structures'][i].N
-
-# 		Gis=torch.tensor(Gis).type(dtype);
-# 		nn_out=SB['nn'].ANN(Gis)
-# 		U1=torch.tensor(np.transpose([U1])).type(dtype);
-# 		N1=torch.tensor(np.transpose([N1])).type(dtype);
-
-
-# 		U2=R1.mm(nn_out)
-# 		u2=U2/N1
-# 		u1=U1/N1
-
-# 		print(Gis.shape,nn_out.shape,R1.shape,U1.shape,U2.shape)
-
-# 		RMSE=(((u1-u2)**2.0).sum()/len(u1))**0.5
-# 		print(RMSE)
-
-# 		#for i in range(0,len(V1)):
-# 		#	print(V1[i],u1[i].item(), u2[i].item())
-# 			# #print(R1.shape) 
-# 			# #exit()
-# 			# y1=[]; k=0; Ninv1=[];  i=0; grp_weighs1=[]; grp_weighs2=[]; x1=[];
-# 			# if(FAST_FIT != True):  
-# 			# 	V_N=[]; v11=[]; SID11=[];  SID1=[]; GID=[];
-# 			# for i1 in bin_j2: #loop over structures
-# 			# 	#print(bin_j2); exit()
-# 			# 	if(FAST_FIT): ID_KEY.append(i1)
-# 			# 	y1.append(structs[i1][1]) #vector of structure energies
-# 			# 	V_N.append(structs[i1][3])
-# 			# 	SID1.append(structs[i1][4])
-# 			# 	GID.append(structs[i1][2])
-# 			# 	Ninv1.append(1.0/structs[i1][0]) #vector of 1/N for each structure
-
-# 				#if(structs[i1][2] 
-
-
