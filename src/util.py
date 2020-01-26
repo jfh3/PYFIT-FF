@@ -36,6 +36,26 @@ def compute_all_lsps(SB):
 	writer.log(["	LSP CONSTRUCTION TIME (SEC)	=",time.time()-start])
 
 
+
+# def full_chkpnt(SB,t):
+# 	if(SB['pot_type']=='NN'):
+# 		SB['nn'].unset_grad()
+# 		writer.write_NN(SB['nn'],t) 
+# 		for ds_name in SB['datasets']:
+# 			SB[ds_name].report(SB,t)
+# 		SB['nn'].set_grad()
+
+
+def chkpnt(SB,t):
+
+	if(SB['pot_type']=='NN'):
+		SB['nn'].unset_grad()
+		writer.write_NN(SB['nn'],t) 
+		for ds_name in SB['datasets']:
+			SB[ds_name].report(SB,t)
+		SB['nn'].set_grad()
+
+
 def partition_data(SB):
 
 	test_set=data.Dataset("test") #INITIALIZE FULL DATASET OBJECT
@@ -43,16 +63,20 @@ def partition_data(SB):
 	validation_set=data.Dataset("validate") #INITIALIZE FULL DATASET OBJECT
 
 	writer.log("PARTITIONING DATA:")
-
+	writer.log(["	TOTAL NUMBER OF GROUPS=",len(SB['full_set'].group_sids.keys())])
 	fraction_train=SB['fraction_train']
 	train_edges=SB['train_edges']
 
 	#ERROR CHECKS 
-	if(fraction_train==0): 						raise ValueError("FRACTION_TRAIN=0 (CANT TRAIN WITHOUT TRAINING DATA)");
-	# if(fraction_train==1): 						raise ValueError("FRACTION_TRAIN=1 (PLEASE CHOOSE 0<FRACTION_TRAIN<1)");
-	if(fraction_train<0 or fraction_train>1): 	raise ValueError("BAD VALUE FOR FRACTION_TRAIN: (I.E. FRACTION_TRAIN<0 OR FRACTION_TRAIN>1)");
+	if(fraction_train==0): 						
+		raise ValueError("FRACTION_TRAIN=0 (CANT TRAIN WITHOUT TRAINING DATA)");
+	if(fraction_train<0 or fraction_train>1): 
+		ERR="BAD VALUE FOR FRACTION_TRAIN: (I.E. FRACTION_TRAIN<0 OR FRACTION_TRAIN>1)"	
+		raise ValueError(ERR);
 	if(SB['n_rand_GIDS']>=len(SB['full_set'].group_sids.keys())): 	
-			raise ValueError("N_RAND_GIDS IS LARGER THAN TOTAL NUMBER OF GIDS: USE N_RAND_GIDS<"+str(len(SB['group_sids'].keys())));
+			ERR="N_RAND_GIDS IS LARGER THAN TOTAL NUMBER OF GIDS: USE N_RAND_GIDS<"  \
+			+str(len(SB['full_set'].group_sids.keys()))
+			raise ValueError(ERR);
 
 	#-------------------------------------
 	#TEST-SET (EXTRAPOLATION)
@@ -62,6 +86,7 @@ def partition_data(SB):
 			k=1
 			while(k<=SB['n_rand_GIDS']):
 				rand_GID=random.choice(list(SB['full_set'].group_sids.keys()))
+				print(rand_GID)
 				if(rand_GID not in SB['test_set_gids'] ):
 					SB['test_set_gids'].append(rand_GID)
 					k=k+1
@@ -97,7 +122,10 @@ def partition_data(SB):
 	# #ADD MIN/MAX VOLUME STRUCTURES IN EACH GROUP TO TRAINING SET
 	if(train_edges):
 		sid_2_add=[]  
-		for i in SB['full_set'].group_sids.values(): sid_2_add.append(i[0]);  sid_2_add.append(i[-1])  #already sorted by volume 
+		for i in SB['full_set'].group_sids.values():
+			if(len(i)>4): #already sorted by volume 
+				sid_2_add.append(i[0]);   sid_2_add.append(i[1])  
+				sid_2_add.append(i[-2]);  sid_2_add.append(i[-1])   
 		#print(sid_2_add)
 		for SID in sid_2_add: 
 			if(SID not in training_set.structures.keys() and SID not in test_set.structures.keys()):  
@@ -131,4 +159,4 @@ def partition_data(SB):
 	SB['test_set']=test_set
 	SB['training_set']=training_set
 	SB['validation_set']=validation_set
-
+	SB['datasets']=['test_set','training_set','validation_set']

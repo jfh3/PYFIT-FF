@@ -1,25 +1,26 @@
 {
-"max_iter"				:	0,
-"fraction_train" 		:	1.0,
-"re_randomize" 			:	false,
+"max_iter"		:	0,
+"fraction_train"	:	0.8,
+"re_randomize"		:	false,
 
-"learning_rate"			:	0.25,
-"lambda_rmse"			:	1.0,
-"lambda_dU"				:	0.0,
-"lambda_l1"				:	0.0,
-"lambda_l2"				:	0.00001,
+"learning_rate"		:	0.25,
+"lambda_rmse"		:	1.0,
+"lambda_dU"		:	1.0,
+"lambda_l1"		:	0.0,
+"lambda_l2"		:	0.0,
+"xtanhx"		:	true,
 
-"rmse_tol"				:	0.000000001,	
-"rmse_final" 			:	0.0,		
-"rmse_max" 				:	10.0,			
-"save_every" 			:	250,
+"rmse_tol"		:	0.000000001,	
+"rmse_final" 		:	0.0,		
+"rmse_max" 		:	10.0,			
+"save_every" 		:	5,
 
-"u_shift"				:	0.0,
-"train_edges" 			:	true,	
+"u_shift"		:	0.0,
+"train_edges" 		:	true,	
 
-"dump_poscars"			:	false,
-"write_lsp"				:	false,
+"dump_poscars"		:	false,
+"write_lsp"		:	false,
 
-"test_set_gids"			: 	[""],		
-"n_rand_GIDS"			:	0							 
+"test_set_gids"		: 	[],		
+"n_rand_GIDS"		:	10					 
 }

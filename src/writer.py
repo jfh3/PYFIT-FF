@@ -16,6 +16,14 @@ def write_header():
 
 
 
+def write_E_vs_V(data,t):
+	with open(run_path+prefix+"-e_vs_V-"+str(data.name)+"-"+str(t)+".dat", 'w') as f:
+		for i in range(0,len(data.v1)): #loop over structures
+			f.write('%10f %10f %10f %5d %40s \n' % (data.v1[i],data.u1[i],data.u2[i],data.SIDS1[i],data.GIDS1[i]))	
+
+def write_stats(name,t,RMSE,MAE,MED_AE,STD_AE,MAX_AE):
+	with open(run_path+prefix+"-stats-"+str(name)+".dat", 'a') as f:
+		f.write('%10f %10f %10f %10f %10f %10f \n' % (t,RMSE,MAE,MED_AE,STD_AE,MAX_AE))	
 
 
 def log(x,tab=0):

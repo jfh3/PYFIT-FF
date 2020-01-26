@@ -37,8 +37,8 @@ class NN:
 
 		if(info['randomize_nn']==True or SB['re_randomize']): 
 			writer.log(["	 RANDOMIZING NN MIN/MAX	=",info['max_rand_wb']])
-			WB	=	np.random.uniform(-info['max_rand_wb'],info['max_rand_wb'],nfit)
-			# WB	=	np.random.normal(0.0,info['max_rand_wb'],nfit)
+			#WB	=	np.random.uniform(-info['max_rand_wb'],info['max_rand_wb'],nfit)
+			WB	=	np.random.normal(0.0,info['max_rand_wb'],nfit)
 		else:
 			WB	=	np.array(lines[8:]).astype(np.float)[:,0]
 
@@ -59,7 +59,7 @@ class NN:
 		#DEFINE OBJECT
 		self.info = info					 
 		self.submatrices=self.extract_submatrices(WB)
-		writer.write_NN(self,step=0)													#save a copy of the initial NN 
+		#writer.write_NN(self,step=0)													#save a copy of the initial NN 
 
 	#TAKES AN ARRAY OF NP.ARRAY SUBMATRICES AND RETURNS A LONG VECTOR W OF WEIGHTS AND BIAS  
 	def matrix_combine(self):
@@ -101,8 +101,7 @@ class NN:
 
 	# #GIVEN AN INPUT MATRIX EVALUATE THE NN
 	def NN_eval(self,x):
-		# print(type(self.submatrices[0]))
-		#M1=torch.tensor([np.ones(len(x))]).type(dtype)
+		#ACTS ON A DATASET OBJECT
 		out=(x.Gis).mm(torch.t(self.submatrices[0]))+torch.t((self.submatrices[1]).mm(x.M1))
 		for i in range(2,int(len(self.submatrices)/2+1)):
 			j=2*(i-1)
@@ -111,35 +110,5 @@ class NN:
 				out=out-0.5	
 			out=out.mm(torch.t(self.submatrices[j]))+torch.t((self.submatrices[j+1]).mm(x.M1))
 		return out 
-
-
-
-
-
-# def compute(set_name,SB):
-# 	#set_name=dateset object name
-# 	print(SB[set_name])
-# 	if( SB['pot_type']=='NN'): 
-# 		nn_out=SB['pot'].NN_eval(SB[set_name].Gis)
-# 		u2=(SB[set_name].R1).mm(nn_out)/SB[set_name].N1
-	
-# 	#print(u2-SB[set_name].u1)
-
-# 	RMSE=(((SB[set_name].u1-u2)**2.0).sum()/len(u2))**0.5	
-# 	print(RMSE)
-
-# 	# def construct_matrices(SB):
-
-# # 	if(SB['pot_type'] != "NN"): raise ValueError("REQUESTED MODEL NOT CODED YET");
-
-
-
-
-# # 		U2=R1.mm(nn_out)
-# # 		u2=U2/N1
-# # 		u1=U1/N1
-
-# # 		print(Gis.shape,nn_out.shape,R1.shape,U1.shape,U2.shape)
-
 
 
