@@ -5,20 +5,18 @@ RUN PARAMETERS:
 	  input_file          	:	input.json	 
 	  src_path            	:	/home/james/bin/PYFIT/PYFIT-FF/src	 
 	  run_path            	:	/home/james/bin/PYFIT/PYFIT-FF/example/	 
-	  start_time          	:	2020-01-26-H15-M04-S45	 
+	  start_time          	:	2020-01-26-H16-M17-S31	 
 READING DEFAULT PARAMETERS USING FILE:	/home/james/bin/PYFIT/PYFIT-FF/src/defaults.json	 
 	  max_iter            	:	1000	 
 	  fraction_train      	:	0.8	 
 	  re_randomize        	:	True	 
 	  learning_rate       	:	0.25	 
-	  lambda_rmse         	:	1.0	 
+	  lambda_E1           	:	1.0	 
 	  lambda_dU           	:	0.0	 
 	  lambda_l1           	:	0.0	 
 	  lambda_l2           	:	0.0	 
-	  xtanhx              	:	False	 
+	  rmse_xtanhx         	:	0.0	 
 	  rmse_tol            	:	1e-05	 
-	  rmse_final          	:	0.0	 
-	  rmse_max            	:	10.0	 
 	  save_every          	:	100	 
 	  u_shift             	:	0.795023	 
 	  train_edges         	:	True	 
@@ -62,14 +60,16 @@ READING DATASET FILE:
 	TOTAL NUMBER OF STRUCTURES:	245	 
 	TOTAL NUMBER OF ATOMS:		490	 
 COMPUTING NEIGHBOR LIST (NBL):	 
-	NBL CONSTRUCTION TIME (SEC)	=	0.4742927551269531	 
+	NBL CONSTRUCTION TIME (SEC)	=	0.4210855960845947	 
 COMPUTING LOCAL STRUCTURE PARAMETERS (LSP):	 
-	LSP CONSTRUCTION TIME (SEC)	=	0.31872057914733887	 
+	LSP CONSTRUCTION TIME (SEC)	=	0.32189178466796875	 
 PARTITIONING DATA: 
 	TOTAL NUMBER OF GROUPS=	2	 
 	TEST SET (UNTRAINED): 
-	N_train_structures	: 	197	 
-	N_val_structures	: 	48	 
+	N_train_structures	: 	199	 
+	N_val_structures	: 	46	 
 	N_test_structures	: 	0	 
 	N_combined		: 	245	 
 STARTING FITTING LOOP: 
+CONVERGENCE CRITERION MET: 
+FITTING LOOP TIME (SEC):	90.28257369995117	 
