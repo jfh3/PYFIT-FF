@@ -78,10 +78,10 @@ writer.log('STARTING FITTING LOOP:')
 
 while(t<max_iter): #and RMSE>0.132299): # and RMSE>RMSE_FINAL and ISTOP==False): 
 
-	if(t<100):
-		SB['xtanhx']=False
-	else:
-		SB['xtanhx']=True
+	#if(t<100):
+	#	SB['xtanhx']=False
+	#else:
+	#	SB['xtanhx']=True
 	optimizer.step(closure)
 
 	writer.log([t,OBE1,OBL1,OBL2])
