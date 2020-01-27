@@ -81,7 +81,7 @@ sudo pip3 install torch torchvision numpy
  	- https://docs.conda.io/projects/conda/en/latest/user-guide/install/
 	- for more information on conda see the following: https://www.youtube.com/watch?v=23aQdrS58e0&t=327s
 2) Use the following commands to create a conda environment with the Python 3.x and PyTorch (numpy will be installed automatically as part of this process) 
-	- sfdsfdklglds
+	- 
 
 3) Use the following command to activate this conda environment on your local machine (
 	- sfdsfdklglds
