@@ -90,7 +90,7 @@ sudo pip3 install torch torchvision numpy
 
 ## Input files 
 
-
+The following is a discussion of the relevant input files for running PYFIT-FF
  set.dat",
 + "max_iter"			:	100,
 "lambda_rmse"			:	1.0,
