@@ -17,7 +17,7 @@
 
 ## Current functionality
 
-+ Single component mathematical NN training using the local atomic environment descriptors developed by [Purja-Pun and Mishin](https://www.nature.com/articles/s41467-019-10343-5) 
++ Single component mathematical NN training using the local atomic environment descriptors developed by [Purja-Pun and Mishin](https://www.nature.com/articles/s41467-019-10343-5).
 
 ## Planned updates
 
