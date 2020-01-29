@@ -5,11 +5,14 @@
 
 "learning_rate"		:	0.1,
 "lambda_E1"		:	1.0,
-"lambda_dU"		:	0.0,
-"lambda_l1"		:	0.005,
-"lambda_l2"		:	0.005,
+"lambda_dU"		:	1.0,
+"lambda_l1"		:	0.0,
+"lambda_l2"		:	0.0005,
+"fit_diff"		:	3.0,
 "rmse_xtanhx"		:	0.0,
-"rmse_tol"		:	0.000001,	
+"rmse_tol"		:	0.0,	
+"rmse_final"		:	0.15,	
+
 
 "cnst_final_bias"	:	false,
 "final_bias"		:	0.0,
@@ -23,6 +26,12 @@
 "dump_poscars"		:	false,
 "write_lsp"		:	false,
 
+"weight_selector"	: 	["DC","WURT"],		
+"default_weight1"	: 	1.0,
+"default_weight2"	: 	0.0,				
+"mod_weight1"		: 	10.0,		
+"mod_weight2"		: 	10.0,		
+
 "test_set_gids"		: 	[],		
-"n_rand_GIDS"		:	5					 
+"n_rand_GIDS"		:	0					 
 }

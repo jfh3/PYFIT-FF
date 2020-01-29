@@ -5,18 +5,20 @@ RUN PARAMETERS:
 	  input_file          	:	input.json	 
 	  src_path            	:	/home/james/bin/PYFIT/PYFIT-FF/src	 
 	  run_path            	:	/home/james/bin/PYFIT/PYFIT-FF/example/	 
-	  start_time          	:	2020-01-28-H16-M11-S52	 
+	  start_time          	:	2020-01-29-H14-M57-S33	 
 READING DEFAULT PARAMETERS USING FILE:	/home/james/bin/PYFIT/PYFIT-FF/src/defaults.json	 
 	  max_iter            	:	10000	 
 	  fraction_train      	:	0.8	 
 	  re_randomize        	:	True	 
 	  learning_rate       	:	0.1	 
 	  lambda_E1           	:	1.0	 
-	  lambda_dU           	:	0.0	 
-	  lambda_l1           	:	0.005	 
-	  lambda_l2           	:	0.005	 
+	  lambda_dU           	:	1.0	 
+	  dU_RMSE             	:	5.0	 
+	  lambda_l1           	:	0.0	 
+	  lambda_l2           	:	0.0005	 
 	  rmse_xtanhx         	:	0.0	 
-	  rmse_tol            	:	1e-06	 
+	  rmse_tol            	:	0.0	 
+	  rmse_final          	:	0.15	 
 	  cnst_final_bias     	:	False	 
 	  final_bias          	:	0.0	 
 	  save_every          	:	25	 
@@ -24,8 +26,13 @@ READING DEFAULT PARAMETERS USING FILE:	/home/james/bin/PYFIT/PYFIT-FF/src/defaul
 	  train_edges         	:	True	 
 	  dump_poscars        	:	False	 
 	  write_lsp           	:	False	 
+	  weight_selector     	:	['DC', 'WURT']	 
+	  default_weight1     	:	1.0	 
+	  default_weight2     	:	0.0	 
+	  mod_weight1         	:	10.0	 
+	  mod_weight2         	:	10.0	 
 	  test_set_gids       	:	[]	 
-	  n_rand_GIDS         	:	5	 
+	  n_rand_GIDS         	:	0	 
 OVERWRITING SELECT DEFAULTS USING INPUT FILE:	input.json	 
 	  pot_type            	:	NN	 
 	  pot_file            	:	nn0.dat	 
@@ -60,21 +67,14 @@ READING DATASET FILE:
 	TOTAL NUMBER OF STRUCTURES:	3644	 
 	TOTAL NUMBER OF ATOMS:		24035	 
 COMPUTING NEIGHBOR LIST (NBL):	 
-	NBL CONSTRUCTION TIME (SEC)	=	8.01116394996643	 
+	NBL CONSTRUCTION TIME (SEC)	=	6.49702000617981	 
 COMPUTING LOCAL STRUCTURE PARAMETERS (LSP):	 
-	LSP CONSTRUCTION TIME (SEC)	=	14.70228362083435	 
+	LSP CONSTRUCTION TIME (SEC)	=	11.132409572601318	 
 PARTITIONING DATA: 
 	TOTAL NUMBER OF GROUPS=	41	 
 	TEST SET (UNTRAINED): 
-		GID		: 	GRP-FCC-P-UNPERTURBED+ISO	 
-		GID		: 	GRP-Si6_1-HEXAMER-CHAIR-UNPERTURBED+ISO	 
-		GID		: 	GRP-Si6_3-HEXAMER-EDGECAP-UNPERTURBED+ISO	 
-		GID		: 	GRP-Si3_3-TRIMER-EQ-LAT-UNPERTURBED+ISO	 
-		GID		: 	GRP-Si4_2-TETRAMER-TD-UNPERTURBED+ISO	 
-	N_train_structures	: 	2674	 
-	N_val_structures	: 	632	 
-	N_test_structures	: 	338	 
+	N_train_structures	: 	2951	 
+	N_val_structures	: 	693	 
+	N_test_structures	: 	0	 
 	N_combined		: 	3644	 
 STARTING FITTING LOOP: 
-CONVERGENCE CRITERION MET: 
-FITTING LOOP TIME (SEC):	467.37479853630066	 

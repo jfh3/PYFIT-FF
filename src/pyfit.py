@@ -59,13 +59,13 @@ if(SB['pot_type']=='NN'):
 	optimizer=optim.LBFGS(SB['nn'].submatrices, lr=SB['learning_rate']) 
 
 def closure():
-	global loss,OBE1,OBL1,OBL2,OB_DU,rmse
+	global loss,OBE1,OBL1,OBL2,OB_DU,rmse,OBT
 	optimizer.zero_grad(); loss=0.0 
 	[rmse,OBE1,OB_DU,OBL1,OBL2]=training_set.compute_objective(SB)
 	loss=OBE1+OB_DU+OBL1+OBL2
 	loss.backward();
 	OBE1=OBE1.item();	OB_DU=OB_DU.item()
-	OBL1=OBL1.item();	OBL2=OBL2.item()
+	OBL1=OBL1.item();	OBL2=OBL2.item();	OBT=loss.item();
 
 	if(str(OBE1)=='nan' or rmse>10**10 ):
 		writer.log(['%10.7s'%str(t),'%10.7s'%str(rmse),'%10.7s'%str(OBE1), \
@@ -78,23 +78,17 @@ def closure():
 start=time(); #RMSE=1
 writer.log('STARTING FITTING LOOP:')
 
-while(t<max_iter): #and RMSE>0.132299): # and RMSE>RMSE_FINAL and ISTOP==False): 
+while(t<max_iter):  # and RMSE>RMSE_FINAL and ISTOP==False): 
 
-
-
-	#if(t<100):
-	#	SB['xtanhx']=False
-	#else:
-	#	SB['xtanhx']=True
 	optimizer.step(closure)
 
 	writer.log(['%10.7s'%str(t),'%10.7s'%str(rmse),'%10.7s'%str(OBE1),'%10.7s'%str(OB_DU), \
-		    '%10.7s'%str(OBL1),'%10.7s'%str(OBL2)],0,"-err-log.dat")
+		    '%10.7s'%str(OBL1),'%10.7s'%str(OBL2),'%10.7s'%str(OBT)],0,"-err-log.dat")
 
 	if(t%SB['save_every']==0):  util.chkpnt(SB,t);   
 
-	if(((rmse_last-rmse)**2.0)**0.5<SB['rmse_tol']): 
-		writer.log("CONVERGENCE CRITERION MET:"); t=max_iter
+	if(((rmse_last-rmse)**2.0)**0.5<SB['rmse_tol'] or rmse<SB['rmse_final']): 
+		writer.log("STOPPING CRITERION MET:"); t=max_iter
 	rmse_last=rmse
 
 	t=t+1

@@ -117,15 +117,13 @@ class NN:
 		for i in range(2,int(len(self.submatrices)/2+1)):
 			j=2*(i-1)
 
-			self.info['activation']=10
-
 			if(self.info['activation']==0 or self.info['activation']==1 ):  
 				out=torch.sigmoid(out)	
 				if(self.info['activation']==1):
 					out=out-0.5	
 				out=out.mm(torch.t(self.submatrices[j]))+torch.t((self.submatrices[j+1]).mm(x.M1))
 
-			if(self.info['activation']==10): #MORSE
+			if(self.info['activation']==10): #ALT ACTIVATION SCHEME
 				#ADD ERROR FOR MULTLATER
 				out=(1.0-torch.exp(-out))**2.0-1.0
 	
@@ -133,7 +131,6 @@ class NN:
 
 
 		#out=(1.0-torch.exp(-out))**2.0	
-
 		#xexp2=True; max_xexp2=10.0
 		#if(xexp2):  out=max_xexp2*out*torch.exp(-1.0*out**2.0)/.4288	
 			
