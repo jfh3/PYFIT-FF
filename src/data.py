@@ -214,13 +214,13 @@ class Structure:
 
 		#LOOP OVER NBL FOR EACH ATOM
 		for nbl in self.nbls:
-			#nbl=np.array([[0,3,0],[2,0,0]]) #np.array([[11,12,13],[21,22,23]])   #useful for testing what the following commands do
+			#nbl=np.array([[11,12,13],[21,22,23]]) #np.array([[0,3,0],[2,0,0]])  #useful for testing what the following commands do
 
-			n=nbl.shape[0]
+			n=nbl.shape[0] #numer of neighbors
 			Xij=np.tile(nbl,n).reshape(n*n,3)
 			Xik=np.tile(nbl,(n,1)).reshape(n*n,3) #.reshape(3*n,1) #.repeat(n,axis=0).reshape(n*n,3)
 
-			rij=(((Xij**2.0).sum(axis=1))**0.5).reshape(1,n*n);		#	print(rij)		
+			rij=(((Xij**2.0).sum(axis=1))**0.5).reshape(1,n*n); #sum accros row		
 			rik=(((Xik**2.0).sum(axis=1))**0.5).reshape(1,n*n);			
 			cos_ijk=((Xij*Xik).sum(axis=1).reshape(1,n*n))/rij/rik;		
 
@@ -231,8 +231,12 @@ class Structure:
 			fcik=(rik-rc)**4.0;  fcik=fcik/(dc4+fcik)
 			#mask      =  (rik < rc).astype(np.int);		fcik=fcik*mask
 
+
 			#term is the same for all LG poly (each row is a given ro)
 			radial_term=np.exp(-((rij-ros)/s)**2.0)*np.exp(-((rik-ros)/s)**2.0)*fcik*fcij/ros2
+
+			#print(radial_term.shape,rij.shape,ros.shape); exit()
+
 
 			#ANGULAR TERM
 			first=True
@@ -240,14 +244,20 @@ class Structure:
 				if(m==0): lg_cos=np.ones((cos_ijk.shape[0],cos_ijk.shape[1]))
 				if(m==1): lg_cos_m1=lg_cos;		lg_cos=cos_ijk;
 				if(m in lgs): 
-					#print(lg_cos)
 					if(first): 
 						gis=(radial_term*lg_cos).sum(axis=1); first=False
 					else:
 						gis=np.concatenate((gis,(radial_term*lg_cos).sum(axis=1)))
+					#print(gis.shape)
+
 				if(m>=1): #define for next iteration of loop 
 						tmp=lg_cos
 						lg_cos=((2.0*m+1.0)*cos_ijk*lg_cos-m*lg_cos_m1)/(m+1); lg_cos_m1=tmp;
+
+
+			#print(radial_term.shape)
+			#print(gis.shape)
+			#exit()
 
 			gis=np.arcsinh(gis)
 			self.lsps.append(gis)

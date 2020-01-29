@@ -18,17 +18,21 @@ class NN:
 		info['num_species']		=	 int(lines[1][0])
 		info['species']			=	 str(lines[2][0])
 
-		info['atomic_weight']	=	 float(lines[2][1])
-		info['randomize_nn']	=	 bool(int(lines[3][0]))
+		info['atomic_weight']		=	 float(lines[2][1])
+		info['randomize_nn']		=	 bool(int(lines[3][0]))
 		info['max_rand_wb']		=	 float(lines[3][1])
 		info['cutoff_dist']		=	 float(lines[3][2])
-		info['cutoff_range']	=	 float(lines[3][3])
+		info['cutoff_range']		=	 float(lines[3][3])
 		info['lsp_sigma']		=	 float(lines[3][4])
 		info['lsp_lg_poly']		=	 list(map(int,lines[4][1:]))	#map converts str list to int list
 		info['lsp_ro_val']		=	 list(map(float,lines[5][1:]))	#map converts str list to float list
 		info['ibaseline']		=	 bool(int(lines[6][0]))
 		info['bop_param']		=	 list(map(float,lines[6][1:]))  
 		info['nn_layers']		=	 list(map(int,lines[7][1:]))  
+
+		info['cnst_final_bias']		=	 SB['cnst_final_bias'] 
+		info['final_bias']		=	 SB['final_bias'] 
+
 
 		#DETERMINE NUMBER OF FITITNG PARAM AND RANDOMIZE IF NEEDED
 		nfit=0; layers=info['nn_layers']
@@ -97,7 +101,14 @@ class NN:
 
 	def set_grad(self):
 		if(self.info['pot_type']=='NN'):
-			for i in self.submatrices:	i.requires_grad = True
+			for i in self.submatrices:	
+				i.requires_grad = True
+			if(self.info['cnst_final_bias']): 
+				#print(self.submatrices[-1]); #exit()
+				self.submatrices[-1].requires_grad=False
+				self.submatrices[-1]=self.info['final_bias']* \
+				torch.ones(self.submatrices[-1].shape[0],self.submatrices[-1].shape[1])
+				#print(self.submatrices[-1]); exit()
 
 	# #GIVEN AN INPUT MATRIX EVALUATE THE NN
 	def NN_eval(self,x):
@@ -105,10 +116,28 @@ class NN:
 		out=(x.Gis).mm(torch.t(self.submatrices[0]))+torch.t((self.submatrices[1]).mm(x.M1))
 		for i in range(2,int(len(self.submatrices)/2+1)):
 			j=2*(i-1)
-			out=torch.sigmoid(out)	
-			if(self.info['activation']==1):
-				out=out-0.5	
-			out=out.mm(torch.t(self.submatrices[j]))+torch.t((self.submatrices[j+1]).mm(x.M1))
+
+			self.info['activation']=10
+
+			if(self.info['activation']==0 or self.info['activation']==1 ):  
+				out=torch.sigmoid(out)	
+				if(self.info['activation']==1):
+					out=out-0.5	
+				out=out.mm(torch.t(self.submatrices[j]))+torch.t((self.submatrices[j+1]).mm(x.M1))
+
+			if(self.info['activation']==10): #MORSE
+				#ADD ERROR FOR MULTLATER
+				out=(1.0-torch.exp(-out))**2.0-1.0
+	
+				out=out.mm(torch.t(self.submatrices[j]))+torch.t((self.submatrices[j+1]).mm(x.M1))
+
+
+		#out=(1.0-torch.exp(-out))**2.0	
+
+		#xexp2=True; max_xexp2=10.0
+		#if(xexp2):  out=max_xexp2*out*torch.exp(-1.0*out**2.0)/.4288	
+			
+	
 		return out 
 
 

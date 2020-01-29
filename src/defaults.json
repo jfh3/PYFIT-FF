@@ -1,17 +1,21 @@
 {
 "max_iter"		:	10000,
 "fraction_train"	:	0.8,
-"re_randomize"		:	false,
+"re_randomize"		:	true,
 
 "learning_rate"		:	0.1,
 "lambda_E1"		:	1.0,
-"lambda_dU"		:	2.0,
-"lambda_l1"		:	0.001,
-"lambda_l2"		:	0.001,
+"lambda_dU"		:	0.0,
+"lambda_l1"		:	0.005,
+"lambda_l2"		:	0.005,
 "rmse_xtanhx"		:	0.0,
+"rmse_tol"		:	0.000001,	
 
-"rmse_tol"		:	0.0000075,	
-"save_every" 		:	10,
+"cnst_final_bias"	:	false,
+"final_bias"		:	0.0,
+
+
+"save_every" 		:	25,
 
 "u_shift"		:	0.795023,
 "train_edges" 		:	true,	
