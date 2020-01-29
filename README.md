@@ -3,7 +3,7 @@
 ## summary
 
 + __Authors__: James Hickman (NIST) and Adam Robinson (GMU) 
-	* Please send any relevant questions or comments to james.hickman@nist.gov 
+	* Please send any relevant questions, bug reports, or comments to james.hickman@nist.gov 
 
 + __Description__: 
 	- PYFIT-FF is a tool for training feed-forward artificial neural network (NN) interatomic potentials to interpolate between density functional theory energy predictions. This is done by utilizing the automatic differentiation and optimization library [PYTORCH](https://pytorch.org/) for the optimization process.
