@@ -119,6 +119,9 @@ class NN:
 		for i in range(2,int(len(self.submatrices)/2+1)):
 			j=2*(i-1)
 
+			if(self.info['activation']==10): #ALT ACTIVATION SCHEME
+
+
 			if(self.info['activation']==0 or self.info['activation']==1 ):  
 				out=torch.sigmoid(out)	
 				if(self.info['activation']==1):
@@ -128,7 +131,7 @@ class NN:
 			if(self.info['activation']==10): #ALT ACTIVATION SCHEME
 				#ADD ERROR FOR MULTLATER
 				out=(1.0-torch.exp(-out))**2.0-1.0
-	
+				print(i,j)
 				out=out.mm(torch.t(self.submatrices[j]))+torch.t((self.submatrices[j+1]).mm(x.M1))
 
 
