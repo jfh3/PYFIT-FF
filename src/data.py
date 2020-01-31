@@ -5,6 +5,8 @@ import	writer
 dtype		=	torch.FloatTensor
 if(torch.cuda.is_available()): dtype = torch.cuda.FloatTensor
 
+fit_diff=False
+
 class Dataset:
 	def __init__(self,name):
 		self.name=name
@@ -85,6 +87,8 @@ class Dataset:
 
 		
 	def compute_objective(self,SB):
+		global fit_diff 
+
 		self.evaluate_model(SB)
 
 		#OBJECTIVE TERM-1 (RMSE OR MAE)
@@ -101,17 +105,14 @@ class Dataset:
 
 		#OBJECTIVE TERM-2 (DIFF)
 		OB_DU=torch.tensor(0.0)
-		#if(SB['lambda_dU']>0): 
-		if(RMSE<SB['dU_RMSE'] and fit_diff != True):
-			fit_diff=True
-		else:
-			fit_diff=False
+
+		if(RMSE<SB['rmse_dU'] and fit_diff != True):  fit_diff=True
 
 		if(SB['lambda_dU']>0 and fit_diff): 
 
 			#APPLY MASK TO ONLY USE TERMS WITH NON-ZERO WEIGHTS 
 			self.ud2=self.u2[self.mask2]
-			DIFF1=(self.swt2**0.5)*1000.0*0.5*((self.ud1.view(self.ud1.shape[0],1)-self.ud1.view(1,self.ud1.shape[0])) \
+			DIFF1=(self.swt2**0.5)*1000.0*((self.ud1.view(self.ud1.shape[0],1)-self.ud1.view(1,self.ud1.shape[0])) \
 			-(self.ud2.view(self.ud2.shape[0],1)-self.ud2.view(1,self.ud2.shape[0]))) 
 			DIFF1=(self.swt2**0.5)*torch.t(DIFF1)
 			if(RMSE<SB['rmse_xtanhx']): #RMAE>1 and RMSE<1
@@ -125,18 +126,25 @@ class Dataset:
 		OBL1=0.0; OBL2=0.0
 		if(SB['pot_type']=='NN'):
 			#L1 REGULARIZATION
-			S=0
+			S=0; 
 			for i in range(0,len(SB['nn'].submatrices)): S=S+((SB['nn'].submatrices[i]**2.0)**0.5).sum()
-			OBL1=SB['lambda_l1']*S
+			OBL1=RMSE*SB['lambda_l1']*S/(SB['nn'].info['num_fit_param']);	     S=0;
 
 			#L2 REGULARIZATION 
-			S=0
-			for i in range(0,len(SB['nn'].submatrices)): S=S+(SB['nn'].submatrices[i]**2).sum()
-			#LAMBDA_L2_REG=1*(-np.tanh(6*(t-25)/100)+1)*0.5+0.00001
-			OBL2=SB['lambda_l2']*S
+			for i in range(0,len(SB['nn'].submatrices)): S=S+(SB['nn'].submatrices[i]**2).sum(); 
+			OBL2=RMSE*SB['lambda_l2']*(S/(SB['nn'].info['num_fit_param']))**0.5; S=0;
 
-	
-		return [RMSE,OBE1,OB_DU,OBL1,OBL2]
+			#L3 REGULARIZATION 
+			for i in range(0,len(SB['nn'].submatrices)): S=S+(SB['nn'].submatrices[i]**4).sum(); 
+			OBL3=RMSE*SB['lambda_l3']*(S/(SB['nn'].info['num_fit_param']))**0.25; S=0
+
+			# max1=0; 
+			# for i in range(0,len(SB['nn'].submatrices)): 
+			# 	if(torch.max(((SB['nn'].submatrices[i])**2.0)**0.5)>max1): max1=torch.max(((SB['nn'].submatrices[i])**2.0)**0.5) 
+			# OBL3=RMSE*SB['lambda_l3']*max1; max1=0
+
+
+		return [RMSE,OBE1,OB_DU,OBL1,OBL2,OBL3]
 
 
 class Structure:
@@ -249,7 +257,9 @@ class Structure:
 			rij=(((Xij**2.0).sum(axis=1))**0.5).reshape(1,n*n); #sum accros row		
 			rik=(((Xik**2.0).sum(axis=1))**0.5).reshape(1,n*n);			
 			cos_ijk=((Xij*Xik).sum(axis=1).reshape(1,n*n))/rij/rik;		
-
+			#cos_ijk=(cos_ijk.reshape(n,n)*(1.0 - np.eye(n, n))).reshape(1,n*n)
+			#print(cos_ijk)
+			#exit()
 			#RADIAL TERM
 			fcij=(rij-rc)**4.0;  fcij=fcij/(dc4+fcij)
 			#mask      =  (rij < rc).astype(np.int);		fcij=fcij*mask		
@@ -263,7 +273,10 @@ class Structure:
 			#ANGULAR TERM
 			first=True
 			for m in range(0,max(lgs)+1):
-				if(m==0): lg_cos=np.ones((cos_ijk.shape[0],cos_ijk.shape[1]))
+				if(m==0): 
+					lg_cos=np.ones((cos_ijk.shape[0],cos_ijk.shape[1]))
+					#lg_cos=(1.0 - np.eye(n, n)).reshape(1,n*n)
+
 				if(m==1): lg_cos_m1=lg_cos;		lg_cos=cos_ijk;
 				if(m in lgs): 
 					if(first): 

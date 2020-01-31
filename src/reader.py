@@ -28,17 +28,16 @@ def read_input(SB):
 		with open(file_path, "r") as read_file:		#READ USER INPUT FILE
 	 		input_data = load(read_file)
 		writer.log_dict(input_data);	
-
-		#ERROR CHECKS
-		if('pot_type' not in input_data.keys() or 'pot_file' not in input_data.keys()  
-			or 'dataset_path' not in input_data.keys()):
-			raise ValueError("INPUT FILE MUST CONTAIN KEYS FOLLOWING KEYS: pot_type, pot_file, dataset_path")
-		if(input_data['pot_type'] != "NN"):
-			raise ValueError("REQUESTED POT_TYPE="+str(input_data['pot_type'])+" IS NOT AVAILABLE")
-
 		SB.update(input_data)
 	else:
 		raise ValueError("INPUT_FILE="+str(file_path)+" DOESNT EXIST")
+
+	#ERROR CHECKS
+	if('pot_type' not in SB.keys() or 'pot_file' not in SB.keys()  
+		or 'dataset_path' not in SB.keys()):
+		raise ValueError("INPUT FILE MUST CONTAIN KEYS FOLLOWING KEYS: pot_type, pot_file, dataset_path")
+	if(SB['pot_type'] != "NN"):
+		raise ValueError("REQUESTED POT_TYPE="+str(SB['pot_type'])+" IS NOT AVAILABLE")
 
 
 def read_pot_file(SB): 

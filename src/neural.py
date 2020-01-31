@@ -44,7 +44,9 @@ class NN:
 			WB	=	np.random.uniform(-info['max_rand_wb'],info['max_rand_wb'],nfit)
 			#WB	=	np.random.normal(0.0,info['max_rand_wb'],nfit)
 		else:
-			WB	=	np.array(lines[8:]).astype(np.float)[:,0]
+			#always do LR ramp up when re-starting
+			SB['ramp_LR']	=	True 
+			WB		=	np.array(lines[8:]).astype(np.float)[:,0]
 
 		#SOME ERROR CHECKS 
 		if(info['num_species']  != 1):						

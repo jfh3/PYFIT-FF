@@ -105,8 +105,12 @@ The following is a discussion of the relevant input files for running PYFIT-FF
 2) The DFT database file which contains POSCAR files, DFT energies
 
 
-## Options
+# Options
+	
+## Fitting schemes
 
++"RMSE_" stands for RMSE 
+	
 
 # Output files
  

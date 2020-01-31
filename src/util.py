@@ -81,17 +81,27 @@ def partition_data(SB):
 	#-------------------------------------
 	#TEST-SET (EXTRAPOLATION)
 	#-------------------------------------
+
+	if(SB['fix_rand_seed']): random.seed(a=412122, version=2)
+					
+
 	#RANDOMLY FORM TEST SET IF DESIRED 
 	if(SB['test_set_gids']==[] and SB['n_rand_GIDS']!=0):
 			k=1
 			while(k<=SB['n_rand_GIDS']):
 				rand_GID=random.choice(list(SB['full_set'].group_sids.keys()))
-				print(rand_GID)
 				#if(rand_GID not in SB['test_set_gids'] ):
-				if(rand_GID not in SB['test_set_gids'] and "DC" not in rand_GID ): #REMOVE
+				for i1 in SB['exclude_from_test']:
+					if(i1 not in rand_GID): 
+						keep=True
+					else:
+						keep=False; break
+
+				if(rand_GID not in SB['test_set_gids'] and keep): #REMOVE
+					writer.log("	"+rand_GID)
 					SB['test_set_gids'].append(rand_GID)
 					k=k+1
-
+	exit()
 	writer.log("	TEST SET (UNTRAINED):")
 
 	for GID in SB['full_set'].group_sids.keys(): 
