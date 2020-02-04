@@ -1,0 +1,44 @@
+{
+"max_iter"		:	20000,
+"fraction_train"	:	0.5,
+"re_randomize"		:	true,
+
+"LR"			:	0.5,
+"ramp_LR"		:	true,
+
+
+"lambda_E1"		:	1.0,
+"lambda_dU"		:	1.0,
+"lambda_l1"		:	0.5,
+"lambda_l2"		:	0.5,
+"lambda_l3"		:	0.0,
+"rmse_dU"		:	0.0,
+"rmse_xtanhx"		:	0.0,
+"rmse_tol"		:	0.0005,	
+"rmse_final"		:	0.0,	
+
+"cnst_final_bias"	:	true,
+"final_bias"		:	0.0,
+
+"save_every" 		:	25,
+
+"u_shift"		:	0.795023,
+"train_edges" 		:	true,	
+
+"dump_poscars"		:	false,
+"write_lsp"		:	false,
+
+"weight_selector"	: 	["DC","Wurt"],		
+"default_weight1"	: 	1.0,
+"default_weight2"	: 	1.0,
+"mod_weight1"		: 	1.0,		
+"mod_weight2"		: 	1.0,		
+
+"test_set_gids"		: 	[],		
+"n_rand_GIDS"		:	10,	
+"fix_rand_seed"		:	true,					 
+"exclude_from_test"	:	["DC","Wurt","AMORP","LIQ","DIM"]					 
+
+}
+
+

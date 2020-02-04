@@ -39,6 +39,11 @@ def log(x,tab=0,name="-log.dat"):
 		else:		
 			f.write('%s \n' % (str_out));    print(str_out)
 
+def log_err(x): 
+	str1=''
+	for i in range(0,len(x)):
+		str1=str1+' %10.7s'%str(x[i])
+	log(str1,0,"-err-log.dat")
 
 def log_dict(x):	#x=dictionary
 	for i in x.keys():	log(['%-20s	:'%i ,x[i]],1)

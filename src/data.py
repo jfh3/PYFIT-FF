@@ -123,28 +123,27 @@ class Dataset:
 
 
 		#OBJECTIVE TERMS 3 AND 4:  L1 AND L2 REG ON NN FITTING PARAM
-		OBL1=0.0; OBL2=0.0
+		OBL1=torch.tensor(0.0); OBL2=torch.tensor(0.0); OBLP=torch.tensor(0.0)
 		if(SB['pot_type']=='NN'):
+		
+			S=0.0
 			#L1 REGULARIZATION
-			S=0; 
-			for i in range(0,len(SB['nn'].submatrices)): S=S+((SB['nn'].submatrices[i]**2.0)**0.5).sum()
-			OBL1=RMSE*SB['lambda_l1']*S/(SB['nn'].info['num_fit_param']);	     S=0;
+			if(SB['lambda_L1']>0):
+				for i in range(0,len(SB['nn'].submatrices)): S=S+((SB['nn'].submatrices[i]**2.0)**0.5).sum()
+				OBL1=SB['lambda_L1']*S/(SB['nn'].info['num_fit_param']);	     S=0;
 
 			#L2 REGULARIZATION 
-			for i in range(0,len(SB['nn'].submatrices)): S=S+(SB['nn'].submatrices[i]**2).sum(); 
-			OBL2=RMSE*SB['lambda_l2']*(S/(SB['nn'].info['num_fit_param']))**0.5; S=0;
+			if(SB['lambda_L2']>0):
+				for i in range(0,len(SB['nn'].submatrices)): S=S+(SB['nn'].submatrices[i]**2.0).sum(); 
+				OBL2=SB['lambda_L2']*(S/(SB['nn'].info['num_fit_param'])); S=0;
 
-			#L3 REGULARIZATION 
-			for i in range(0,len(SB['nn'].submatrices)): S=S+(SB['nn'].submatrices[i]**4).sum(); 
-			OBL3=RMSE*SB['lambda_l3']*(S/(SB['nn'].info['num_fit_param']))**0.25; S=0
+			# #L3 REGULARIZATION 
+			if(SB['lambda_Lp']>0):
+				p=6.0
+				for i in range(0,len(SB['nn'].submatrices)): S=S+(SB['nn'].submatrices[i]**p).sum(); 
+				OBLP=SB['lambda_Lp']*(S/(SB['nn'].info['num_fit_param'])); S=0;
 
-			# max1=0; 
-			# for i in range(0,len(SB['nn'].submatrices)): 
-			# 	if(torch.max(((SB['nn'].submatrices[i])**2.0)**0.5)>max1): max1=torch.max(((SB['nn'].submatrices[i])**2.0)**0.5) 
-			# OBL3=RMSE*SB['lambda_l3']*max1; max1=0
-
-
-		return [RMSE,OBE1,OB_DU,OBL1,OBL2,OBL3]
+		return [RMSE,OBE1,OB_DU,OBL1,OBL2,OBLP]
 
 
 class Structure:
@@ -256,10 +255,8 @@ class Structure:
 
 			rij=(((Xij**2.0).sum(axis=1))**0.5).reshape(1,n*n); #sum accros row		
 			rik=(((Xik**2.0).sum(axis=1))**0.5).reshape(1,n*n);			
-			cos_ijk=((Xij*Xik).sum(axis=1).reshape(1,n*n))/rij/rik;		
-			#cos_ijk=(cos_ijk.reshape(n,n)*(1.0 - np.eye(n, n))).reshape(1,n*n)
-			#print(cos_ijk)
-			#exit()
+			cos_ijk1=((Xij*Xik).sum(axis=1).reshape(1,n*n))/rij/rik;
+
 			#RADIAL TERM
 			fcij=(rij-rc)**4.0;  fcij=fcij/(dc4+fcij)
 			#mask      =  (rij < rc).astype(np.int);		fcij=fcij*mask		
@@ -267,27 +264,39 @@ class Structure:
 			fcik=(rik-rc)**4.0;  fcik=fcik/(dc4+fcik)
 			#mask      =  (rik < rc).astype(np.int);		fcik=fcik*mask
 
-			#term is the same for all LG poly (each row is a given ro)
-			radial_term=np.exp(-((rij-ros)/s)**2.0)*np.exp(-((rik-ros)/s)**2.0)*fcik*fcij/ros2
+			#radial_term=np.exp(-((rij-ros)/s)**2.0)*np.exp(-((rik-ros)/s)**2.0)*fcik*fcij/ros2
+			radial_term=np.exp(-(rij/ros)**2.0)*np.exp(-((rik/ros))**2.0)*fcik*fcij #*norm
+			#radial_term=np.exp(-((rij-s)/ros)**2.0)*np.exp(-(((rik-s)/ros))**2.0)*fcik*fcij #*norm
 
 			#ANGULAR TERM
 			first=True
 			for m in range(0,max(lgs)+1):
 				if(m==0): 
-					lg_cos=np.ones((cos_ijk.shape[0],cos_ijk.shape[1]))
-					#lg_cos=(1.0 - np.eye(n, n)).reshape(1,n*n)
+					lg_cos1=np.ones((cos_ijk1.shape[0],cos_ijk1.shape[1]))
+					# lg_cos2=np.ones((cos_ijk.shape[0],cos_ijk.shape[1]))
+					# lg_cos3=np.ones((cos_ijk.shape[0],cos_ijk.shape[1]))
 
-				if(m==1): lg_cos_m1=lg_cos;		lg_cos=cos_ijk;
+				if(m==1): 
+					lg_cos1_m1=lg_cos1;		lg_cos1=cos_ijk1;
+					# lg_cos2_m1=lg_cos2;		lg_cos2=cos_ijk2;
+					# lg_cos3_m1=lg_cos3;		lg_cos3=cos_ijk3;
+
+				#lg_cos=1+jk_mask*lg_cos #(1+lg_cos)
+				# lg_cos=lg_cos*fcik*fcij
 				if(m in lgs): 
 					if(first): 
-						gis=(radial_term*lg_cos).sum(axis=1); first=False
+						gis=(radial_term*(lg_cos1)).sum(axis=1); first=False
 					else:
-						gis=np.concatenate((gis,(radial_term*lg_cos).sum(axis=1)))
-					#print(gis.shape)
-
+						gis=np.concatenate((gis,(radial_term*(lg_cos1)).sum(axis=1)))
 				if(m>=1): #define for next iteration of loop 
-						tmp=lg_cos
-						lg_cos=((2.0*m+1.0)*cos_ijk*lg_cos-m*lg_cos_m1)/(m+1); lg_cos_m1=tmp;
+						tmp=lg_cos1
+						lg_cos1=((2.0*m+1.0)*cos_ijk1*lg_cos1-m*lg_cos1_m1)/(m+1); lg_cos1_m1=tmp;
+						# tmp=lg_cos2
+						# lg_cos2=((2.0*m+1.0)*cos_ijk2*lg_cos2-m*lg_cos2_m1)/(m+1); lg_cos2_m1=tmp;
+						# tmp=lg_cos3
+						# lg_cos3=((2.0*m+1.0)*cos_ijk3*lg_cos3-m*lg_cos3_m1)/(m+1); lg_cos3_m1=tmp;
+
+				#print(np.max(radial_term),np.max(lg_cos))
 
 			gis=np.arcsinh(gis)
 			self.lsps.append(gis)
@@ -297,3 +306,56 @@ class Structure:
 				for i in gis:
 					str1=str1+' %14.12f '%i
 				writer.write_LSP(str1)
+
+
+
+
+			# cos_ijk=np.around(cos_ijk,7)
+			# #theta_ijk=np.arccos(cos_ijk)
+
+			# #cos_ijk1=cos_ijk*(1.0-cos_ijk**2.0)**0.5 #cos*sin
+			# #cos_ijk=cos_ijk**2.0
+			# #cos_ijk2=cos_ijk*(1.0-cos_ijk**2.0)**0.5 #cos*sin
+			# # cos_ijk3=(1.0-cos_ijk**2.0)**0.5 #sin
+			# # cos_ijk=cos_ijk*(1.0-cos_ijk**2.0)**0.5 #cos*sin
+			# # # cos_ijk2=cos_ijk**2.0
+
+			# #cos_ijk=cos_ijk*(1.0-cos_ijk**2.0)**0.5 #cos*sin
+			# #cos_ijk=(1.0-cos_ijk**2.0)**0.5 #sin
+			# # cos_ijk1=np.cos(1.0*theta_ijk)
+			# # cos_ijk2=np.cos(2.0*theta_ijk)
+			# # cos_ijk3=np.cos(3.0*theta_ijk) 
+
+			# cos_ijk1=cos_ijk #*np.exp(-(theta_ijk-np.pi/2)**2.0)
+			# # cos_ijk2=cos_ijk*(1.0-cos_ijk**2.0)**0.5
+			# # cos_ijk3=cos_ijk**3.0
+
+
+
+			#term is the same for all LG poly (each row is a given ro)
+			#norm=10*np.exp(-ros)
+			# norm=1.0/ros2
+
+			#jk_mask=(1.0 - np.eye(n, n)).reshape(1,n*n)
+			# rij=rij*jk_mask
+			# rik=rik*jk_mask
+
+			# print(cos_ijk)
+
+			# for i in np.arccos(cos_ijk):
+			# 	print(i)
+			# exit()
+			#cos_ijk=(cos_ijk.reshape(n,n)*(1.0 - np.eye(n, n))).reshape(1,n*n)
+			#print(cos_ijk)
+			#exit()
+
+			#radial_term=np.exp(-((rij-s)/ros)**2.0)*np.exp(-(((rik-s)/ros))**2.0)*fcik*fcij #*norm
+			#radial_term=0*radial_term
+			#print("------------------")
+
+
+			# print(cos_ijk.shape)
+			# for i in range(0,cos_ijk.shape[1]):
+			# 	rounded=round(cos_ijk[0][i],5)
+			# 	print('%5.5s'%str(rounded),'%10.7s'%str(np.arccos(float(rounded))*180.0/np.pi))
+			#exit()

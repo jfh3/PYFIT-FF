@@ -31,11 +31,12 @@ reader.read_pot_file(SB)	#READ NN FILE AND ADD INFO TO SB
 reader.read_database(SB);	#READ DATABASES AND ADD INFO TO SB 
 
 #WRITE POSCAR IF DESIRED 
-if(SB['dump_poscars']):	util.dump_poscars(SB)()
+if(SB['dump_poscars']):	util.dump_poscars(SB)() #MOVE TO read_data
 
 #COMPUTE NEIGHBORLIST (NBL) AND LSP FOR ALL STRUCTURES
 util.compute_all_nbls(SB)	
 util.compute_all_lsps(SB)	
+#exit()
 util.partition_data(SB)
 
 
@@ -46,7 +47,13 @@ util.partition_data(SB)
 t		=	0;  
 max_iter	=	SB['max_iter']
 training_set	=	SB['training_set']
-rmse_last	=	100
+
+delta_check	=	10
+rmse_m1		=	0
+rmse_m2		=	0
+m1_turn		=	True
+last_add	=	0
+
 rmse		= 	1000.0
 SB['nn'].set_grad()
 
@@ -59,53 +66,82 @@ if(max_iter==0): exit()	 #DONT START LOOP
 # def set_optim()"
 
 #HARDED-CODED TO USE LBFGS (SEEMS TO BE THE BEST) 
-if(SB['pot_type']=='NN'):
-	#SMOOTHLY INCREASE LR (MORE STABLE FITTING)
-	if(SB['ramp_LR']):
-		optimizer=optim.LBFGS(SB['nn'].submatrices, lr=1.0) 
-		mid_ramp=25; LR_i=0.0001
-		lmbda = lambda t: SB['LR']*(np.tanh(6.0*(t-mid_ramp)/mid_ramp)+1.0)/(2.0+2.0*LR_i)+LR_i 
-		scheduler = optim.lr_scheduler.LambdaLR(optimizer, lmbda,-1)
-	else: 
-		optimizer=optim.LBFGS(SB['nn'].submatrices, lr=SB['LR_i']) 
+def set_optim():
+	global optimizer,scheduler
+	if(SB['pot_type']=='NN'):
+		#SMOOTHLY INCREASE LR (MORE STABLE FITTING)
+		if(SB['ramp_LR']):
+			optimizer=optim.LBFGS(SB['nn'].submatrices, lr=1.0) 
+			mid_ramp=20; LR_i=0.001
+			lmbda = lambda t: SB['LR']*(np.tanh(6.0*(t-mid_ramp)/mid_ramp)+1.0)/(2.0+2.0*LR_i)+LR_i 
+			scheduler = optim.lr_scheduler.LambdaLR(optimizer, lmbda,-1)
+		else: 
+			optimizer=optim.LBFGS(SB['nn'].submatrices, lr=SB['LR_i']) 
+set_optim()
 
 def closure():
-	global loss,OBE1,OBL1,OBL2,OBL3,OB_DU,rmse,OBT
+	global loss,OBE1,OBL1,OBL2,OBLP,OB_DU,rmse,OBT
 	optimizer.zero_grad(); loss=0.0 
-	[rmse,OBE1,OB_DU,OBL1,OBL2,OBL3]=training_set.compute_objective(SB)
-	loss=OBE1+OB_DU+OBL1+OBL2+OBL3
+	[rmse,OBE1,OB_DU,OBL1,OBL2,OBLP]=training_set.compute_objective(SB)
+	loss=OBE1+OB_DU+OBL1+OBL2+OBLP
 
 	loss.backward();
-	OBE1=OBE1.item();	OB_DU=OB_DU.item();	OBL3=OBL3.item()
+	OBE1=OBE1.item();	OB_DU=OB_DU.item();	OBLP=OBLP.item()
 	OBL1=OBL1.item();	OBL2=OBL2.item();	OBT=loss.item();
-
-	if(str(OBE1)=='nan' or rmse>10**10 ):
-		writer.log(['%10.7s'%str(t),'%10.7s'%str(rmse),'%10.7s'%str(OBE1), \
-			    '%10.7s'%str(OBL1),'%10.7s'%str(OBL2)],0,"-err-log.dat")
-		raise ValueError("OB1=NAN or OB1>10000000000 (TRY LOWER LR)")
 
 	return loss
 
 #OPTIMIZATION LOOP
-start=time(); #RMSE=1
+start=time();  
 writer.log('STARTING FITTING LOOP:')
 writer.log(["	INITIAL LR:",'%10.7s'%str(optimizer.param_groups[0]['lr'])])
-
+N_TRY=1; N_TRY_MAX=1; 
 while(t<max_iter):  # and RMSE>RMSE_FINAL and ISTOP==False): 
 
 	optimizer.step(closure)
 
-	if(SB['ramp_LR']): scheduler.step()
+	if(SB['ramp_LR']): scheduler.step() #ADJUST LR 
 
-	writer.log(['%10.7s'%str(t),'%10.7s'%str(rmse),'%10.7s'%str(OBE1),'%10.7s'%str(OB_DU), \
-		    '%10.7s'%str(OBL1),'%10.7s'%str(OBL2),'%10.7s'%str(OBL3),'%10.7s'%str(OBT), \
-		    '%10.7s'%str(optimizer.param_groups[0]['lr'])],0,"-err-log.dat")
+	#CHECK CONVERGENCE
 
+	if(str(OBE1)=='nan' or rmse>1000000): #START OVER
+		writer.log("NOTE: THE OBJ FUNCTION BLEW UP (IM STARTING OVER)(MAYBE TRY SMALLER LR)")
+		SB['nn'].unset_grad();	SB['nn'].randomize();	set_optim(); N_TRY=N_TRY+1
+
+	delta1=((rmse_m1-rmse)**2.0)**0.5
+	delta2=((rmse_m2-rmse)**2.0)**0.5
+
+	#WRITE STUFF
+	if(rmse<5000 and t%5==0): writer.log_err([t,rmse,OBE1,OB_DU,OBL1,OBL2, \
+				  OBLP,OBT,optimizer.param_groups[0]['lr'],delta1,delta2]) 
 	if(t%SB['save_every']==0):  util.chkpnt(SB,t);   
 
-	if(((rmse_last-rmse)**2.0)**0.5<SB['rmse_tol'] or rmse<SB['rmse_final']): 
+	if(delta1<SB['rmse_tol'] and delta2<SB['rmse_tol'] and t-last_add>250): 
+		if(SB['dynamic_NN']):
+			if(N_TRY>=N_TRY_MAX):
+				SB['nn'].add_neurons()
+				set_optim()
+				N_TRY=1; last_add=t
+			else:
+				writer.log("GOT STUCK: RE-RANDOMIZING")
+				SB['nn'].randomize()
+				set_optim()
+				N_TRY=N_TRY+1
+		else:
+			writer.log("STOPPING CRITERION MET:"); t=max_iter
+
+	if(rmse<SB['rmse_final']): 
 		writer.log("STOPPING CRITERION MET:"); t=max_iter
-	rmse_last=rmse
+		writer.log(["NFIT=",SB['nn'].info['num_fit_param']]); t=max_iter
+
+	if(t%delta_check==0): 
+		if(m1_turn):
+			rmse_m1=rmse;	m1_turn=False; 
+		else:
+			rmse_m2=rmse;	m1_turn=True; 
+
+
+	#print(SB['nn'].W)
 
 	t=t+1
 
