@@ -1,0 +1,47 @@
+-------------------------------------------------------------- 
+-------------------------PYFIT-FF----------------------------- 
+-------------------------------------------------------------- 
+RUN PARAMETERS: 
+	  input_file          	:	input.json	 
+	  src_path            	:	/users/jfh3/bin/PYFIT-FF/src	 
+	  run_path            	:	/users/jfh3/bin/PYFIT-FF/example/	 
+	  start_time          	:	2020-02-05-H11-M56-S41	 
+READING DEFAULT PARAMETERS USING FILE:	/users/jfh3/bin/PYFIT-FF/src/defaults.json	 
+	  max_iter            	:	20	 
+	  fraction_train      	:	0.5	 
+	  re_randomize        	:	True	 
+	  LR                  	:	0.1	 
+	  ramp_LR             	:	False	 
+	  lambda_E1           	:	1.0	 
+	  lambda_dU           	:	1.0	 
+	  lambda_L1           	:	0.0	 
+	  lambda_L2           	:	0.0	 
+	  lambda_Lp           	:	0.0	 
+	  dynamic_NN          	:	False	 
+	  rmse_dU             	:	0.0	 
+	  rmse_xtanhx         	:	0.0	 
+	  rmse_tol            	:	0.005	 
+	  rmse_final          	:	2.0	 
+	  cnst_final_bias     	:	True	 
+	  final_bias          	:	0.0	 
+	  save_every          	:	100	 
+	  u_shift             	:	0.795023	 
+	  train_edges         	:	True	 
+	  dump_poscars        	:	False	 
+	  write_lsp           	:	False	 
+	  weight_selector     	:	['DC', 'Wurt']	 
+	  default_weight1     	:	1.0	 
+	  default_weight2     	:	1.0	 
+	  mod_weight1         	:	1.0	 
+	  mod_weight2         	:	1.0	 
+	  use_cuda            	:	True	 
+	  test_set_gids       	:	[]	 
+	  n_rand_GIDS         	:	0	 
+	  fix_rand_seed       	:	False	 
+	  exclude_from_test   	:	['DC', 'Wurt', 'AMORP', 'LIQ', 'DIM']	 
+OVERWRITING SELECT DEFAULTS USING INPUT FILE:	input.json	 
+	  pot_type            	:	NN	 
+	  pot_file            	:	nn0.dat	 
+	  dataset_path        	:	train.dat	 
+READING NEURAL NETWORK FILE: 
+	 RANDOMIZING NN MIN/MAX	=	0.25	 

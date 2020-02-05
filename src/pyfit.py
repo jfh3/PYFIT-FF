@@ -24,7 +24,8 @@ SB={};
 SB['input_file']=argv[1]
 
 ##GET RUN PARAMETER 
-util.get_run_parameters(SB)	
+util.get_run_parameters(SB)
+
 #READ INPUT FILES
 reader.read_input(SB)		#READ INPUT FILE AND ADD INFO TO SB
 reader.read_pot_file(SB)	#READ NN FILE AND ADD INFO TO SB 
@@ -76,7 +77,7 @@ def set_optim():
 			lmbda = lambda t: SB['LR']*(np.tanh(6.0*(t-mid_ramp)/mid_ramp)+1.0)/(2.0+2.0*LR_i)+LR_i 
 			scheduler = optim.lr_scheduler.LambdaLR(optimizer, lmbda,-1)
 		else: 
-			optimizer=optim.LBFGS(SB['nn'].submatrices, lr=SB['LR_i']) 
+			optimizer=optim.LBFGS(SB['nn'].submatrices, lr=SB['LR']) 
 set_optim()
 
 def closure():
@@ -112,7 +113,7 @@ while(t<max_iter):  # and RMSE>RMSE_FINAL and ISTOP==False):
 	delta2=((rmse_m2-rmse)**2.0)**0.5
 
 	#WRITE STUFF
-	if(rmse<5000 and t%5==0): writer.log_err([t,rmse,OBE1,OB_DU,OBL1,OBL2, \
+	if(rmse<5000 and t%1==0): writer.log_err([t,rmse,OBE1,OB_DU,OBL1,OBL2, \
 				  OBLP,OBT,optimizer.param_groups[0]['lr'],delta1,delta2]) 
 	if(t%SB['save_every']==0):  util.chkpnt(SB,t);   
 

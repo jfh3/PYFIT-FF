@@ -2,8 +2,7 @@
 import	numpy	as	np
 import  torch
 import	writer
-dtype		=	torch.FloatTensor
-if(torch.cuda.is_available()): dtype = torch.cuda.FloatTensor
+
 
 fit_diff=False
 
@@ -15,15 +14,18 @@ class Dataset:
 		self.Na=0;
 		self.Ns=0;
 
-
 	def sort_group_sids(self): 
 		for i in self.group_sids.keys():
 			self.group_sids[i]=[item[1] for item in sorted(self.group_sids[i])]	 
 
-
 	def build_arrays(self,SB): 
 
 		if(self.Ns!=0):
+		
+			#ONLY DO TRAINING SET ON GPU 
+			dtype=torch.FloatTensor
+			if(self.name=="train" and SB['use_cuda']): dtype=torch.cuda.FloatTensor
+
 			#ALL MODELS NEED THE FOLLOWING 
 			u1=[]; v1=[]; N1=[]; self.SIDS1=[]; self.GIDS1=[];	#DFT STUFF
 			swt1=[];  swt2=[]; mask2=[]
@@ -35,7 +37,6 @@ class Dataset:
 					swt1.append(structure.weight1)
 					swt2.append(structure.weight2)
 					if(structure.weight2!=0): mask2.append(j)
-
 
 					self.SIDS1.append(structure.sid)
 					self.GIDS1.append(structure.gid)
@@ -62,14 +63,6 @@ class Dataset:
 				self.M1=torch.tensor([np.ones(len(self.Gis))]).type(dtype)
 
 
-	#APPLY THE MODEL TO DATASET
-	def evaluate_model(self,SB):
-		#set_name=dateset object name
-		if(SB['pot_type']=='NN'):
-			#nn_out=self.NN_eval(SB['nn'])
-			nn_out=SB['nn'].NN_eval(self)
-
-			self.u2=(self.R1).mm(nn_out)/self.N1
 
 	def report(self,SB,t):
 		if(self.Ns!=0):
@@ -85,7 +78,28 @@ class Dataset:
 			RMS_DU=(torch.mean(RMS_DU**2.0)**0.5)
 			writer.write_stats(self.name,t,RMSE,MAE,MED_AE,STD_AE,MAX_AE,RMS_DU)
 
-		
+
+	#APPLY THE MODEL TO DATASET
+	def evaluate_model(self,SB):
+		#set_name=dateset object name
+		if(SB['pot_type']=='NN'):
+			
+#			#MOVE NN MATRICES TO CPU FOR NON-TRAINING SET
+#			if(self.name!="train"): 
+#				for i in SB['nn'].submatrices:	i.cpu(); #print(type(i))
+#				print("HERE")
+
+#			for i in SB['nn'].submatrices: print(type(i))
+			print(self.name,SB['nn'].submatrices[0].is_cuda)
+			#EVALUATE NN
+			nn_out=SB['nn'].NN_eval(self)
+			self.u2=(self.R1).mm(nn_out)/self.N1
+
+#			#MOVE NN MATRICES BACK
+#			if(self.name!="train"): 
+#				for i in SB['nn'].submatrices:	i.cuda()
+#			for i in SB['nn'].submatrices: print("B",type(i))
+	
 	def compute_objective(self,SB):
 		global fit_diff 
 
@@ -104,7 +118,7 @@ class Dataset:
 
 
 		#OBJECTIVE TERM-2 (DIFF)
-		OB_DU=torch.tensor(0.0)
+		OB_DU=torch.tensor(0.0) #.type(SB['dtype'])
 
 		if(RMSE<SB['rmse_dU'] and fit_diff != True):  fit_diff=True
 
@@ -123,7 +137,8 @@ class Dataset:
 
 
 		#OBJECTIVE TERMS 3 AND 4:  L1 AND L2 REG ON NN FITTING PARAM
-		OBL1=torch.tensor(0.0); OBL2=torch.tensor(0.0); OBLP=torch.tensor(0.0)
+		OBL1=torch.tensor(0.0); OBL2=torch.tensor(0.0);	OBLP=torch.tensor(0.0)
+
 		if(SB['pot_type']=='NN'):
 		
 			S=0.0
@@ -142,6 +157,7 @@ class Dataset:
 				p=6.0
 				for i in range(0,len(SB['nn'].submatrices)): S=S+(SB['nn'].submatrices[i]**p).sum(); 
 				OBLP=SB['lambda_Lp']*(S/(SB['nn'].info['num_fit_param'])); S=0;
+
 
 		return [RMSE,OBE1,OB_DU,OBL1,OBL2,OBLP]
 

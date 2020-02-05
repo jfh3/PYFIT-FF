@@ -1,21 +1,21 @@
 {
-"max_iter"		:	20000,
-"fraction_train"	:	0.40,
+"max_iter"		:	20,
+"fraction_train"	:	0.5,
 "re_randomize"		:	true,
 
-"LR"			:	0.5,
-"ramp_LR"		:	true,
+"LR"			:	0.1,
+"ramp_LR"		:	false,
 
 "lambda_E1"		:	1.0,
 "lambda_dU"		:	1.0,
 "lambda_L1"		:	0.0,
 "lambda_L2"		:	0.0,
 "lambda_Lp"		:	0.0,
-"dynamic_NN"		:	true,
+"dynamic_NN"		:	false,
 
 "rmse_dU"		:	0.0,
 "rmse_xtanhx"		:	0.0,
-"rmse_tol"		:	0.001,	
+"rmse_tol"		:	0.005,	
 "rmse_final"		:	2.0,	
 
 "cnst_final_bias"	:	true,
@@ -35,8 +35,10 @@
 "mod_weight1"		: 	1.0,		
 "mod_weight2"		: 	1.0,		
 
+"use_cuda"		:	true,
+
 "test_set_gids"		: 	[],		
-"n_rand_GIDS"		:	5,	
+"n_rand_GIDS"		:	0,	
 "fix_rand_seed"		:	false,					 
 "exclude_from_test"	:	["DC","Wurt","AMORP","LIQ","DIM"]					 
 

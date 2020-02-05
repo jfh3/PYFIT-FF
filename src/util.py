@@ -1,9 +1,8 @@
 import  writer
-import	numpy	as 		np
+import	numpy	as 	np
 import 	time
 import  random
-# import	computer
-from 	os		import  path 
+from 	os	import  path 
 import  data
 
 def get_run_parameters(SB):
@@ -13,7 +12,6 @@ def get_run_parameters(SB):
 	SB['start_time']	= 	writer.start_time;	
 	writer.log("RUN PARAMETERS:");							
 	writer.log_dict(SB)
-
 
 def dump_poscars(SB):
 	for structure in SB['full_set'].structures.values(): 
@@ -28,6 +26,7 @@ def compute_all_nbls(SB):
 		structure.compute_nbl(SB); 
 	writer.log(["	NBL CONSTRUCTION TIME (SEC)	=",time.time()-start])
 
+
 def compute_all_lsps(SB):
 	writer.log(["COMPUTING LOCAL STRUCTURE PARAMETERS (LSP):"])
 	start = time.time();	
@@ -36,25 +35,13 @@ def compute_all_lsps(SB):
 	writer.log(["	LSP CONSTRUCTION TIME (SEC)	=",time.time()-start])
 
 
-
-# def full_chkpnt(SB,t):
-# 	if(SB['pot_type']=='NN'):
-# 		SB['nn'].unset_grad()
-# 		writer.write_NN(SB['nn'],t) 
-# 		for ds_name in SB['datasets']:
-# 			SB[ds_name].report(SB,t)
-# 		SB['nn'].set_grad()
-
-
 def chkpnt(SB,t):
-
 	if(SB['pot_type']=='NN'):
 		SB['nn'].unset_grad()
 		writer.write_NN(SB['nn'],t) 
 		for ds_name in SB['datasets']:
 			SB[ds_name].report(SB,t)
 		SB['nn'].set_grad()
-
 
 def partition_data(SB):
 

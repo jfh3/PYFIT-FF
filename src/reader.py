@@ -1,12 +1,13 @@
 #Author: James hickman 
 #Description: As the name implies this code reads the various files needed for pyfit to run
-from 	json		import		load
-from  	os 			import  	path 
+from 	json	import	load
+from  	os 	import  path 
 import  writer		 
-from 	numpy		import 		array,random
+from 	numpy	import 	array,random
 
 import 	neural
 import  data
+from	torch	import cuda
 
 def read_input(SB): 
 
@@ -32,12 +33,17 @@ def read_input(SB):
 	else:
 		raise ValueError("INPUT_FILE="+str(file_path)+" DOESNT EXIST")
 
-	#ERROR CHECKS
+	if(SB['use_cuda'] and  cuda.is_available()==False ):
+		writer.log("NOTE: CUDA IS NOT AVAILABLE (RE-SETTING)")
+		writer.log("	use_cuda		:	False")
+		SB['use_cuda']=False
+
 	if('pot_type' not in SB.keys() or 'pot_file' not in SB.keys()  
 		or 'dataset_path' not in SB.keys()):
 		raise ValueError("INPUT FILE MUST CONTAIN KEYS FOLLOWING KEYS: pot_type, pot_file, dataset_path")
 	if(SB['pot_type'] != "NN"):
 		raise ValueError("REQUESTED POT_TYPE="+str(SB['pot_type'])+" IS NOT AVAILABLE")
+
 
 
 def read_pot_file(SB): 
