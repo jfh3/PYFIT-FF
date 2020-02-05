@@ -7,7 +7,7 @@ from 	numpy	import 	array,random
 
 import 	neural
 import  data
-from	torch	import cuda
+from	torch	import cuda,
 
 def read_input(SB): 
 
@@ -33,10 +33,26 @@ def read_input(SB):
 	else:
 		raise ValueError("INPUT_FILE="+str(file_path)+" DOESNT EXIST")
 
-	if(SB['use_cuda'] and  cuda.is_available()==False ):
+	if(SB['use_cuda'] and  cuda.is_available()==True ):
 		writer.log("NOTE: CUDA IS NOT AVAILABLE (RE-SETTING)")
 		writer.log("	use_cuda		:	False")
 		SB['use_cuda']=False
+
+
+	exit()
+	#USING FLAG FROM INPUT FILE DEFINE DTYPE
+	writer.log("CUDA INFORMATION:");
+	dtype=FloatTensor; TMP={}
+	TMP['cuda_avail']=cuda.is_available() 
+	TMP['use_cuda']	 =SB['use_cuda']
+	if(TMP['cuda_avail'] and SB['use_cuda']): dtype = cuda.FloatTensor
+	TMP['dtype']=dtype
+	writer.log_dict(TMP);	
+	SB.update(TMP)
+
+
+
+
 
 	if('pot_type' not in SB.keys() or 'pot_file' not in SB.keys()  
 		or 'dataset_path' not in SB.keys()):
