@@ -7,7 +7,7 @@ from 	numpy	import 	array,random
 
 import 	neural
 import  data
-from	torch	import cuda,
+from	torch	import cuda #,FloatTensor
 
 def read_input(SB): 
 
@@ -33,34 +33,16 @@ def read_input(SB):
 	else:
 		raise ValueError("INPUT_FILE="+str(file_path)+" DOESNT EXIST")
 
-	if(SB['use_cuda'] and  cuda.is_available()==True ):
+	if(SB['use_cuda'] and  cuda.is_available()==False ):
 		writer.log("NOTE: CUDA IS NOT AVAILABLE (RE-SETTING)")
 		writer.log("	use_cuda		:	False")
 		SB['use_cuda']=False
-
-
-	exit()
-	#USING FLAG FROM INPUT FILE DEFINE DTYPE
-	writer.log("CUDA INFORMATION:");
-	dtype=FloatTensor; TMP={}
-	TMP['cuda_avail']=cuda.is_available() 
-	TMP['use_cuda']	 =SB['use_cuda']
-	if(TMP['cuda_avail'] and SB['use_cuda']): dtype = cuda.FloatTensor
-	TMP['dtype']=dtype
-	writer.log_dict(TMP);	
-	SB.update(TMP)
-
-
-
-
 
 	if('pot_type' not in SB.keys() or 'pot_file' not in SB.keys()  
 		or 'dataset_path' not in SB.keys()):
 		raise ValueError("INPUT FILE MUST CONTAIN KEYS FOLLOWING KEYS: pot_type, pot_file, dataset_path")
 	if(SB['pot_type'] != "NN"):
 		raise ValueError("REQUESTED POT_TYPE="+str(SB['pot_type'])+" IS NOT AVAILABLE")
-
-
 
 def read_pot_file(SB): 
 	if(SB['pot_type']=="NN"):
@@ -85,7 +67,7 @@ def read_database(SB):
 	file_path=SB['dataset_path']
 	writer.log("READING DATASET FILE:");  		 
 
-	full_set=data.Dataset("full") #INITIALIZE FULL DATASET OBJECT
+	full_set=data.Dataset("full",SB) #INITIALIZE FULL DATASET OBJECT
 
 	SID=0;  new_structure=True;
 	if(path.exists(file_path)):

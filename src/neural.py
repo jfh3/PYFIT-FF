@@ -31,13 +31,17 @@ class NN:
 		info['cnst_final_bias']		=	 SB['cnst_final_bias'] 
 		info['final_bias']		=	 SB['final_bias'] 
 
+
+
 		#DETERMINE NUMBER OF FITITNG PARAM AND RANDOMIZE IF NEEDED
 		nfit=0; layers=info['nn_layers']
 		for i in range(1,len(layers)):  nfit=nfit+layers[i-1]*layers[i]+layers[i]
 		info['num_fit_param']	 =	nfit
 
 		self.info = info
-		self.use_cuda=SB['use_cuda']
+
+		self.dtype=torch.FloatTensor
+		if(SB['use_cuda']): self.dtype=torch.cuda.FloatTensor
 
 		if(info['randomize_nn'] or SB['re_randomize']): 
 			writer.log(["	 RANDOMIZING NN MIN/MAX	=",info['max_rand_wb']])
@@ -49,8 +53,6 @@ class NN:
 			self.submatrices=self.extract_submatrices(WB)
 			if(len(WB) != info['num_fit_param']):				
 				raise ValueError("INCORRECT NUMBER OF FITTING PARAMETERS")
-
-		self.set_grad()
 
 		#SOME ERROR CHECKS 
 		if(info['num_species']  != 1):						
@@ -136,7 +138,14 @@ class NN:
 		self.info['num_fit_param']=new_nfit
 		writer.log(["	new num_fit_param	=",new_nfit])
 
+		# print(self.info['nn_layers'],self.info['num_fit_param'])
+		# for i in range(0,len(self.submatrices)):
+		# 	print(self.submatrices[i].shape)
+		# exit()
+
 		self.set_grad()
+
+
 
 	#TAKES AN ARRAY OF NP.ARRAY SUBMATRICES AND RETURNS A LONG VECTOR W OF WEIGHTS AND BIAS  
 	def matrix_combine(self):
@@ -164,37 +173,38 @@ class NN:
 
 		#CONVERT TO TORCH TENSORS
 		for i in range(0,len(submatrices)):
-				submatrices[i]=torch.tensor(submatrices[i]).type(torch.float)
-				print(submatrices[i])
+				submatrices[i]=torch.tensor(submatrices[i]).type(self.dtype)
+				#writer.log("	 matrix_shape		:	"+str(submatrices[i].shape))
+
 		return submatrices
 
-	def unset_grad(self):
-		for i in self.submatrices:	i.requires_grad = False
-
 	def send_to_gpu(self):
-		for i in self.submatrices:	i.cuda(); print(i)
+		for i in range(0,len(self.submatrices)):	
+			self.submatrices[i]=self.submatrices[i].cuda(); #print(i.is_cuda)
 
 	def send_to_cpu(self):
-		for i in self.submatrices:	i.cpu()
+		for i in range(0,len(self.submatrices)):	
+			self.submatrices[i]=self.submatrices[i].cpu(); #print(i.is_cuda)
+
+	def unset_grad(self):
+		for i in range(0,len(self.submatrices)): self.submatrices[i].requires_grad = False
 
 	def set_grad(self):
 		if(self.info['pot_type']=='NN'):
-			for i in self.submatrices:	
-				i.requires_grad = True
+			for i in range(0,len(self.submatrices)):	
+				 self.submatrices[i].requires_grad = True
 			if(self.info['cnst_final_bias']): 
 				#print(self.submatrices[-1]); #exit()
 				self.submatrices[-1].requires_grad=False
 				self.submatrices[-1]=(self.info['final_bias']* \
-				torch.ones(self.submatrices[-1].shape[0],self.submatrices[-1].shape[1])) 
+				torch.ones(self.submatrices[-1].shape[0],self.submatrices[-1].shape[1])).type(self.dtype)
 
-			if(self.use_cuda): self.send_to_gpu()
-			for i in self.submatrices: print(i.is_cuda)
-			print("HERE")
-			exit()
+				#print(self.submatrices[-1]); exit()
+
 	# #GIVEN AN INPUT MATRIX EVALUATE THE NN
 	def NN_eval(self,x):
 		#ACTS ON A DATASET OBJECT
-		print("A",type(x.Gis),x.Gis.is_cuda)
+#		print(type(x))
 #		exit()
 		out=(x.Gis).mm(torch.t(self.submatrices[0]))+torch.t((self.submatrices[1]).mm(x.M1))
 	

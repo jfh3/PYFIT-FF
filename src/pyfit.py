@@ -85,7 +85,7 @@ def closure():
 	optimizer.zero_grad(); loss=0.0 
 	[rmse,OBE1,OB_DU,OBL1,OBL2,OBLP]=training_set.compute_objective(SB)
 	loss=OBE1+OB_DU+OBL1+OBL2+OBLP
-
+	#print(loss.is_cuda,OBE1.is_cuda,OBL1.is_cuda)
 	loss.backward();
 	OBE1=OBE1.item();	OB_DU=OB_DU.item();	OBLP=OBLP.item()
 	OBL1=OBL1.item();	OBL2=OBL2.item();	OBT=loss.item();
@@ -100,7 +100,7 @@ N_TRY=1; N_TRY_MAX=1;
 while(t<max_iter):  # and RMSE>RMSE_FINAL and ISTOP==False): 
 
 	optimizer.step(closure)
-
+	#print(SB['nn'].submatrices[0])
 	if(SB['ramp_LR']): scheduler.step() #ADJUST LR 
 
 	#CHECK CONVERGENCE

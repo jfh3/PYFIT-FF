@@ -5,13 +5,13 @@ RUN PARAMETERS:
 	  input_file          	:	input.json	 
 	  src_path            	:	/users/jfh3/bin/PYFIT-FF/src	 
 	  run_path            	:	/users/jfh3/bin/PYFIT-FF/example/	 
-	  start_time          	:	2020-02-05-H11-M56-S41	 
+	  start_time          	:	2020-02-05-H15-M46-S06	 
 READING DEFAULT PARAMETERS USING FILE:	/users/jfh3/bin/PYFIT-FF/src/defaults.json	 
-	  max_iter            	:	20	 
-	  fraction_train      	:	0.5	 
-	  re_randomize        	:	True	 
+	  max_iter            	:	0	 
+	  fraction_train      	:	1	 
+	  re_randomize        	:	False	 
 	  LR                  	:	0.1	 
-	  ramp_LR             	:	False	 
+	  ramp_LR             	:	True	 
 	  lambda_E1           	:	1.0	 
 	  lambda_dU           	:	1.0	 
 	  lambda_L1           	:	0.0	 
@@ -22,7 +22,7 @@ READING DEFAULT PARAMETERS USING FILE:	/users/jfh3/bin/PYFIT-FF/src/defaults.jso
 	  rmse_xtanhx         	:	0.0	 
 	  rmse_tol            	:	0.005	 
 	  rmse_final          	:	2.0	 
-	  cnst_final_bias     	:	True	 
+	  cnst_final_bias     	:	False	 
 	  final_bias          	:	0.0	 
 	  save_every          	:	100	 
 	  u_shift             	:	0.795023	 
@@ -34,7 +34,7 @@ READING DEFAULT PARAMETERS USING FILE:	/users/jfh3/bin/PYFIT-FF/src/defaults.jso
 	  default_weight2     	:	1.0	 
 	  mod_weight1         	:	1.0	 
 	  mod_weight2         	:	1.0	 
-	  use_cuda            	:	True	 
+	  use_cuda            	:	False	 
 	  test_set_gids       	:	[]	 
 	  n_rand_GIDS         	:	0	 
 	  fix_rand_seed       	:	False	 
@@ -44,4 +44,39 @@ OVERWRITING SELECT DEFAULTS USING INPUT FILE:	input.json
 	  pot_file            	:	nn0.dat	 
 	  dataset_path        	:	train.dat	 
 READING NEURAL NETWORK FILE: 
-	 RANDOMIZING NN MIN/MAX	=	0.25	 
+	  lsp_type            	:	5	 
+	  pot_type            	:	NN	 
+	  lsp_shift           	:	0.0	 
+	  activation          	:	1	 
+	  num_species         	:	1	 
+	  species             	:	Si	 
+	  atomic_weight       	:	28.0855	 
+	  randomize_nn        	:	False	 
+	  max_rand_wb         	:	0.25	 
+	  cutoff_dist         	:	4.5	 
+	  cutoff_range        	:	0.978124	 
+	  lsp_sigma           	:	2.0	 
+	  N_lg_poly           	:	5	 
+	  lsp_lg_poly         	:	[0, 1, 2, 4, 6]	 
+	  N_ro_val            	:	8	 
+	  lsp_ro_val          	:	[-0.6, -0.4, -0.2, 0.2, 0.4, 0.5, 0.6, 0.8]	 
+	  ibaseline           	:	True	 
+	  bop_param           	:	[12.1692, 6.17263, 3.11471, 0.755675, 0.404939, 0.036124, 0.650018, 0.57289]	 
+	  nn_layers           	:	[40, 24, 24, 16, 1]	 
+	  cnst_final_bias     	:	False	 
+	  final_bias          	:	0.0	 
+	  num_fit_param       	:	2001	 
+READING DATASET FILE: 
+	TOTAL NUMBER OF STRUCTURES:	245	 
+	TOTAL NUMBER OF ATOMS:		490	 
+COMPUTING NEIGHBOR LIST (NBL):	 
+	NBL CONSTRUCTION TIME (SEC)	=	0.5590198040008545	 
+COMPUTING LOCAL STRUCTURE PARAMETERS (LSP):	 
+	LSP CONSTRUCTION TIME (SEC)	=	0.25447988510131836	 
+PARTITIONING DATA: 
+	TOTAL NUMBER OF GROUPS=	2	 
+	TEST SET (UNTRAINED): 
+	N_train_structures	: 	245	 
+	N_val_structures	: 	0	 
+	N_test_structures	: 	0	 
+	N_combined		: 	245	 

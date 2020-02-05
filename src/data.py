@@ -7,12 +7,18 @@ import	writer
 fit_diff=False
 
 class Dataset:
-	def __init__(self,name):
+	def __init__(self,name,SB):
 		self.name=name
 		self.structures={};  #structure[SID]  --> structure_objects
 		self.group_sids={}   #group_sids[GID] --> list of SID
 		self.Na=0;
 		self.Ns=0;
+
+		self.dtype=torch.FloatTensor
+		self.dtype2=torch.LongTensor
+		if(SB['use_cuda'] and self.name=="train"): 
+			self.dtype=torch.cuda.FloatTensor
+			self.dtype2=torch.cuda.LongTensor
 
 	def sort_group_sids(self): 
 		for i in self.group_sids.keys():
@@ -22,14 +28,11 @@ class Dataset:
 
 		if(self.Ns!=0):
 		
-			#ONLY DO TRAINING SET ON GPU 
-			dtype=torch.FloatTensor
-			if(self.name=="train" and SB['use_cuda']): dtype=torch.cuda.FloatTensor
-
 			#ALL MODELS NEED THE FOLLOWING 
 			u1=[]; v1=[]; N1=[]; self.SIDS1=[]; self.GIDS1=[];	#DFT STUFF
 			swt1=[];  swt2=[]; mask2=[]
-			self.R1=torch.zeros(self.Ns,self.Na).type(dtype); j=0; k=0 # REDUCTION MATRIX: Ns X Na 
+			#self.R1=torch.zeros(self.Ns,self.Na).type(self.dtype); j=0; k=0 # REDUCTION MATRIX: Ns X Na 
+			self.ind1=[]; self.ind2=[]; k=0; j=0
 			for structure in self.structures.values():
 					u1.append(structure.u)
 					v1.append(structure.v)
@@ -41,32 +44,44 @@ class Dataset:
 					self.SIDS1.append(structure.sid)
 					self.GIDS1.append(structure.gid)
 
-					for i in range(0,structure.N):
-					 	self.R1[j][k]=1
-					 	k=k+1
-					j=j+1	
-						
-			self.v1=torch.tensor(np.transpose([v1])).type(dtype);
-			self.u1=torch.tensor(np.transpose([u1])).type(dtype);
-			self.N1=torch.tensor(np.transpose([N1])).type(dtype);
-			self.swt1=torch.tensor(np.transpose([swt1])).type(dtype);	#FOR RMSE
+					for i in range(0,structure.N):	k=k+1
+
+					#INDICES FOR REDUCTION
+					self.ind1.append(int(k-1))
+					if(self.ind2==[]): 
+						self.ind2.append(0)
+					else:
+						self.ind2.append(self.ind1[len(self.ind1)-2])
+					j=j+1
+
+			#self.reduction_indices.append(ind)
+			#print(self.reduction_indices,len(self.reduction_indices),self.Ns); exit()
+			self.ind1=torch.tensor([self.ind1]).type(self.dtype2)
+			self.ind2=torch.tensor([self.ind2]).type(self.dtype2)				
+			self.v1=torch.tensor(np.transpose([v1])).type(self.dtype);
+			self.u1=torch.tensor(np.transpose([u1])).type(self.dtype);
+			self.N1=torch.tensor(np.transpose([N1])).type(self.dtype);
+			self.swt1=torch.tensor(np.transpose([swt1])).type(self.dtype);	#FOR RMSE
 			#FOR DIFF
 			self.mask2 = mask2
 			self.ud1=self.u1[self.mask2]
-			self.swt2=(torch.tensor(np.transpose([swt2])).type(dtype))[self.mask2]; 	
-
+			self.swt2=(torch.tensor(np.transpose([swt2])).type(self.dtype))[self.mask2]; 	
+			#print(self.name,self.v1.is_cuda,self.R1.is_cuda)
+			#exit() 
 			if(SB['pot_type'] == "NN"):
 				Gis=[] 
 				for structure in self.structures.values():
 					for Gi in structure.lsps:	Gis.append(Gi)
-				self.Gis=torch.tensor(Gis).type(dtype);
-				self.M1=torch.tensor([np.ones(len(self.Gis))]).type(dtype)
+				self.Gis=torch.tensor(Gis).type(self.dtype);
+				self.M1=torch.tensor([np.ones(len(self.Gis))]).type(self.dtype)
 
 
 
 	def report(self,SB,t):
 		if(self.Ns!=0):
+			if(self.name!="train" and  SB['use_cuda']):  SB['nn'].send_to_cpu()
 			self.evaluate_model(SB)
+			if(self.name!="train" and  SB['use_cuda']):  SB['nn'].send_to_gpu()
 			writer.write_E_vs_V(self,t)
 			RMSE=(((self.u1-self.u2)**2.0).sum()/self.Ns)**0.5 
 			MAE=(((self.u1-self.u2)**2.0)**0.5).sum()/self.Ns
@@ -84,22 +99,15 @@ class Dataset:
 		#set_name=dateset object name
 		if(SB['pot_type']=='NN'):
 			
-#			#MOVE NN MATRICES TO CPU FOR NON-TRAINING SET
-#			if(self.name!="train"): 
-#				for i in SB['nn'].submatrices:	i.cpu(); #print(type(i))
-#				print("HERE")
-
-#			for i in SB['nn'].submatrices: print(type(i))
-			print(self.name,SB['nn'].submatrices[0].is_cuda)
 			#EVALUATE NN
 			nn_out=SB['nn'].NN_eval(self)
-			self.u2=(self.R1).mm(nn_out)/self.N1
-
-#			#MOVE NN MATRICES BACK
-#			if(self.name!="train"): 
-#				for i in SB['nn'].submatrices:	i.cuda()
-#			for i in SB['nn'].submatrices: print("B",type(i))
-	
+		
+#			#REDUCE (ATOMIC EN --> STRUCTURE EN)
+			b=torch.t(nn_out).cumsum(1)
+			c=b.gather(1,self.ind1);
+			d=b.gather(1,self.ind2);  d[0][0]=0.0
+			self.u2=torch.t(c-d)/self.N1
+			
 	def compute_objective(self,SB):
 		global fit_diff 
 
@@ -158,7 +166,6 @@ class Dataset:
 				for i in range(0,len(SB['nn'].submatrices)): S=S+(SB['nn'].submatrices[i]**p).sum(); 
 				OBLP=SB['lambda_Lp']*(S/(SB['nn'].info['num_fit_param'])); S=0;
 
-
 		return [RMSE,OBE1,OB_DU,OBL1,OBL2,OBLP]
 
 
@@ -193,7 +200,6 @@ class Structure:
 				if(tag in self.gid): 
 					self.weight1=SB['mod_weight1']; 
 					self.weight2=SB['mod_weight2']; 
-
 
 		if((np.array(lines[7:-1]).astype(np.float)).shape[1] != 3):
 			raise Exception("POSCAR FILE HAS MORE THAN 3 ENTRIES ON COORDINATE LINES")
@@ -280,8 +286,9 @@ class Structure:
 			fcik=(rik-rc)**4.0;  fcik=fcik/(dc4+fcik)
 			#mask      =  (rik < rc).astype(np.int);		fcik=fcik*mask
 
-			#radial_term=np.exp(-((rij-ros)/s)**2.0)*np.exp(-((rik-ros)/s)**2.0)*fcik*fcij/ros2
-			radial_term=np.exp(-(rij/ros)**2.0)*np.exp(-((rik/ros))**2.0)*fcik*fcij #*norm
+			#print(s,ros)
+			radial_term=np.exp(-((rij-ros)/s)**2.0)*np.exp(-((rik-ros)/s)**2.0)*fcik*fcij/ros2
+			#radial_term=np.exp(-(rij/ros)**2.0)*np.exp(-((rik/ros))**2.0)*fcik*fcij #*norm
 			#radial_term=np.exp(-((rij-s)/ros)**2.0)*np.exp(-(((rik-s)/ros))**2.0)*fcik*fcij #*norm
 
 			#ANGULAR TERM
@@ -322,6 +329,66 @@ class Structure:
 				for i in gis:
 					str1=str1+' %14.12f '%i
 				writer.write_LSP(str1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+#			self.u2=(self.R1).mm(nn_out)/self.N1
+
+#			print(self.u2.shape)
+#			print(nn_out.shape)
+#			print(torch.t(nn_out).shape)
+#			print(len(self.ind1))
+#			print(self.ind1)
+#			print(self.ind2)
+
+
+#			c=b.gather(1, torch.tensor(self.reduction_indices)) #select relevant terms
+#			d=torch.cat( (torch.tensor([[0]]), b.gather(1, torch.tensor([self.reduction_indices[0][0:-1]]))),1) #select relevant terms
+#			print(c,d,c-d)
+##a=torch.tensor([[1,2,3,4,5,6,7,8]])
+##b=a.cumsum(1) #cumulative sum over row
+##c=b.gather(1, torch.tensor([[1,3,7]])) #select relevant terms
+##d=torch.cat( (torch.tensor([[0]]), b.gather(1, torch.tensor([[1,3]]))),1) #select relevant terms
+
+##			#FOR THE SUM
+#			b=torch.t(nn_out).cumsum(1)
+#			c=b.gather(1, torch.tensor([self.ind1])) #select relevant terms
+#			d=b.gather(1, torch.tensor([self.ind2])) #select relevant terms
+#			d[0][0]=0
+#			self.u2=(c-d)/2
+#			#print(c,d,c-d)
+#			print(torch.t(self.u2)-(c-d)/2)
+
+###			#FOR THE SUM
+#			ind1=[1,3,7]
+#			ind2=[0,1,3]
+#			a=torch.tensor([[1,2,3,4,5,6,7,8]])
+#			b=a.cumsum(1) #cumulative sum over row
+#			c=b.gather(1, torch.tensor([ind1])) #select relevant terms
+#			d=b.gather(1, torch.tensor([ind2])) #select relevant terms
+#			d[0][0]=0
+#			print(c,d,c-d)
+
+#			#print(b,c,c.shape)
+
+#			exit()
+
+
+
+
+
+
+
 
 
 

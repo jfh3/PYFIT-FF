@@ -1,10 +1,10 @@
 {
-"max_iter"		:	20,
-"fraction_train"	:	0.5,
-"re_randomize"		:	true,
+"max_iter"		:	0,
+"fraction_train"	:	1,
+"re_randomize"		:	false,
 
 "LR"			:	0.1,
-"ramp_LR"		:	false,
+"ramp_LR"		:	true,
 
 "lambda_E1"		:	1.0,
 "lambda_dU"		:	1.0,
@@ -18,7 +18,7 @@
 "rmse_tol"		:	0.005,	
 "rmse_final"		:	2.0,	
 
-"cnst_final_bias"	:	true,
+"cnst_final_bias"	:	false,
 "final_bias"		:	0.0,
 
 "save_every" 		:	100,
@@ -35,7 +35,7 @@
 "mod_weight1"		: 	1.0,		
 "mod_weight2"		: 	1.0,		
 
-"use_cuda"		:	true,
+"use_cuda"		:	false,
 
 "test_set_gids"		: 	[],		
 "n_rand_GIDS"		:	0,	

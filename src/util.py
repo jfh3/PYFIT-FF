@@ -45,9 +45,9 @@ def chkpnt(SB,t):
 
 def partition_data(SB):
 
-	test_set=data.Dataset("test") #INITIALIZE FULL DATASET OBJECT
-	training_set=data.Dataset("train") #INITIALIZE FULL DATASET OBJECT
-	validation_set=data.Dataset("validate") #INITIALIZE FULL DATASET OBJECT
+	test_set=data.Dataset("test",SB) #INITIALIZE FULL DATASET OBJECT
+	training_set=data.Dataset("train",SB) #INITIALIZE FULL DATASET OBJECT
+	validation_set=data.Dataset("validate",SB) #INITIALIZE FULL DATASET OBJECT
 
 	writer.log("PARTITIONING DATA:")
 	writer.log(["	TOTAL NUMBER OF GROUPS=",len(SB['full_set'].group_sids.keys())])
