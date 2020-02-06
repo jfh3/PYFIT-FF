@@ -1,8 +1,6 @@
-
 import	numpy	as	np
 import  torch
 import	writer
-
 
 fit_diff=False
 
@@ -30,52 +28,50 @@ class Dataset:
 		
 			#ALL MODELS NEED THE FOLLOWING 
 			u1=[]; v1=[]; N1=[]; self.SIDS1=[]; self.GIDS1=[];	#DFT STUFF
-			swt1=[];  swt2=[]; mask2=[]
-			#self.R1=torch.zeros(self.Ns,self.Na).type(self.dtype); j=0; k=0 # REDUCTION MATRIX: Ns X Na 
-			self.ind1=[]; self.ind2=[]; k=0; j=0
+			swt1=[];  swt2=[]; mask2=[]; j=0
+
+			#GET MAX NUMBER OF ATOMS IN DATASET
+			for structure in self.structures.values():	N1.append(structure.N)
+			self.Nmax=max(N1);	self.mask=[]
+
 			for structure in self.structures.values():
 					u1.append(structure.u)
 					v1.append(structure.v)
-					N1.append(structure.N)
 					swt1.append(structure.weight1)
 					swt2.append(structure.weight2)
 					if(structure.weight2!=0): mask2.append(j)
+					j=j+1
 
 					self.SIDS1.append(structure.sid)
 					self.GIDS1.append(structure.gid)
 
-					for i in range(0,structure.N):	k=k+1
+					#BUILD MASK FOR REDUCTION
+					counter=1
+					while(counter<=self.Nmax):
+						if(counter<=structure.N):
+							self.mask.append([True])
+						else:
+							self.mask.append([False])
+						counter += 1
 
-					#INDICES FOR REDUCTION
-					self.ind1.append(int(k-1))
-					if(self.ind2==[]): 
-						self.ind2.append(0)
-					else:
-						self.ind2.append(self.ind1[len(self.ind1)-2])
-					j=j+1
-
-			#self.reduction_indices.append(ind)
-			#print(self.reduction_indices,len(self.reduction_indices),self.Ns); exit()
-			self.ind1=torch.tensor([self.ind1]).type(self.dtype2)
-			self.ind2=torch.tensor([self.ind2]).type(self.dtype2)				
+			self.mask=torch.tensor(self.mask)			
 			self.v1=torch.tensor(np.transpose([v1])).type(self.dtype);
 			self.u1=torch.tensor(np.transpose([u1])).type(self.dtype);
+			self.u2=torch.tensor(np.transpose([u1])).type(self.dtype); #initialize
 			self.N1=torch.tensor(np.transpose([N1])).type(self.dtype);
 			self.swt1=torch.tensor(np.transpose([swt1])).type(self.dtype);	#FOR RMSE
+
 			#FOR DIFF
 			self.mask2 = mask2
 			self.ud1=self.u1[self.mask2]
 			self.swt2=(torch.tensor(np.transpose([swt2])).type(self.dtype))[self.mask2]; 	
-			#print(self.name,self.v1.is_cuda,self.R1.is_cuda)
-			#exit() 
+
 			if(SB['pot_type'] == "NN"):
 				Gis=[] 
 				for structure in self.structures.values():
 					for Gi in structure.lsps:	Gis.append(Gi)
 				self.Gis=torch.tensor(Gis).type(self.dtype);
 				self.M1=torch.tensor([np.ones(len(self.Gis))]).type(self.dtype)
-
-
 
 	def report(self,SB,t):
 		if(self.Ns!=0):
@@ -93,7 +89,6 @@ class Dataset:
 			RMS_DU=(torch.mean(RMS_DU**2.0)**0.5)
 			writer.write_stats(self.name,t,RMSE,MAE,MED_AE,STD_AE,MAX_AE,RMS_DU)
 
-
 	#APPLY THE MODEL TO DATASET
 	def evaluate_model(self,SB):
 		#set_name=dateset object name
@@ -101,13 +96,11 @@ class Dataset:
 			
 			#EVALUATE NN
 			nn_out=SB['nn'].NN_eval(self)
-		
-#			#REDUCE (ATOMIC EN --> STRUCTURE EN)
-			b=torch.t(nn_out).cumsum(1)
-			c=b.gather(1,self.ind1);
-			d=b.gather(1,self.ind2);  d[0][0]=0.0
-			self.u2=torch.t(c-d)/self.N1
-			
+
+			#PREFORM REDUCTION (SUM(ATOMIC_EN) --> STRUCTURE_EN)
+			self.u2=(torch.sum((torch.zeros(self.mask.shape[0], 1)).masked_scatter_(self.mask, nn_out) \
+				.view(self.Ns,self.Nmax),1).view(self.Ns,1))/self.N1
+
 	def compute_objective(self,SB):
 		global fit_diff 
 
@@ -123,7 +116,6 @@ class Dataset:
 			#OBE1=SB['lambda_E1']*(torch.mean(torch.tanh(err)*torch.tanh(err))) #**0.5
 		else:
 			OBE1=SB['lambda_E1']*(torch.mean(err**2.0)**0.5)
-
 
 		#OBJECTIVE TERM-2 (DIFF)
 		OB_DU=torch.tensor(0.0) #.type(SB['dtype'])
@@ -142,7 +134,6 @@ class Dataset:
 				#OB_DU=SB['lambda_dU']*(torch.mean(torch.tanh(DIFF1)*torch.tanh(DIFF1))) #**0.5
 			else:
 				OB_DU=SB['lambda_dU']*(torch.mean(DIFF1**2.0)**0.5)
-
 
 		#OBJECTIVE TERMS 3 AND 4:  L1 AND L2 REG ON NN FITTING PARAM
 		OBL1=torch.tensor(0.0); OBL2=torch.tensor(0.0);	OBLP=torch.tensor(0.0)
@@ -186,7 +177,6 @@ class Structure:
 		self.v			= self.V/self.N
 		self.u			= self.U/self.N
 		self.species		= SB['species']  #TODO THIS NEEDS TO BE FIXED (GENERALIZE TO BINARY)
-
 
 		#INDIVDUAL STRUCTURE WEIGHTS FOR OBJECTIVE FUNCTION 
 		self.weight1		= SB['default_weight1'] 	#RMSE WEIGHT
@@ -329,116 +319,3 @@ class Structure:
 				for i in gis:
 					str1=str1+' %14.12f '%i
 				writer.write_LSP(str1)
-
-
-
-
-
-
-
-
-
-
-
-
-
-#			self.u2=(self.R1).mm(nn_out)/self.N1
-
-#			print(self.u2.shape)
-#			print(nn_out.shape)
-#			print(torch.t(nn_out).shape)
-#			print(len(self.ind1))
-#			print(self.ind1)
-#			print(self.ind2)
-
-
-#			c=b.gather(1, torch.tensor(self.reduction_indices)) #select relevant terms
-#			d=torch.cat( (torch.tensor([[0]]), b.gather(1, torch.tensor([self.reduction_indices[0][0:-1]]))),1) #select relevant terms
-#			print(c,d,c-d)
-##a=torch.tensor([[1,2,3,4,5,6,7,8]])
-##b=a.cumsum(1) #cumulative sum over row
-##c=b.gather(1, torch.tensor([[1,3,7]])) #select relevant terms
-##d=torch.cat( (torch.tensor([[0]]), b.gather(1, torch.tensor([[1,3]]))),1) #select relevant terms
-
-##			#FOR THE SUM
-#			b=torch.t(nn_out).cumsum(1)
-#			c=b.gather(1, torch.tensor([self.ind1])) #select relevant terms
-#			d=b.gather(1, torch.tensor([self.ind2])) #select relevant terms
-#			d[0][0]=0
-#			self.u2=(c-d)/2
-#			#print(c,d,c-d)
-#			print(torch.t(self.u2)-(c-d)/2)
-
-###			#FOR THE SUM
-#			ind1=[1,3,7]
-#			ind2=[0,1,3]
-#			a=torch.tensor([[1,2,3,4,5,6,7,8]])
-#			b=a.cumsum(1) #cumulative sum over row
-#			c=b.gather(1, torch.tensor([ind1])) #select relevant terms
-#			d=b.gather(1, torch.tensor([ind2])) #select relevant terms
-#			d[0][0]=0
-#			print(c,d,c-d)
-
-#			#print(b,c,c.shape)
-
-#			exit()
-
-
-
-
-
-
-
-
-
-
-
-			# cos_ijk=np.around(cos_ijk,7)
-			# #theta_ijk=np.arccos(cos_ijk)
-
-			# #cos_ijk1=cos_ijk*(1.0-cos_ijk**2.0)**0.5 #cos*sin
-			# #cos_ijk=cos_ijk**2.0
-			# #cos_ijk2=cos_ijk*(1.0-cos_ijk**2.0)**0.5 #cos*sin
-			# # cos_ijk3=(1.0-cos_ijk**2.0)**0.5 #sin
-			# # cos_ijk=cos_ijk*(1.0-cos_ijk**2.0)**0.5 #cos*sin
-			# # # cos_ijk2=cos_ijk**2.0
-
-			# #cos_ijk=cos_ijk*(1.0-cos_ijk**2.0)**0.5 #cos*sin
-			# #cos_ijk=(1.0-cos_ijk**2.0)**0.5 #sin
-			# # cos_ijk1=np.cos(1.0*theta_ijk)
-			# # cos_ijk2=np.cos(2.0*theta_ijk)
-			# # cos_ijk3=np.cos(3.0*theta_ijk) 
-
-			# cos_ijk1=cos_ijk #*np.exp(-(theta_ijk-np.pi/2)**2.0)
-			# # cos_ijk2=cos_ijk*(1.0-cos_ijk**2.0)**0.5
-			# # cos_ijk3=cos_ijk**3.0
-
-
-
-			#term is the same for all LG poly (each row is a given ro)
-			#norm=10*np.exp(-ros)
-			# norm=1.0/ros2
-
-			#jk_mask=(1.0 - np.eye(n, n)).reshape(1,n*n)
-			# rij=rij*jk_mask
-			# rik=rik*jk_mask
-
-			# print(cos_ijk)
-
-			# for i in np.arccos(cos_ijk):
-			# 	print(i)
-			# exit()
-			#cos_ijk=(cos_ijk.reshape(n,n)*(1.0 - np.eye(n, n))).reshape(1,n*n)
-			#print(cos_ijk)
-			#exit()
-
-			#radial_term=np.exp(-((rij-s)/ros)**2.0)*np.exp(-(((rik-s)/ros))**2.0)*fcik*fcij #*norm
-			#radial_term=0*radial_term
-			#print("------------------")
-
-
-			# print(cos_ijk.shape)
-			# for i in range(0,cos_ijk.shape[1]):
-			# 	rounded=round(cos_ijk[0][i],5)
-			# 	print('%5.5s'%str(rounded),'%10.7s'%str(np.arccos(float(rounded))*180.0/np.pi))
-			#exit()

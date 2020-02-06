@@ -1,4 +1,4 @@
-import 	numpy 		as 		np
+import 	numpy	as	np
 import 	writer
 import  torch
 
@@ -30,8 +30,6 @@ class NN:
 		info['nn_layers']		=	 list(map(int,lines[7][1:]))  
 		info['cnst_final_bias']		=	 SB['cnst_final_bias'] 
 		info['final_bias']		=	 SB['final_bias'] 
-
-
 
 		#DETERMINE NUMBER OF FITITNG PARAM AND RANDOMIZE IF NEEDED
 		nfit=0; layers=info['nn_layers']
@@ -129,8 +127,6 @@ class NN:
 
 						self.info['nn_layers'][layer_add]=self.info['nn_layers'][layer_add]+1
 
-				# writer.log(["ADDING NEURON TO HIDDEN LAYER",layer_add])
-
 		#COUNT NFIT
 		for i in range(0,len(self.submatrices)):
 			new_nfit+=self.submatrices[i].shape[0]*self.submatrices[i].shape[1]
@@ -138,14 +134,7 @@ class NN:
 		self.info['num_fit_param']=new_nfit
 		writer.log(["	new num_fit_param	=",new_nfit])
 
-		# print(self.info['nn_layers'],self.info['num_fit_param'])
-		# for i in range(0,len(self.submatrices)):
-		# 	print(self.submatrices[i].shape)
-		# exit()
-
 		self.set_grad()
-
-
 
 	#TAKES AN ARRAY OF NP.ARRAY SUBMATRICES AND RETURNS A LONG VECTOR W OF WEIGHTS AND BIAS  
 	def matrix_combine(self):
@@ -199,15 +188,10 @@ class NN:
 				self.submatrices[-1]=(self.info['final_bias']* \
 				torch.ones(self.submatrices[-1].shape[0],self.submatrices[-1].shape[1])).type(self.dtype)
 
-				#print(self.submatrices[-1]); exit()
 
 	# #GIVEN AN INPUT MATRIX EVALUATE THE NN
 	def NN_eval(self,x):
-		#ACTS ON A DATASET OBJECT
-#		print(type(x))
-#		exit()
 		out=(x.Gis).mm(torch.t(self.submatrices[0]))+torch.t((self.submatrices[1]).mm(x.M1))
-	
 		for i in range(2,int(len(self.submatrices)/2+1)):
 			j=2*(i-1)
 
@@ -227,15 +211,7 @@ class NN:
 
 				else:
 					out=torch.sigmoid(out)-0.5	
-
-				#print(i,j,int(len(self.submatrices)/2))
 				out=out.mm(torch.t(self.submatrices[j]))+torch.t((self.submatrices[j+1]).mm(x.M1))
-
-		#exit()
-		#out=(1.0-torch.exp(-out))**2.0	
-		#xexp2=True; max_xexp2=10.0
-		#if(xexp2):  out=max_xexp2*out*torch.exp(-1.0*out**2.0)/.4288	
-			
 	
 		return out 
 

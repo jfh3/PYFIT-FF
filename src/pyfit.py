@@ -9,11 +9,11 @@ import  reader
 import  writer
 import	util
 import  torch.optim as optim
+import 	torch 
 
 #-------------------------------------------------------------------------
 #PART-1: SETUP
 #-------------------------------------------------------------------------
-
 writer.write_header()
 
 #CHECK THAT A FILE WAS PROVIDED BY USER
@@ -37,12 +37,10 @@ if(SB['dump_poscars']):	util.dump_poscars(SB)() #MOVE TO read_data
 #COMPUTE NEIGHBORLIST (NBL) AND LSP FOR ALL STRUCTURES
 util.compute_all_nbls(SB)	
 util.compute_all_lsps(SB)	
-#exit()
 util.partition_data(SB)
 
-
 #-------------------------------------------------------------------------
-#PART-1: Train
+#PART-2: TRAIN
 #-------------------------------------------------------------------------
 
 t		=	0;  
@@ -61,10 +59,6 @@ SB['nn'].set_grad()
 #WRITE INITIAL DATA
 util.chkpnt(SB,t); t=t+1  
 if(max_iter==0): exit()	 #DONT START LOOP
-
-# exit()
-
-# def set_optim()"
 
 #HARDED-CODED TO USE LBFGS (SEEMS TO BE THE BEST) 
 def set_optim():
@@ -85,11 +79,9 @@ def closure():
 	optimizer.zero_grad(); loss=0.0 
 	[rmse,OBE1,OB_DU,OBL1,OBL2,OBLP]=training_set.compute_objective(SB)
 	loss=OBE1+OB_DU+OBL1+OBL2+OBLP
-	#print(loss.is_cuda,OBE1.is_cuda,OBL1.is_cuda)
 	loss.backward();
 	OBE1=OBE1.item();	OB_DU=OB_DU.item();	OBLP=OBLP.item()
 	OBL1=OBL1.item();	OBL2=OBL2.item();	OBT=loss.item();
-
 	return loss
 
 #OPTIMIZATION LOOP
@@ -97,14 +89,12 @@ start=time();
 writer.log('STARTING FITTING LOOP:')
 writer.log(["	INITIAL LR:",'%10.7s'%str(optimizer.param_groups[0]['lr'])])
 N_TRY=1; N_TRY_MAX=1; 
-while(t<max_iter):  # and RMSE>RMSE_FINAL and ISTOP==False): 
+while(t<max_iter):  
 
 	optimizer.step(closure)
-	#print(SB['nn'].submatrices[0])
 	if(SB['ramp_LR']): scheduler.step() #ADJUST LR 
 
 	#CHECK CONVERGENCE
-
 	if(str(OBE1)=='nan' or rmse>1000000): #START OVER
 		writer.log("NOTE: THE OBJ FUNCTION BLEW UP (IM STARTING OVER)(MAYBE TRY SMALLER LR)")
 		SB['nn'].unset_grad();	SB['nn'].randomize();	set_optim(); N_TRY=N_TRY+1
@@ -140,10 +130,6 @@ while(t<max_iter):  # and RMSE>RMSE_FINAL and ISTOP==False):
 			rmse_m1=rmse;	m1_turn=False; 
 		else:
 			rmse_m2=rmse;	m1_turn=True; 
-
-
-	#print(SB['nn'].W)
-
 	t=t+1
 
 writer.log(['FITTING LOOP TIME (SEC):',time()-start])
@@ -151,5 +137,3 @@ t=111111 #FOR CONSISTANT FILE NAMING
 util.chkpnt(SB,t)
 
 exit()
-
-

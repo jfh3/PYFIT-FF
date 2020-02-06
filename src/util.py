@@ -18,7 +18,6 @@ def dump_poscars(SB):
 		writer.write_poscar(structure)
 		#structure.compute_nbl_for_structure(SB); 
 
-#COMPUTE NBL 
 def compute_all_nbls(SB):
 	writer.log(["COMPUTING NEIGHBOR LIST (NBL):"])
 	start = time.time();	
@@ -26,14 +25,12 @@ def compute_all_nbls(SB):
 		structure.compute_nbl(SB); 
 	writer.log(["	NBL CONSTRUCTION TIME (SEC)	=",time.time()-start])
 
-
 def compute_all_lsps(SB):
 	writer.log(["COMPUTING LOCAL STRUCTURE PARAMETERS (LSP):"])
 	start = time.time();	
 	for structure in SB['full_set'].structures.values():  
 		structure.compute_lsp(SB); 
 	writer.log(["	LSP CONSTRUCTION TIME (SEC)	=",time.time()-start])
-
 
 def chkpnt(SB,t):
 	if(SB['pot_type']=='NN'):
@@ -44,7 +41,6 @@ def chkpnt(SB,t):
 		SB['nn'].set_grad()
 
 def partition_data(SB):
-
 	test_set=data.Dataset("test",SB) #INITIALIZE FULL DATASET OBJECT
 	training_set=data.Dataset("train",SB) #INITIALIZE FULL DATASET OBJECT
 	validation_set=data.Dataset("validate",SB) #INITIALIZE FULL DATASET OBJECT
@@ -71,7 +67,6 @@ def partition_data(SB):
 
 	if(SB['fix_rand_seed']): random.seed(a=412122, version=2)
 					
-
 	#RANDOMLY FORM TEST SET IF DESIRED 
 	if(SB['test_set_gids']==[] and SB['n_rand_GIDS']!=0):
 			k=1
@@ -105,7 +100,6 @@ def partition_data(SB):
 		if(SID not in test_set.structures.keys()):
 			remainder.append(SID)
 
-
 	#-------------------------------------
 	#TRAIN-VALIDATION-SET (TRAIN+INTERPOLATION SET)
 	#-------------------------------------
@@ -115,7 +109,6 @@ def partition_data(SB):
 		training_set.structures[remainder[i]]= SB['full_set'].structures[remainder[i]] 
 		training_set.Ns+=1;		
 		training_set.Na+=SB['full_set'].structures[remainder[i]].N
-
 
 	# #ADD MIN/MAX VOLUME STRUCTURES IN EACH GROUP TO TRAINING SET
 	if(train_edges):
@@ -131,15 +124,12 @@ def partition_data(SB):
 				training_set.Ns+=1;		
 				training_set.Na+=SB['full_set'].structures[SID].N
 
-
 	# #VALIDATION SID
 	for SID in remainder: 
 		if(SID not in training_set.structures.keys()):  
 			validation_set.structures[SID]= SB['full_set'].structures[SID] 
 			validation_set.Ns+=1;		
 			validation_set.Na+=SB['full_set'].structures[SID].N
-
-
 
 	if(SB['full_set'].Ns != training_set.Ns+test_set.Ns+validation_set.Ns):
 		raise ValueError("LOST A STUCTURE IN DATA PARTITIONING");

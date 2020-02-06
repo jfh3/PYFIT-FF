@@ -1,5 +1,3 @@
-#Author: James hickman 
-#Description: As the name implies this code reads the various files needed for pyfit to run
 from 	json	import	load
 from  	os 	import  path 
 import  writer		 
@@ -62,7 +60,6 @@ def read_pot_file(SB):
 		SB['nn']=pot					
 	#return nn
 
-
 def read_database(SB): 
 	file_path=SB['dataset_path']
 	writer.log("READING DATASET FILE:");  		 
@@ -99,4 +96,3 @@ def read_database(SB):
 	writer.log(["	TOTAL NUMBER OF STRUCTURES:",full_set.Ns])
 	writer.log(["	TOTAL NUMBER OF ATOMS:	",full_set.Na])
 	SB['full_set']=full_set
-

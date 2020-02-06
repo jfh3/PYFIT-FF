@@ -1,5 +1,5 @@
 {
-"max_iter"		:	0,
+"max_iter"		:	20,
 "fraction_train"	:	1,
 "re_randomize"		:	false,
 
@@ -35,13 +35,12 @@
 "mod_weight1"		: 	1.0,		
 "mod_weight2"		: 	1.0,		
 
-"use_cuda"		:	false,
+"use_cuda"		:	true,
 
 "test_set_gids"		: 	[],		
 "n_rand_GIDS"		:	0,	
 "fix_rand_seed"		:	false,					 
 "exclude_from_test"	:	["DC","Wurt","AMORP","LIQ","DIM"]					 
-
 }
 
 

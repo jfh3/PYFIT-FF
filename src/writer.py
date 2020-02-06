@@ -1,8 +1,7 @@
-from  	os 			import  	path,getcwd 
+from  	os 		import  	path,getcwd 
 from	datetime	import		datetime
 from 	string		import 		Template
 from 	json		import		dump
-#from	pyfit 		import		*
 
 #MISC PARAM
 run_path	=	getcwd()+'/'											#tell module where to write
@@ -14,8 +13,6 @@ def write_header():
 	log("-------------------------PYFIT-FF-----------------------------")
 	log("--------------------------------------------------------------")
 
-
-
 def write_E_vs_V(data,t):
 	with open(run_path+prefix+"-e_vs_V-"+str(data.name)+"-"+str(t)+".dat", 'w') as f:
 		for i in range(0,len(data.v1)): #loop over structures
@@ -24,7 +21,6 @@ def write_E_vs_V(data,t):
 def write_stats(name,t,RMSE,MAE,MED_AE,STD_AE,MAX_AE,RMS_DU):
 	with open(run_path+prefix+"-stats-"+str(name)+".dat", 'a') as f:
 		f.write('%10f %10f %10f %10f %10f %10f %10f \n' % (t,RMSE,MAE,MED_AE,STD_AE,MAX_AE,RMS_DU))	
-
 
 def log(x,tab=0,name="-log.dat"):
 	str_out=''
@@ -75,7 +71,6 @@ def write_NN(nn,step):
 		f.write('\n')
 		for i in WB:	f.write('%16.8e %8.4f\n'%  (i,0.0))
 		f.write('\n')
-
 
 def write_poscar(x):
 	# x=structure object
