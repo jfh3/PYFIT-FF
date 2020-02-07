@@ -38,7 +38,9 @@ def log(x,tab=0,name="-log.dat"):
 def log_err(x): 
 	str1=''
 	for i in range(0,len(x)):
-		str1=str1+' %14.10s'%str(x[i])
+		#str1=str1+' %14.5e'%float(x[i])
+		str1=str1+' %16.5f'%float(x[i])
+
 	log(str1,0,"-err-log.dat")
 
 def log_dict(x):	#x=dictionary

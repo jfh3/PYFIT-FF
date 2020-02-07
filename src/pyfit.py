@@ -54,6 +54,7 @@ m1_turn		=	True
 last_add	=	0
 
 rmse		= 	1000.0
+
 SB['nn'].set_grad()
 
 #WRITE INITIAL DATA
@@ -107,7 +108,7 @@ while(t<max_iter):
 				  OBLP,OBT,optimizer.param_groups[0]['lr'],delta1,delta2]) 
 	if(t%SB['save_every']==0):  util.chkpnt(SB,t);   
 
-	if(delta1<SB['rmse_tol'] and delta2<SB['rmse_tol'] and t-last_add>250): 
+	if(delta1<SB['rmse_tol'] and delta2<SB['rmse_tol'] and t-last_add>50): 
 		if(SB['dynamic_NN']):
 			if(N_TRY>=N_TRY_MAX):
 				SB['nn'].add_neurons()

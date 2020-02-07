@@ -96,7 +96,7 @@ class NN:
 			self.randomize(); 		
 			max_rand_wb=self.info['max_rand_wb']
 		else:
-			max_rand_wb=2.5
+			max_rand_wb=1.0
 
 		new_nfit=0
 		N_neuron_2_add=2
@@ -112,7 +112,6 @@ class NN:
 						#ADD ROW (WEIGHT MATRIX)
 						shp2=self.submatrices[i].shape[1]
 						TMP=max_rand_wb*torch.empty(1,shp2).uniform_(-1.0, 1.0)
-						#TMP.requires_grad=True
 						self.submatrices[i]=torch.cat((self.submatrices[i],TMP))
 
 						#ADD BIAS 

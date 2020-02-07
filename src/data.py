@@ -276,26 +276,18 @@ class Structure:
 			fcik=(rik-rc)**4.0;  fcik=fcik/(dc4+fcik)
 			#mask      =  (rik < rc).astype(np.int);		fcik=fcik*mask
 
-			#print(s,ros)
-			radial_term=np.exp(-((rij-ros)/s)**2.0)*np.exp(-((rik-ros)/s)**2.0)*fcik*fcij/ros2
-			#radial_term=np.exp(-(rij/ros)**2.0)*np.exp(-((rik/ros))**2.0)*fcik*fcij #*norm
-			#radial_term=np.exp(-((rij-s)/ros)**2.0)*np.exp(-(((rik-s)/ros))**2.0)*fcik*fcij #*norm
+			if(SB['nn'].info['lsp_type']==5):
+				radial_term=np.exp(-((rij-ros)/s)**2.0)*np.exp(-((rik-ros)/s)**2.0)*fcik*fcij/ros2
+			if(SB['nn'].info['lsp_type']==20):
+				radial_term=np.exp(-((rij-s)/ros)**2.0)*np.exp(-(((rik-s)/ros))**2.0)*fcik*fcij 
 
 			#ANGULAR TERM
 			first=True
 			for m in range(0,max(lgs)+1):
 				if(m==0): 
 					lg_cos1=np.ones((cos_ijk1.shape[0],cos_ijk1.shape[1]))
-					# lg_cos2=np.ones((cos_ijk.shape[0],cos_ijk.shape[1]))
-					# lg_cos3=np.ones((cos_ijk.shape[0],cos_ijk.shape[1]))
-
 				if(m==1): 
 					lg_cos1_m1=lg_cos1;		lg_cos1=cos_ijk1;
-					# lg_cos2_m1=lg_cos2;		lg_cos2=cos_ijk2;
-					# lg_cos3_m1=lg_cos3;		lg_cos3=cos_ijk3;
-
-				#lg_cos=1+jk_mask*lg_cos #(1+lg_cos)
-				# lg_cos=lg_cos*fcik*fcij
 				if(m in lgs): 
 					if(first): 
 						gis=(radial_term*(lg_cos1)).sum(axis=1); first=False
@@ -303,14 +295,8 @@ class Structure:
 						gis=np.concatenate((gis,(radial_term*(lg_cos1)).sum(axis=1)))
 				if(m>=1): #define for next iteration of loop 
 						tmp=lg_cos1
-						lg_cos1=((2.0*m+1.0)*cos_ijk1*lg_cos1-m*lg_cos1_m1)/(m+1); lg_cos1_m1=tmp;
-						# tmp=lg_cos2
-						# lg_cos2=((2.0*m+1.0)*cos_ijk2*lg_cos2-m*lg_cos2_m1)/(m+1); lg_cos2_m1=tmp;
-						# tmp=lg_cos3
-						# lg_cos3=((2.0*m+1.0)*cos_ijk3*lg_cos3-m*lg_cos3_m1)/(m+1); lg_cos3_m1=tmp;
-
-				#print(np.max(radial_term),np.max(lg_cos))
-
+						lg_cos1=((2.0*m+1.0)*cos_ijk1*lg_cos1-m*lg_cos1_m1)/(m+1); lg_cos1_m1=tmp; 
+						
 			gis=np.arcsinh(gis)
 			self.lsps.append(gis)
 
@@ -319,3 +305,57 @@ class Structure:
 				for i in gis:
 					str1=str1+' %14.12f '%i
 				writer.write_LSP(str1)
+
+
+				# # for i in range(0,len(SB['nn'].submatrices)):
+				# # 	S=S+torch.sum((SB['nn'].submatrices[i])**2.0) #.sum(); 
+				# 	#print(i,S,len(SB['nn'].submatrices),SB['nn'].submatrices[i]) 
+				# #exit()
+				# first=True
+				# for i in range(0,len(SB['nn'].submatrices)):
+
+				# 	if(first):
+				# 		TMP=(SB['nn'].submatrices[i]).view(SB['nn'].submatrices[i].shape[0]*SB['nn'].submatrices[i].shape[1],1)
+				# 		first=False
+				# 	else: 
+				# 		TMP=torch.cat((TMP,(SB['nn'].submatrices[i]).view(SB['nn'].submatrices[i].shape[0]*SB['nn'].submatrices[i].shape[1],1)))
+				# # print(TMP,(TMP-torch.t(TMP)).shape)
+				# # print(TMP-torch.t(TMP))
+				# # exit()
+				# # (TMP**2.0).sum()
+				# # OBL2=SB['lambda_L2']*((TMP-torch.t(TMP))**2.0).sum()/(SB['nn'].info['num_fit_param'])/(SB['nn'].info['num_fit_param']); S=0;
+				# #exit()
+				# OBL2=SB['lambda_L2']*(TMP**6.0).sum()
+
+
+
+
+			# #ANGULAR TERM
+			# first=True
+			# for m in range(0,max(lgs)+1):
+			# 	if(m==0): 
+			# 		lg_cos1=np.ones((cos_ijk1.shape[0],cos_ijk1.shape[1]))
+			# 		# lg_cos2=np.ones((cos_ijk.shape[0],cos_ijk.shape[1]))
+			# 		# lg_cos3=np.ones((cos_ijk.shape[0],cos_ijk.shape[1]))
+
+			# 	if(m==1): 
+			# 		lg_cos1_m1=lg_cos1;		lg_cos1=cos_ijk1;
+			# 		# lg_cos2_m1=lg_cos2;		lg_cos2=cos_ijk2;
+			# 		# lg_cos3_m1=lg_cos3;		lg_cos3=cos_ijk3;
+
+			# 	#lg_cos=1+jk_mask*lg_cos #(1+lg_cos)
+			# 	# lg_cos=lg_cos*fcik*fcij
+			# 	if(m in lgs): 
+			# 		if(first): 
+			# 			gis=(radial_term*(lg_cos1)).sum(axis=1); first=False
+			# 		else:
+			# 			gis=np.concatenate((gis,(radial_term*(lg_cos1)).sum(axis=1)))
+			# 	if(m>=1): #define for next iteration of loop 
+			# 			tmp=lg_cos1
+			# 			lg_cos1=((2.0*m+1.0)*cos_ijk1*lg_cos1-m*lg_cos1_m1)/(m+1); lg_cos1_m1=tmp;
+			# 			# tmp=lg_cos2
+			# 			# lg_cos2=((2.0*m+1.0)*cos_ijk2*lg_cos2-m*lg_cos2_m1)/(m+1); lg_cos2_m1=tmp;
+			# 			# tmp=lg_cos3
+			# 			# lg_cos3=((2.0*m+1.0)*cos_ijk3*lg_cos3-m*lg_cos3_m1)/(m+1); lg_cos3_m1=tmp;
+
+			# 	#print(np.max(radial_term),np.max(lg_cos))

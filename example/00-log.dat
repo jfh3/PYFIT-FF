@@ -5,11 +5,11 @@ RUN PARAMETERS:
 	  input_file          	:	input.json	 
 	  src_path            	:	/home/james/bin/PYFIT/PYFIT-FF/src	 
 	  run_path            	:	/home/james/bin/PYFIT/PYFIT-FF/example/	 
-	  start_time          	:	2020-02-06-H12-M43-S07	 
+	  start_time          	:	2020-02-07-H11-M48-S00	 
 READING DEFAULT PARAMETERS USING FILE:	/home/james/bin/PYFIT/PYFIT-FF/src/defaults.json	 
-	  max_iter            	:	20	 
-	  fraction_train      	:	1	 
-	  re_randomize        	:	False	 
+	  max_iter            	:	10000	 
+	  fraction_train      	:	0.5	 
+	  re_randomize        	:	True	 
 	  LR                  	:	0.1	 
 	  ramp_LR             	:	True	 
 	  lambda_E1           	:	1.0	 
@@ -20,11 +20,11 @@ READING DEFAULT PARAMETERS USING FILE:	/home/james/bin/PYFIT/PYFIT-FF/src/defaul
 	  dynamic_NN          	:	False	 
 	  rmse_dU             	:	0.0	 
 	  rmse_xtanhx         	:	0.0	 
-	  rmse_tol            	:	0.005	 
+	  rmse_tol            	:	0.05	 
 	  rmse_final          	:	2.0	 
-	  cnst_final_bias     	:	False	 
+	  cnst_final_bias     	:	True	 
 	  final_bias          	:	0.0	 
-	  save_every          	:	100	 
+	  save_every          	:	25	 
 	  u_shift             	:	0.795023	 
 	  train_edges         	:	True	 
 	  dump_poscars        	:	False	 
@@ -36,7 +36,7 @@ READING DEFAULT PARAMETERS USING FILE:	/home/james/bin/PYFIT/PYFIT-FF/src/defaul
 	  mod_weight2         	:	1.0	 
 	  use_cuda            	:	True	 
 	  test_set_gids       	:	[]	 
-	  n_rand_GIDS         	:	0	 
+	  n_rand_GIDS         	:	10	 
 	  fix_rand_seed       	:	False	 
 	  exclude_from_test   	:	['DC', 'Wurt', 'AMORP', 'LIQ', 'DIM']	 
 OVERWRITING SELECT DEFAULTS USING INPUT FILE:	input.json	 
@@ -46,6 +46,7 @@ OVERWRITING SELECT DEFAULTS USING INPUT FILE:	input.json
 NOTE: CUDA IS NOT AVAILABLE (RE-SETTING) 
 	use_cuda		:	False 
 READING NEURAL NETWORK FILE: 
+	 RANDOMIZING NN MIN/MAX	=	0.25	 
 	  lsp_type            	:	5	 
 	  pot_type            	:	NN	 
 	  lsp_shift           	:	0.0	 
@@ -54,34 +55,23 @@ READING NEURAL NETWORK FILE:
 	  species             	:	Si	 
 	  atomic_weight       	:	28.0855	 
 	  randomize_nn        	:	False	 
-	  max_rand_wb         	:	0.5	 
+	  max_rand_wb         	:	0.25	 
 	  cutoff_dist         	:	4.5	 
-	  cutoff_range        	:	1.0	 
+	  cutoff_range        	:	0.978124	 
 	  lsp_sigma           	:	1.0	 
 	  N_lg_poly           	:	5	 
 	  lsp_lg_poly         	:	[0, 1, 2, 4, 6]	 
 	  N_ro_val            	:	8	 
-	  lsp_ro_val          	:	[2.0, 2.286, 2.571, 2.857, 3.143, 3.429, 3.714, 4.0]	 
-	  ibaseline           	:	False	 
-	  bop_param           	:	[10.917617, 5.331839, 3.753038, 1.219086, 0.130215, 0.92121, 0.883955, 0.631915]	 
-	  nn_layers           	:	[40, 24, 24, 1]	 
-	  cnst_final_bias     	:	False	 
+	  lsp_ro_val          	:	[1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0, 3.25]	 
+	  ibaseline           	:	True	 
+	  bop_param           	:	[12.1692, 6.17263, 3.11471, 0.755675, 0.404939, 0.036124, 0.650018, 0.57289]	 
+	  nn_layers           	:	[40, 16, 1]	 
+	  cnst_final_bias     	:	True	 
 	  final_bias          	:	0.0	 
-	  num_fit_param       	:	1609	 
+	  num_fit_param       	:	673	 
 READING DATASET FILE: 
-	TOTAL NUMBER OF STRUCTURES:	8330	 
-	TOTAL NUMBER OF ATOMS:		233179	 
+	TOTAL NUMBER OF STRUCTURES:	245	 
+	TOTAL NUMBER OF ATOMS:		490	 
 COMPUTING NEIGHBOR LIST (NBL):	 
-	NBL CONSTRUCTION TIME (SEC)	=	70.25832200050354	 
+	NBL CONSTRUCTION TIME (SEC)	=	0.4404752254486084	 
 COMPUTING LOCAL STRUCTURE PARAMETERS (LSP):	 
-	LSP CONSTRUCTION TIME (SEC)	=	95.20253562927246	 
-PARTITIONING DATA: 
-	TOTAL NUMBER OF GROUPS=	93	 
-	TEST SET (UNTRAINED): 
-	N_train_structures	: 	8330	 
-	N_val_structures	: 	0	 
-	N_test_structures	: 	0	 
-	N_combined		: 	8330	 
-STARTING FITTING LOOP: 
-	INITIAL LR:	   0.00100	 
-FITTING LOOP TIME (SEC):	80.47342133522034	 
