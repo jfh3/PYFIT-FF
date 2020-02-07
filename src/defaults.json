@@ -1,6 +1,11 @@
 {
-"max_iter"		:	10000,
-"fraction_train"	:	0.5,
+
+"pot_type"		:	"NN",
+"pot_file"		:	"nn0.dat",
+"dataset_path"		:	"train.dat",
+
+"max_iter"		:	1000000,
+"fraction_train"	:	0.75,
 "re_randomize"		:	true,
 
 "LR"			:	0.1,
@@ -11,17 +16,20 @@
 "lambda_L1"		:	0.0,
 "lambda_L2"		:	0.0,
 "lambda_Lp"		:	0.0,
-"dynamic_NN"		:	false,
+
+"dynamic_NN"		:	true,
+"start_fresh"		:	true, 
+"try_n_times"		:	4,
 
 "rmse_dU"		:	0.0,
 "rmse_xtanhx"		:	0.0,
-"rmse_tol"		:	0.05,	
-"rmse_final"		:	2.0,	
+"rmse_tol"		:	0.01,	
+"rmse_final"		:	2.5,	
 
 "cnst_final_bias"	:	true,
 "final_bias"		:	0.0,
 
-"save_every" 		:	25,
+"save_every" 		:	1000,
 
 "u_shift"		:	0.795023,
 "train_edges" 		:	true,	
@@ -35,11 +43,11 @@
 "mod_weight1"		: 	1.0,		
 "mod_weight2"		: 	1.0,		
 
-"use_cuda"		:	true,
+"use_cuda"		:	false,
 
 "test_set_gids"		: 	[],		
-"n_rand_GIDS"		:	10,	
-"fix_rand_seed"		:	false,					 
+"n_rand_GIDS"		:	5,	
+"fix_rand_seed"		:	true,					 
 "exclude_from_test"	:	["DC","Wurt","AMORP","LIQ","DIM"]					 
 }
 

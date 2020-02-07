@@ -30,6 +30,7 @@ class NN:
 		info['nn_layers']		=	 list(map(int,lines[7][1:]))  
 		info['cnst_final_bias']		=	 SB['cnst_final_bias'] 
 		info['final_bias']		=	 SB['final_bias'] 
+		info['start_fresh']		=	 SB['start_fresh'] 
 
 		#DETERMINE NUMBER OF FITITNG PARAM AND RANDOMIZE IF NEEDED
 		nfit=0; layers=info['nn_layers']
@@ -87,16 +88,16 @@ class NN:
 		# print(self.info['nn_layers'],self.info['num_fit_param'])
 		# for i in range(0,len(self.submatrices)):
 		# 	print(self.submatrices[i].shape)
-		
-		self.unset_grad()
 
 		#START FRESH EVERY TIME
-		start_fresh=False 
+		start_fresh=self.info['start_fresh'] 
 		if(start_fresh):
 			self.randomize(); 		
 			max_rand_wb=self.info['max_rand_wb']
 		else:
 			max_rand_wb=1.0
+
+		self.unset_grad()
 
 		new_nfit=0
 		N_neuron_2_add=2

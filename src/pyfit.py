@@ -89,7 +89,7 @@ def closure():
 start=time();  
 writer.log('STARTING FITTING LOOP:')
 writer.log(["	INITIAL LR:",'%10.7s'%str(optimizer.param_groups[0]['lr'])])
-N_TRY=1; N_TRY_MAX=1; 
+N_TRY=1; 
 while(t<max_iter):  
 
 	optimizer.step(closure)
@@ -110,7 +110,7 @@ while(t<max_iter):
 
 	if(delta1<SB['rmse_tol'] and delta2<SB['rmse_tol'] and t-last_add>50): 
 		if(SB['dynamic_NN']):
-			if(N_TRY>=N_TRY_MAX):
+			if(N_TRY>=SB['try_n_times']):
 				SB['nn'].add_neurons()
 				set_optim()
 				N_TRY=1; last_add=t
