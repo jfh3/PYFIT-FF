@@ -36,7 +36,7 @@ then
 	NLG=$(awk '{if(NR==5){print $1}}' $IN)				#NUMBER OF LG POLYNOMIALS
 	NRo=$(awk '{if(NR==6){print $1}}' $IN)				#NUMBER OF Ro TERMS
 	NGi=$(awk -v NLG=$NLG -v NRo=$NRo   'BEGIN {print NLG*NRo}' )	#NUMBER OF Gi
-
+	NLT=$(awk -v NL=$NL 'BEGIN {print NL+2}' )	#TOTAL NUMBER OF LAYERS
 
 	if [ $NL -eq 1 ]
 	then
@@ -53,13 +53,14 @@ then
 		#echo $A $B $C
 		NODES=$(awk -v A=$A -v B=$B -v C=$C 'BEGIN {print int((-B+(B^2-4.0*A*C)^0.5)/(2.0*A))}')
 		
-		str=" "$NGi
+		str=""$NLT" "$NGi
 		for i in $(seq 1 $NL)
 		do
 			str=$str" "$NODES 
 		done
 		str=$str" "$NF 
-		echo $str >> $OUT
+		echo $str  
+		echo " "$str >> $OUT
 
 	fi
 

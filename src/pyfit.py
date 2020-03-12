@@ -76,13 +76,13 @@ def set_optim():
 set_optim()
 
 def closure():
-	global loss,OBE1,OBL1,OBL2,OBLP,OB_DU,rmse,OBT
+	global loss,OBE1,OBL1,OBLP,OB_DU,rmse,OBT
 	optimizer.zero_grad(); loss=0.0 
-	[rmse,OBE1,OB_DU,OBL1,OBL2,OBLP]=training_set.compute_objective(SB)
-	loss=OBE1+OB_DU+OBL1+OBL2+OBLP
+	[rmse,OBE1,OB_DU,OBL1,OBLP]=training_set.compute_objective(SB)
+	loss=OBE1+OB_DU+OBL1+OBLP
 	loss.backward();
 	OBE1=OBE1.item();	OB_DU=OB_DU.item();	OBLP=OBLP.item()
-	OBL1=OBL1.item();	OBL2=OBL2.item();	OBT=loss.item();
+	OBL1=OBL1.item();	OBT=loss.item();
 	return loss
 
 #OPTIMIZATION LOOP
@@ -104,7 +104,7 @@ while(t<max_iter):
 	delta2=((rmse_m2-rmse)**2.0)**0.5
 
 	#WRITE STUFF
-	if(rmse<5000 and t%1==0): writer.log_err([t,rmse,OBE1,OB_DU,OBL1,OBL2, \
+	if(rmse<5000 and t%1==0): writer.log_err([t,rmse,OBE1,OB_DU,OBL1, \
 				  OBLP,OBT,optimizer.param_groups[0]['lr'],delta1,delta2]) 
 	if(t%SB['save_every']==0):  util.chkpnt(SB,t);   
 

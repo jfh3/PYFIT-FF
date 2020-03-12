@@ -1,11 +1,11 @@
 {
 
 "pot_type"		:	"NN",
-"pot_file"		:	"nn0.dat",
+"pot_file"		:	"NN1.dat",
 "dataset_path"		:	"train.dat",
 
 "max_iter"		:	1000000,
-"fraction_train"	:	0.75,
+"fraction_train"	:	0.8,
 "re_randomize"		:	true,
 
 "LR"			:	0.1,
@@ -14,22 +14,23 @@
 "lambda_E1"		:	1.0,
 "lambda_dU"		:	1.0,
 "lambda_L1"		:	0.0,
-"lambda_L2"		:	0.0,
-"lambda_Lp"		:	0.0,
+"lambda_Lp"		:	10.0,
+"LP"			:	6.0,
+"constrain_WB"		:	4.0,
 
-"dynamic_NN"		:	true,
+"dynamic_NN"		:	false,
 "start_fresh"		:	true, 
 "try_n_times"		:	4,
 
-"rmse_dU"		:	0.0,
+"rmse_dU"		:	5.0,
 "rmse_xtanhx"		:	0.0,
-"rmse_tol"		:	0.01,	
-"rmse_final"		:	2.5,	
+"rmse_tol"		:	0.0,	
+"rmse_final"		:	1.0,	
 
 "cnst_final_bias"	:	true,
 "final_bias"		:	0.0,
 
-"save_every" 		:	1000,
+"save_every" 		:	250,
 
 "u_shift"		:	0.795023,
 "train_edges" 		:	true,	
@@ -37,18 +38,18 @@
 "dump_poscars"		:	false,
 "write_lsp"		:	false,
 
-"weight_selector"	: 	["DC","Wurt"],		
+"weight_selector"	: 	["DC","AIMD","Wurt"],		
 "default_weight1"	: 	1.0,
-"default_weight2"	: 	1.0,
-"mod_weight1"		: 	1.0,		
-"mod_weight2"		: 	1.0,		
+"default_weight2"	: 	0.0,
+"mod_weight1"		: 	10.0,		
+"mod_weight2"		: 	10.0,		
 
 "use_cuda"		:	false,
 
 "test_set_gids"		: 	[],		
 "n_rand_GIDS"		:	5,	
-"fix_rand_seed"		:	true,					 
-"exclude_from_test"	:	["DC","Wurt","AMORP","LIQ","DIM"]					 
+"fix_rand_seed"		:	false,					 
+"exclude_from_test"	:	["DC","BSN","ROSE","ISOLATED","Wurt","AMORP","LIQ","DIM"]					 
 }
 
 

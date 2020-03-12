@@ -87,7 +87,10 @@ class Dataset:
 			RMS_DU=0.5*((self.u1.view(self.u1.shape[0],1)-self.u1.view(1,self.u1.shape[0])) \
 				-(self.u2.view(self.u2.shape[0],1)-self.u2.view(1,self.u2.shape[0]))) 
 			RMS_DU=(torch.mean(RMS_DU**2.0)**0.5)
-			writer.write_stats(self.name,t,RMSE,MAE,MED_AE,STD_AE,MAX_AE,RMS_DU)
+
+			if(self.name!="no_dft"):
+				writer.write_stats(self.name,t,RMSE,MAE,MED_AE,STD_AE,MAX_AE,RMS_DU)
+
 
 	#APPLY THE MODEL TO DATASET
 	def evaluate_model(self,SB):
@@ -136,7 +139,7 @@ class Dataset:
 				OB_DU=SB['lambda_dU']*(torch.mean(DIFF1**2.0)**0.5)
 
 		#OBJECTIVE TERMS 3 AND 4:  L1 AND L2 REG ON NN FITTING PARAM
-		OBL1=torch.tensor(0.0); OBL2=torch.tensor(0.0);	OBLP=torch.tensor(0.0)
+		OBL1=torch.tensor(0.0); OBLP=torch.tensor(0.0)
 
 		if(SB['pot_type']=='NN'):
 		
@@ -146,18 +149,12 @@ class Dataset:
 				for i in range(0,len(SB['nn'].submatrices)): S=S+((SB['nn'].submatrices[i]**2.0)**0.5).sum()
 				OBL1=SB['lambda_L1']*S/(SB['nn'].info['num_fit_param']);	     S=0;
 
-			#L2 REGULARIZATION 
-			if(SB['lambda_L2']>0):
-				for i in range(0,len(SB['nn'].submatrices)): S=S+(SB['nn'].submatrices[i]**2.0).sum(); 
-				OBL2=SB['lambda_L2']*(S/(SB['nn'].info['num_fit_param'])); S=0;
-
-			# #L3 REGULARIZATION 
+			#LP P=2-->L2 REGULARIZATION 
 			if(SB['lambda_Lp']>0):
-				p=6.0
-				for i in range(0,len(SB['nn'].submatrices)): S=S+(SB['nn'].submatrices[i]**p).sum(); 
+				for i in range(0,len(SB['nn'].submatrices)): S=S+(SB['nn'].submatrices[i]**SB['LP']).sum(); 
 				OBLP=SB['lambda_Lp']*(S/(SB['nn'].info['num_fit_param'])); S=0;
 
-		return [RMSE,OBE1,OB_DU,OBL1,OBL2,OBLP]
+		return [RMSE,OBE1,OB_DU,OBL1,OBLP]
 
 
 class Structure:

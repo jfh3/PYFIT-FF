@@ -1,0 +1,38 @@
+
+
+*******************************************************************************
+Thu Mar 12 14:26:13 2020
+
+
+FIT:    data read from 'rn-e-2.dat' u 1:2
+        format = x:z
+        #datapoints = 15
+        residuals are weighted equally (unit weight)
+
+function used for fitting: E(x)
+	E(x)=Eo*(1.0+a*(x/ao-1.0))*exp(-a*(x/ao-1.0))*(x-Rc)**4.0/(Tc**4+(x-Rc)**4)-0.795023
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   Eo            a             ao           
+   0 8.2590734106e-01   0.00e+00  2.19e+00   -5.000000e+00   1.000000e-01   2.500000e+00
+1254 3.9568162334e-04  -9.99e-01  2.19e-03   -9.127782e+00   9.353060e-01   1.681486e+01
+
+After 1254 iterations the fit converged.
+final sum of squares of residuals : 0.000395682
+rel. change during last iteration : -9.99069e-06
+
+degrees of freedom    (FIT_NDF)                        : 12
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.00574225
+variance of residuals (reduced chisquare) = WSSR/ndf   : 3.29735e-05
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+Eo              = -9.12778         +/- 89.66        (982.3%)
+a               = 0.935306         +/- 0.1167       (12.48%)
+ao              = 16.8149          +/- 288.7        (1717%)
+
+correlation matrix of the fit parameters:
+                Eo     a      ao     
+Eo              1.000 
+a              -0.997  1.000 
+ao             -1.000  0.997  1.000 

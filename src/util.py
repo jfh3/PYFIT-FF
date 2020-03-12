@@ -41,9 +41,11 @@ def chkpnt(SB,t):
 		SB['nn'].set_grad()
 
 def partition_data(SB):
-	test_set=data.Dataset("test",SB) #INITIALIZE FULL DATASET OBJECT
-	training_set=data.Dataset("train",SB) #INITIALIZE FULL DATASET OBJECT
-	validation_set=data.Dataset("validate",SB) #INITIALIZE FULL DATASET OBJECT
+
+	test_set=data.Dataset("test",SB) #INITIALIZE DATASET OBJECT
+	training_set=data.Dataset("train",SB) #INITIALIZE DATASET OBJECT
+	validation_set=data.Dataset("validate",SB) #INITIALIZE DATASET OBJECT
+	no_dft_set=data.Dataset("no_dft",SB) #INITIALIZE DATASET OBJECT
 
 	writer.log("PARTITIONING DATA:")
 	writer.log(["	TOTAL NUMBER OF GROUPS=",len(SB['full_set'].group_sids.keys())])
@@ -65,10 +67,10 @@ def partition_data(SB):
 	#TEST-SET (EXTRAPOLATION)
 	#-------------------------------------
 
-	if(SB['fix_rand_seed']): random.seed(a=412122, version=2)
+	if(SB['fix_rand_seed']): random.seed(a=412122, version=2)  #SAME RAND TEST SET EVERY TIME
 					
-	#RANDOMLY FORM TEST SET IF DESIRED 
-	if(SB['test_set_gids']==[] and SB['n_rand_GIDS']!=0):
+	#COLLECT GID FOR TEST SET 
+	if(SB['n_rand_GIDS']!=0):
 			k=1
 			while(k<=SB['n_rand_GIDS']):
 				rand_GID=random.choice(list(SB['full_set'].group_sids.keys()))
@@ -80,24 +82,33 @@ def partition_data(SB):
 						keep=False; break
 
 				if(rand_GID not in SB['test_set_gids'] and keep): #REMOVE
-					writer.log("	"+rand_GID)
+					#writer.log("	"+rand_GID)
 					SB['test_set_gids'].append(rand_GID)
 					k=k+1
-	#exit()
+
 	writer.log("	TEST SET (UNTRAINED):")
 
+	#COLLECT STRUCTURES FOR TEST SET
 	for GID in SB['full_set'].group_sids.keys(): 
 		if(GID in SB['test_set_gids']): 
 			writer.log(["		GID		: ",GID])
 			#test_set.group_sids[GID]= SB['full_set'].group_sids[GID] 
 			for SID in SB['full_set'].group_sids[GID]:
-				test_set.structures[SID]= SB['full_set'].structures[SID]
-				test_set.Ns+=1;		test_set.Na+=SB['full_set'].structures[SID].N
+				test_set.structures[SID] = SB['full_set'].structures[SID]
+				test_set.Ns+=1;		
+				test_set.Na+=SB['full_set'].structures[SID].N
 
-	remainder=[] #whats left (use for train+val)
+	#EXTAPOLATION
+	if("NO_DFT" in SB['full_set'].group_sids.keys()):
+		for SID in SB['full_set'].group_sids["NO_DFT"]:
+			no_dft_set.structures[SID] = SB['full_set'].structures[SID]
+			no_dft_set.Ns+=1;		
+			no_dft_set.Na+=SB['full_set'].structures[SID].N
 
+	#COLLECT WHATS LEFT (use for train+val)
+	remainder=[] 
 	for SID in SB['full_set'].structures.keys(): 
-		if(SID not in test_set.structures.keys()):
+		if(SID not in test_set.structures.keys() and SID not in no_dft_set.structures.keys()):
 			remainder.append(SID)
 
 	#-------------------------------------
@@ -119,7 +130,8 @@ def partition_data(SB):
 				sid_2_add.append(i[-2]);  sid_2_add.append(i[-1])   
 		#print(sid_2_add)
 		for SID in sid_2_add: 
-			if(SID not in training_set.structures.keys() and SID not in test_set.structures.keys()):  
+			if(SID not in training_set.structures.keys() and SID not in test_set.structures.keys() \
+			and SID not in no_dft_set.structures.keys()):  
 				training_set.structures[SID]= SB['full_set'].structures[SID] 
 				training_set.Ns+=1;		
 				training_set.Na+=SB['full_set'].structures[SID].N
@@ -131,8 +143,8 @@ def partition_data(SB):
 			validation_set.Ns+=1;		
 			validation_set.Na+=SB['full_set'].structures[SID].N
 
-	if(SB['full_set'].Ns != training_set.Ns+test_set.Ns+validation_set.Ns):
-		raise ValueError("LOST A STUCTURE IN DATA PARTITIONING");
+	#if(SB['full_set'].Ns != training_set.Ns+test_set.Ns+validation_set.Ns):
+	#	raise ValueError("LOST A STUCTURE IN DATA PARTITIONING");
 
 	# if(test_SIDS==[]): test_SIDS=validation_SIDS #not ideal but test_SIDS cant be empty
 	writer.log(["	N_train_structures	: ",training_set.Ns])
@@ -148,3 +160,9 @@ def partition_data(SB):
 	SB['training_set']=training_set
 	SB['validation_set']=validation_set
 	SB['datasets']=['test_set','training_set','validation_set']
+
+	if("NO_DFT" in SB['full_set'].group_sids.keys()):
+		no_dft_set.build_arrays(SB)
+		SB['no_dft_set']=no_dft_set
+		SB['datasets'].append('no_dft_set')
+

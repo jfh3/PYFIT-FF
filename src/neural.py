@@ -7,30 +7,31 @@ class NN:
 	def __init__(self, lines, SB):
 		
 		info={}	
-
 		info['lsp_type']		=	 int(lines[0][0])
 		info['pot_type']		=	 str(SB['pot_type'])
 		info['lsp_shift']		=	 float(lines[0][1])
 		info['activation']		=	 int(lines[0][2])
 		info['num_species']		=	 int(lines[1][0])
 		info['species']			=	 str(lines[2][0])
-
 		info['atomic_weight']		=	 float(lines[2][1])
 		info['randomize_nn']		=	 bool(int(lines[3][0]))
 		info['max_rand_wb']		=	 float(lines[3][1])
 		info['cutoff_dist']		=	 float(lines[3][2])
 		info['cutoff_range']		=	 float(lines[3][3])
 		info['lsp_sigma']		=	 float(lines[3][4])
-		info['N_lg_poly']		=	 int(lines[4][0])	 
-		info['lsp_lg_poly']		=	 list(map(int,lines[4][1:]))	#map converts str list to int list
+		info['N_lg_poly']		=	 int(lines[4][0])	
+		#map converts str list to int list 
+		info['lsp_lg_poly']		=	 list(map(int,lines[4][1:]))	
 		info['N_ro_val']		=	 int(lines[5][0])	 
-		info['lsp_ro_val']		=	 list(map(float,lines[5][1:]))	#map converts str list to float list
+		info['lsp_ro_val']		=	 list(map(float,lines[5][1:]))	
+		#map converts str list to float list
 		info['ibaseline']		=	 bool(int(lines[6][0]))
 		info['bop_param']		=	 list(map(float,lines[6][1:]))  
 		info['nn_layers']		=	 list(map(int,lines[7][1:]))  
 		info['cnst_final_bias']		=	 SB['cnst_final_bias'] 
 		info['final_bias']		=	 SB['final_bias'] 
 		info['start_fresh']		=	 SB['start_fresh'] 
+		info['constrain_WB']		=	 SB['constrain_WB'] 
 
 		#DETERMINE NUMBER OF FITITNG PARAM AND RANDOMIZE IF NEEDED
 		nfit=0; layers=info['nn_layers']
@@ -85,10 +86,6 @@ class NN:
 		if( self.info['activation'] != 1): 
 			raise ValueError("ERROR: CAN ONLY ADD NEURONS TO SHIFTD SIGMOID FUNCTION")
 
-		# print(self.info['nn_layers'],self.info['num_fit_param'])
-		# for i in range(0,len(self.submatrices)):
-		# 	print(self.submatrices[i].shape)
-
 		#START FRESH EVERY TIME
 		start_fresh=self.info['start_fresh'] 
 		if(start_fresh):
@@ -142,7 +139,7 @@ class NN:
 		for l in range(0,len(self.submatrices)):
 			for j in range(0,len(self.submatrices[l][0])): #len(w1[0])=number of columns
 				for i in range(0,len(self.submatrices[l])): #build down the each row then accros
-					W.append(self.submatrices[l][i][j].item())
+					W.append(self.F(self.submatrices[l][i][j]).item())
 		return W
 
 	#TAKES A LONG VECTOR W OF WEIGHTS AND BIAS AND RETURNS WEIGHT AND BIAS SUBMATRICES
@@ -183,36 +180,38 @@ class NN:
 			for i in range(0,len(self.submatrices)):	
 				 self.submatrices[i].requires_grad = True
 			if(self.info['cnst_final_bias']): 
-				#print(self.submatrices[-1]); #exit()
 				self.submatrices[-1].requires_grad=False
 				self.submatrices[-1]=(self.info['final_bias']* \
 				torch.ones(self.submatrices[-1].shape[0],self.submatrices[-1].shape[1])).type(self.dtype)
 
+	#FUNCTION FOR SMOOTHLY CONSTRAINING NN WEIGHTS AND BIAS TERMS (SMOOTH MAX)
+	def F(self,x):
+		if(self.info['constrain_WB']>0):
+
+			return  x*torch.exp(-(x*0.429/self.info['constrain_WB'])**2)
+			# return  self.info['constrain_WB']*x*torch.exp(-x**2)/0.429
+		else:
+			return x
 
 	# #GIVEN AN INPUT MATRIX EVALUATE THE NN
 	def NN_eval(self,x):
-		out=(x.Gis).mm(torch.t(self.submatrices[0]))+torch.t((self.submatrices[1]).mm(x.M1))
+
+		out=(x.Gis).mm(torch.t(self.F(self.submatrices[0])))+torch.t((self.F(self.submatrices[1])).mm(x.M1))
 		for i in range(2,int(len(self.submatrices)/2+1)):
 			j=2*(i-1)
-
-			#self.info['activation']=10 
 
 			if(self.info['activation']==0 or self.info['activation']==1 ):  
 				out=torch.sigmoid(out)	
 				if(self.info['activation']==1):
 					out=out-0.5	
-				out=out.mm(torch.t(self.submatrices[j]))+torch.t((self.submatrices[j+1]).mm(x.M1))
+				out=out.mm(torch.t(self.F(self.submatrices[j])))+torch.t((self.F(self.submatrices[j+1])).mm(x.M1))
 
-			if(self.info['activation']==10): #ALT ACTIVATION SCHEME
-				#ADD ERROR FOR MULTLATER
-				if(i==int(len(self.submatrices)/2)):
-					out=(1.0-torch.exp(-out))**2.0-1.0
-					#out=(torch.sigmoid(out)**2.0)*((1.0-torch.exp(-out))**2.0-1.0)
-
-				else:
-					out=torch.sigmoid(out)-0.5	
-				out=out.mm(torch.t(self.submatrices[j]))+torch.t((self.submatrices[j+1]).mm(x.M1))
-	
 		return out 
 
 
+
+
+
+		# print(self.info['nn_layers'],self.info['num_fit_param'])
+		# for i in range(0,len(self.submatrices)):
+		# 	print(self.submatrices[i].shape)
