@@ -104,9 +104,9 @@ while(t<max_iter):
 	delta2=((rmse_m2-rmse)**2.0)**0.5
 
 	#WRITE STUFF
-	if(rmse<5000 and t%1==0): writer.log_err([t,rmse,OBE1,OB_DU,OBL1, \
-				  OBLP,OBT,optimizer.param_groups[0]['lr'],delta1,delta2]) 
-	if(t%SB['save_every']==0):  util.chkpnt(SB,t);   
+	if(rmse<1 and t%1==0): writer.log_err([t,rmse,OBE1,OB_DU,OBL1, \
+				  OBLP,OBT,SB['nn'].maxwb])  #,optimizer.param_groups[0]['lr']
+	if(t%SB['save_every1']==0 or t%SB['save_every2']==0):  util.chkpnt(SB,t);   
 
 	if(delta1<SB['rmse_tol'] and delta2<SB['rmse_tol'] and t-last_add>50): 
 		if(SB['dynamic_NN']):

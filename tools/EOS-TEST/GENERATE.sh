@@ -8,7 +8,7 @@ file1=$name'.dat'
 for i in $(seq 1 $N);
 do 
 
-r=$(awk -v i=$i -v N=$N 'BEGIN {print 1.75+i*(4.45-1.75)/N}')	#NN dist
+r=$(awk -v i=$i -v N=$N 'BEGIN {print 1.5+i*(4.45-1.75)/N}')	#NN dist
 echo $r
 
 #-------------------------------------------------

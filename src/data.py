@@ -78,7 +78,9 @@ class Dataset:
 			if(self.name!="train" and  SB['use_cuda']):  SB['nn'].send_to_cpu()
 			self.evaluate_model(SB)
 			if(self.name!="train" and  SB['use_cuda']):  SB['nn'].send_to_gpu()
-			writer.write_E_vs_V(self,t)
+
+			if(t%SB['save_every2']==0  or t==111111): writer.write_E_vs_V(self,t)
+
 			RMSE=(((self.u1-self.u2)**2.0).sum()/self.Ns)**0.5 
 			MAE=(((self.u1-self.u2)**2.0)**0.5).sum()/self.Ns
 			MED_AE=torch.median((((self.u1-self.u2)**2.0)**0.5))
@@ -110,7 +112,7 @@ class Dataset:
 		self.evaluate_model(SB)
 
 		#OBJECTIVE TERM-1 (RMSE OR MAE)
-		err=1000.0*(self.u1-self.u2) 		#convert to meV
+		err=(self.u1-self.u2) 		#*1000 #convert to meV
 		RMSE=(torch.mean(err**2.0)**0.5).item() #NOT USED IN OBJ 
 		err=self.swt1*err 			#apply individual structure weights
 
@@ -129,8 +131,8 @@ class Dataset:
 
 			#APPLY MASK TO ONLY USE TERMS WITH NON-ZERO WEIGHTS 
 			self.ud2=self.u2[self.mask2]
-			DIFF1=(self.swt2**0.5)*1000.0*((self.ud1.view(self.ud1.shape[0],1)-self.ud1.view(1,self.ud1.shape[0])) \
-			-(self.ud2.view(self.ud2.shape[0],1)-self.ud2.view(1,self.ud2.shape[0]))) 
+			DIFF1=(self.swt2**0.5)*((self.ud1.view(self.ud1.shape[0],1)-self.ud1.view(1,self.ud1.shape[0])) \
+			-(self.ud2.view(self.ud2.shape[0],1)-self.ud2.view(1,self.ud2.shape[0]))) #*1000.0 
 			DIFF1=(self.swt2**0.5)*torch.t(DIFF1)
 			if(RMSE<SB['rmse_xtanhx']): #RMAE>1 and RMSE<1
 				OB_DU=SB['lambda_dU']*(torch.mean(DIFF1*torch.tanh(DIFF1))) #**0.5

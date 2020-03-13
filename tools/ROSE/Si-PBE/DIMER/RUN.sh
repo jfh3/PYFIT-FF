@@ -15,14 +15,14 @@ name="DIMER-ROSE"	#group name
 r1=1.0    	#relation between V/N and lattice constant --> a^3=r1*v   
 r2=1.0      	#relation between nearest neighbor dist and lattice constant --> rnn=r2*a
 #rmin=2.3	#min nearest neighbor distance used for fitting  
-rmax=3.1	#max nearest neighbor distance used for fitting 
+rmax=3	#max nearest neighbor distance used for fitting 
 Rc=4.5; 
 Tc=1.0
 shift=0.795023
 
 #CONVERT FILE TO NEAREST NEIGHBOR DIST
 cp r-e.dat 'rn-e-1.dat'  #FULL
-awk -v rmax=$rmax '{if(0.70*rmax<$1 && $1<rmax){print $1,$2}}' 'r-e.dat'  > 'rn-e-2.dat'  #FITTING DATA
+awk -v rmax=$rmax '{if(0.6*rmax<$1 && $1<rmax){print $1,$2}}' 'r-e.dat'  > 'rn-e-2.dat'  #FITTING DATA
 
 
 
@@ -49,18 +49,15 @@ echo $Eo $a1 $ao
 #WRITE EXTRPOLATED DATA SET
 file1=$name'.dat';   > $file1
 > fitted-data.dat
+
+#EXPAND
 for i in $(seq 1 $N);
 do 
 
-r=$(awk -v i=$i -v rmax=$rmax -v N=$N 'BEGIN {print 1.01*rmax+i*(4.45-1.01*rmax)/N}')	#NN dist
+r=$(awk -v i=$i -v rmax=$rmax -v N=$N 'BEGIN {print 2.5+i*(4.45-2.5)/N}')	#NN dist
 e=$(awk -v r=$r -v Eo=$Eo -v a=$a1 -v ao=$ao -v Rc=$Rc -v Tc=$Tc -v shift=$shift 'BEGIN {print Eo*(1.0+a*(r/ao-1.0))*exp(-a*(r/ao-1.0))*(r-Rc)^4.0/(Tc^4+(r-Rc)^4)-shift}')
 E=$(awk -v e=$e -v Na=$Na 'BEGIN {print e*Na}')	#NN dist
 a=$(awk -v r=$r 'BEGIN {print 20+r}')	#NN dist
-
-
-#-------------------------------------------------
-#SC 
-#-------------------------------------------------
 
 emax=$(awk -v shift=$shift 'BEGIN {print -shift-0.5}')	 
 if (( $(echo "$e < $emax" |bc -l) )); 
@@ -86,4 +83,42 @@ rm TEMP.dat
 fi 
 
 done
+
+#exit
+
+#COMPRESS
+N=100
+for i in $(seq 1 $N);
+do 
+
+r=$(awk -v i=$i -v rmax=$rmax -v N=$N 'BEGIN {print 1.3+i*(1.95-1.3)/N}')	#NN dist
+e=$(awk -v r=$r -v Eo=$Eo -v a=$a1 -v ao=$ao -v Rc=$Rc -v Tc=$Tc -v shift=$shift 'BEGIN {print Eo*(1.0+a*(r/ao-1.0))*exp(-a*(r/ao-1.0))*(r-Rc)^4.0/(Tc^4+(r-Rc)^4)-shift}')
+E=$(awk -v e=$e -v Na=$Na 'BEGIN {print e*Na}')	#NN dist
+a=$(awk -v r=$r 'BEGIN {print 20+r}')	#NN dist
+
+emax=1000 #$(awk -v shift=$shift 'BEGIN {print 1000}')	 
+if (( $(echo "$e < $emax" |bc -l) )); 
+then
+echo $r $e $a $E >> fitted-data.dat
+
+
+cat >TEMP.dat <<!
+$name
+1.0 
+20   0.0  0.0 
+0.0  $a   0.0
+0.0  0.0  20
+$Na
+carestian or direct (scaled), only the first letter matters
+0.0  0.0  0.0 
+0.0  $r   0.0 
+$E
+!
+awk '{print $0}' 'TEMP.dat' >> $file1
+#-------------------------------------------------
+rm TEMP.dat
+fi 
+
+done
+
 

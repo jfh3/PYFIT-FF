@@ -35,7 +35,7 @@ def compute_all_lsps(SB):
 def chkpnt(SB,t):
 	if(SB['pot_type']=='NN'):
 		SB['nn'].unset_grad()
-		writer.write_NN(SB['nn'],t) 
+		if(t%SB['save_every2']==0 or t==111111): writer.write_NN(SB['nn'],t) 
 		for ds_name in SB['datasets']:
 			SB[ds_name].report(SB,t)
 		SB['nn'].set_grad()
@@ -68,7 +68,8 @@ def partition_data(SB):
 	#-------------------------------------
 
 	if(SB['fix_rand_seed']): random.seed(a=412122, version=2)  #SAME RAND TEST SET EVERY TIME
-					
+			
+	SB['test_set_gids']=[]					
 	#COLLECT GID FOR TEST SET 
 	if(SB['n_rand_GIDS']!=0):
 			k=1
@@ -81,10 +82,20 @@ def partition_data(SB):
 					else:
 						keep=False; break
 
-				if(rand_GID not in SB['test_set_gids'] and keep): #REMOVE
+				if(rand_GID not in SB['test_set_gids'] and keep and rand_GID != "NO_DFT"): #REMOVE
 					#writer.log("	"+rand_GID)
 					SB['test_set_gids'].append(rand_GID)
 					k=k+1
+
+	for key in SB['test_set_tags']:
+		for GID in SB['full_set'].group_sids.keys(): 
+			for i1 in SB['exclude_from_test']:
+				if(i1 not in GID): 
+					keep=True
+				else:
+					keep=False; break
+			if(key in GID and key != GID and keep and GID != "NO_DFT"):
+				SB['test_set_gids'].append(GID)
 
 	writer.log("	TEST SET (UNTRAINED):")
 

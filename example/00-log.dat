@@ -5,45 +5,46 @@ RUN PARAMETERS:
 	  input_file          	:	input.json	 
 	  src_path            	:	/media/james/EXT4-2TB/HOME/SRC/PY-FIT/PYFIT-FF/src	 
 	  run_path            	:	/media/james/EXT4-2TB/HOME/SRC/PY-FIT/PYFIT-FF/example/	 
-	  start_time          	:	2020-03-12-H19-M05-S50	 
+	  start_time          	:	2020-03-13-H18-M31-S35	 
 READING DEFAULT PARAMETERS USING FILE:	/media/james/EXT4-2TB/HOME/SRC/PY-FIT/PYFIT-FF/src/defaults.json	 
 	  pot_type            	:	NN	 
-	  pot_file            	:	NN1.dat	 
+	  pot_file            	:	nn0.dat	 
 	  dataset_path        	:	train.dat	 
-	  max_iter            	:	1000000	 
-	  fraction_train      	:	0.8	 
+	  max_iter            	:	50000	 
+	  fraction_train      	:	0.5	 
 	  re_randomize        	:	True	 
 	  LR                  	:	0.1	 
 	  ramp_LR             	:	True	 
 	  lambda_E1           	:	1.0	 
 	  lambda_dU           	:	1.0	 
 	  lambda_L1           	:	0.0	 
-	  lambda_Lp           	:	10.0	 
-	  LP                  	:	6.0	 
-	  constrain_WB        	:	4.0	 
+	  lambda_Lp           	:	1e-05	 
+	  LP                  	:	2.0	 
+	  constrain_WB        	:	5.0	 
 	  dynamic_NN          	:	False	 
 	  start_fresh         	:	True	 
-	  try_n_times         	:	4	 
-	  rmse_dU             	:	10.0	 
+	  try_n_times         	:	1	 
+	  rmse_dU             	:	0.0	 
 	  rmse_xtanhx         	:	0.0	 
 	  rmse_tol            	:	0.0	 
-	  rmse_final          	:	2.5	 
+	  rmse_final          	:	0.004	 
 	  cnst_final_bias     	:	True	 
 	  final_bias          	:	0.0	 
-	  save_every          	:	100	 
+	  save_every1         	:	100	 
+	  save_every2         	:	100	 
 	  u_shift             	:	0.795023	 
 	  train_edges         	:	True	 
 	  dump_poscars        	:	False	 
 	  write_lsp           	:	False	 
 	  weight_selector     	:	['DC', 'AIMD', 'Wurt']	 
 	  default_weight1     	:	1.0	 
-	  default_weight2     	:	0.0	 
-	  mod_weight1         	:	10.0	 
-	  mod_weight2         	:	10.0	 
+	  default_weight2     	:	1.0	 
+	  mod_weight1         	:	1.0	 
+	  mod_weight2         	:	1.0	 
 	  use_cuda            	:	False	 
-	  test_set_gids       	:	[]	 
-	  n_rand_GIDS         	:	5	 
-	  fix_rand_seed       	:	True	 
+	  test_set_tags       	:	['Si', 'SILICENE']	 
+	  n_rand_GIDS         	:	0	 
+	  fix_rand_seed       	:	False	 
 	  exclude_from_test   	:	['DC', 'BSN', 'ROSE', 'ISOLATED', 'Wurt', 'AMORP', 'LIQ', 'DIM']	 
 OVERWRITING SELECT DEFAULTS USING INPUT FILE:	input.json	 
 	  pot_type            	:	NN	 
@@ -65,34 +66,51 @@ READING NEURAL NETWORK FILE:
 	  lsp_sigma           	:	1.0	 
 	  N_lg_poly           	:	5	 
 	  lsp_lg_poly         	:	[0, 1, 2, 3, 4]	 
-	  N_ro_val            	:	6	 
-	  lsp_ro_val          	:	[2.25, 2.5, 2.75, 3.0, 3.5, 4.0]	 
+	  N_ro_val            	:	4	 
+	  lsp_ro_val          	:	[2.0, 2.2857, 2.5714, 2.8571]	 
 	  ibaseline           	:	True	 
 	  bop_param           	:	[12.1692, 6.17263, 3.11471, 0.755675, 0.404939, 0.036124, 0.650018, 0.57289]	 
-	  nn_layers           	:	[30, 13, 13, 13, 1]	 
+	  nn_layers           	:	[20, 14, 14, 14, 1]	 
 	  cnst_final_bias     	:	True	 
 	  final_bias          	:	0.0	 
 	  start_fresh         	:	True	 
-	  constrain_WB        	:	4.0	 
-	  num_fit_param       	:	781	 
+	  constrain_WB        	:	5.0	 
+	  num_fit_param       	:	729	 
 READING DATASET FILE: 
-	TOTAL NUMBER OF STRUCTURES:	4292	 
-	TOTAL NUMBER OF ATOMS:		49598	 
+	TOTAL NUMBER OF STRUCTURES:	5279	 
+	TOTAL NUMBER OF ATOMS:		28184	 
 COMPUTING NEIGHBOR LIST (NBL):	 
-	NBL CONSTRUCTION TIME (SEC)	=	17.612608432769775	 
+	NBL CONSTRUCTION TIME (SEC)	=	10.053847789764404	 
 COMPUTING LOCAL STRUCTURE PARAMETERS (LSP):	 
-	LSP CONSTRUCTION TIME (SEC)	=	25.3811776638031	 
+	LSP CONSTRUCTION TIME (SEC)	=	15.34496021270752	 
 PARTITIONING DATA: 
-	TOTAL NUMBER OF GROUPS=	33	 
+	TOTAL NUMBER OF GROUPS=	48	 
 	TEST SET (UNTRAINED): 
-		GID		: 	GRP-BCC-P-UNPERTURBED+ISO	 
-		GID		: 	GRP-BC8-C-UNPERTURBED+ISO	 
-		GID		: 	GRP-ST12-P-PERTURBED+ANISO	 
-		GID		: 	GRP-HCP-P-UNPERTURBED+ANISO	 
-		GID		: 	GRP-SH-P-HEX-UNPERTURBED+ANISO	 
-	N_train_structures	: 	2312	 
-	N_val_structures	: 	555	 
-	N_test_structures	: 	425	 
-	N_combined		: 	3292	 
+		GID		: 	GRP-Si5_1-PENTAMER-PENTAGON-UNPERTURBED+ISO	 
+		GID		: 	GRP-Si5_2-PENTAMER-PYRAMID-UNPERTURBED+ISO	 
+		GID		: 	GRP-Si5_3-PENTAMER-BRIDGE-UNPERTURBED+ISO	 
+		GID		: 	GRP-Si5_4-PENTAMER-BIPYRAMID-UNPERTURBED+ISO	 
+		GID		: 	GRP-Si6_1-HEXAMER-CHAIR-UNPERTURBED+ISO	 
+		GID		: 	GRP-Si6_2-HEXAMER-OCTAHEDRON-UNPERTURBED+ISO	 
+		GID		: 	GRP-Si6_3-HEXAMER-EDGECAP-UNPERTURBED+ISO	 
+		GID		: 	GRP-Si6_4-HEXAMER-FACECAP-UNPERTURBED+ISO	 
+		GID		: 	GRP-Si6_5-HEXAMER-HEXAGON-UNPERTURBED+ISO	 
+		GID		: 	GRP-Si7_1-HEPTAMER-BI-PYRAMID-UNPERTURBED+ISO	 
+		GID		: 	GRP-Si8_1-OCTAMER-BI-PYRAMID-UNPERTURBED+ISO	 
+		GID		: 	GRP-Si3_3-TRIMER-EQ-LAT-UNPERTURBED+ISO	 
+		GID		: 	GRP-Si4_2-TETRAMER-TD-UNPERTURBED+ISO	 
+		GID		: 	GRP-Si4_3-D4h-TETRAMER-SQUARE-UNPERTURBED+ISO	 
+		GID		: 	GRP-Si4_4-TETRAMER-UNPERTURBED+ISO	 
+		GID		: 	GRP-Si4_5-TETRAMER-UNPERTURBED+ISO	 
+		GID		: 	GRP-SILICENE-1-LAYER-BUCKLED-UNPERTURBED+ISO	 
+		GID		: 	GRP-SILICENE-1-LAYER-DUMBELL-UNPERTURBED+ISO	 
+		GID		: 	GRP-SILICENE-PLANAR-BILAYER-AA_p-UNPERTURBED+ISO	 
+		GID		: 	GRP-SILICENE-BUCKLED-BILAYER-AA^p-UNPERTURBED+ISO	 
+		GID		: 	GRP-SILICENE-BUCKLED-BILAYER-AB-UNPERTURBED+ISO	 
+		GID		: 	GRP-SILICENE-1-LAYER-HONEYCOMB-UNPERTURBED+ISO	 
+	N_train_structures	: 	1778	 
+	N_val_structures	: 	1666	 
+	N_test_structures	: 	835	 
+	N_combined		: 	4279	 
 STARTING FITTING LOOP: 
 	INITIAL LR:	   0.00100	 

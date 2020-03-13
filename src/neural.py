@@ -60,7 +60,7 @@ class NN:
 		if(len(info['nn_layers'])  != int(lines[7][0])):	
 			raise ValueError("NUMBER OF LAYERS IN NEURAL NETWORK FILE IS INCORRECT")
 
-		if(int(lines[0][0]) not in [5,6,7]):				
+		if(int(lines[0][0]) not in [5,6,7,20]):				
 			raise ValueError("REQUESTED POT_TYPE="+str(int(lines[0][0]))+" NOT AVAILABLE")
 		if( info['pot_type']=='PINN_BOP' and info['nn_layers'][-1]!=8): 
 			raise ValueError("ERROR: NN OUTPUT DIMENSION INCORRECT")
@@ -195,16 +195,23 @@ class NN:
 
 	# #GIVEN AN INPUT MATRIX EVALUATE THE NN
 	def NN_eval(self,x):
-
+		MAX1=torch.max(torch.max(self.F(self.submatrices[1])),torch.max(self.F(self.submatrices[0])))
 		out=(x.Gis).mm(torch.t(self.F(self.submatrices[0])))+torch.t((self.F(self.submatrices[1])).mm(x.M1))
 		for i in range(2,int(len(self.submatrices)/2+1)):
 			j=2*(i-1)
+
+			TMP=torch.max(torch.max(self.F(self.submatrices[j])),torch.max(self.F(self.submatrices[j+1])))
+			MAX1=torch.max(TMP,MAX1)
 
 			if(self.info['activation']==0 or self.info['activation']==1 ):  
 				out=torch.sigmoid(out)	
 				if(self.info['activation']==1):
 					out=out-0.5	
 				out=out.mm(torch.t(self.F(self.submatrices[j])))+torch.t((self.F(self.submatrices[j+1])).mm(x.M1))
+
+		#self.maxwb=self.F(MAX1)
+		self.maxwb=MAX1
+
 
 		return out 
 
