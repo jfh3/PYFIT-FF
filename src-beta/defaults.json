@@ -6,7 +6,7 @@
 
 "normalize_gi"		:	false,
 "normalize_by_ro"	:	false,
-"normalize_ei"		:	false,
+"normalize_ei"		:	true,
 
 "lambda_Lp"		:	0.00001,
 "LP"			:	2.0,
@@ -53,7 +53,6 @@
 "mid_ramp"		:	50,
 "LR_o"			:	0.001,
 "LR_f"			:	0.10,
-
 
 "lambda_E1"		:	1.0,
 "lambda_dU"		:	1.0,

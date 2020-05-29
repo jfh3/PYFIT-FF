@@ -31,7 +31,11 @@ class NN:
 		info['cnst_final_bias']		=	 SB['cnst_final_bias'] 
 		info['final_bias']		=	 SB['final_bias'] 
 		info['start_fresh']		=	 SB['start_fresh'] 
+	
 		info['constrain_WB']		=	 SB['constrain_WB'] 
+
+		self.normalize_ei		=	 SB['normalize_ei']		 
+
 
 		#DETERMINE NUMBER OF FITITNG PARAM AND RANDOMIZE IF NEEDED
 		nfit=0; layers=info['nn_layers']
@@ -168,6 +172,12 @@ class NN:
 						#print("HERE"); exit()
 					else:
 						W.append(self.F(self.submatrices[l][i][j]).item())
+
+		if(self.normalize_ei): 
+			print(W,W[-1])
+			W[-1]=10*W[-1]
+			exit()
+
 		return W
 
 	#TAKES A LONG VECTOR W OF WEIGHTS AND BIAS AND RETURNS WEIGHT AND BIAS SUBMATRICES

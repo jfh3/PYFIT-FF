@@ -179,9 +179,10 @@ class Structure:
 		self.N      		= int(lines[5])
 		self.U			= float(lines[-1])+self.N*SB['u_shift']  
 		
-		if(SB['normalize_ei']): 
-			raise Exception("ERROR: NORMALIZATION OF ENERGIES IS CURRENTLY DISABLED")
-			self.U=self.U/10.0  #change units so energy runs from ~ -1 to 1
+
+
+		if(SB['normalize_ei']):	self.U=self.U/10.0  #change units so energy runs from ~ -1 to 1
+
 
 		self.v			= self.V/self.N
 		self.u			= self.U/self.N

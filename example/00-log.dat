@@ -5,13 +5,13 @@ RUN PARAMETERS:
 	  input_file          	:	input.json	 
 	  src_path            	:	/home/james/HOME/SRC/PY-FIT/PYFIT-FF/src	 
 	  run_path            	:	/home/james/HOME/SRC/PY-FIT/PYFIT-FF/example/	 
-	  start_time          	:	2020-04-26-H19-M18-S53	 
+	  start_time          	:	2020-05-29-H13-M54-S30	 
 READING DEFAULT PARAMETERS USING FILE:	/home/james/HOME/SRC/PY-FIT/PYFIT-FF/src/defaults.json	 
 	  train_RMSE          	:	True	 
-	  rmse_tol            	:	0.00011	 
+	  rmse_tol            	:	1e-05	 
 	  normalize_gi        	:	False	 
 	  normalize_by_ro     	:	False	 
-	  normalize_ei        	:	False	 
+	  normalize_ei        	:	True	 
 	  lambda_Lp           	:	1e-05	 
 	  LP                  	:	2.0	 
 	  constrain_WB        	:	0.0	 
@@ -20,7 +20,7 @@ READING DEFAULT PARAMETERS USING FILE:	/home/james/HOME/SRC/PY-FIT/PYFIT-FF/src/
 	  fix_rand_seed       	:	False	 
 	  exclude_from_test   	:	['DC', 'BSN', 'ROSE', 'ISOLATED', 'Wurt', 'AMORP', 'LIQ', 'DIM']	 
 	  save_every1         	:	100	 
-	  save_every2         	:	100	 
+	  save_every2         	:	1000	 
 	  lbfgs_max_iter      	:	20	 
 	  u_shift             	:	0.795023	 
 	  train_edges         	:	True	 
@@ -86,15 +86,13 @@ READING DATASET FILE:
 	TOTAL NUMBER OF STRUCTURES:	511	 
 	TOTAL NUMBER OF ATOMS:		1491	 
 COMPUTING NEIGHBOR LIST (NBL):	 
-	NBL CONSTRUCTION TIME (SEC)	=	1.0426051616668701	 
+	NBL CONSTRUCTION TIME (SEC)	=	0.8485708236694336	 
 COMPUTING LOCAL STRUCTURE PARAMETERS (LSP):	 
-	LSP CONSTRUCTION TIME (SEC)	=	0.6770942211151123	 
+	LSP CONSTRUCTION TIME (SEC)	=	0.6378178596496582	 
 PARTITIONING DATA: 
 	TOTAL NUMBER OF GROUPS=	4	 
 	TEST SET (UNTRAINED): 
-	N_train_structures	: 	412	 
-	N_val_structures	: 	99	 
+	N_train_structures	: 	410	 
+	N_val_structures	: 	101	 
 	N_test_structures	: 	0	 
 	N_combined		: 	511	 
-STARTING FITTING LOOP: 
-	INITIAL LR:	   0.00100	 
