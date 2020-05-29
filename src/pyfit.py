@@ -39,6 +39,12 @@ util.compute_all_nbls(SB)
 util.compute_all_lsps(SB)	
 util.partition_data(SB)
 
+if(SB['normalize_gi']):	
+	raise Exception("ERROR: NORMALIZATION OF Gi IS CURRENTLY DISABLED")
+	util.collect_all_lsp(SB) 	#MAKE A SINGLE MATRIX WITH ALL GI
+	util.normalize_lsp(SB)
+
+
 #-------------------------------------------------------------------------
 #PART-2: TRAIN
 #-------------------------------------------------------------------------
@@ -47,7 +53,7 @@ t		=	0;
 max_iter	=	SB['max_iter']
 training_set	=	SB['training_set']
 
-delta_check	=	10
+delta_check	=	100
 rmse_m1		=	0
 rmse_m2		=	0
 m1_turn		=	True
@@ -67,12 +73,12 @@ def set_optim():
 	if(SB['pot_type']=='NN'):
 		#SMOOTHLY INCREASE LR (MORE STABLE FITTING)
 		if(SB['ramp_LR']):
-			optimizer=optim.LBFGS(SB['nn'].submatrices, lr=1.0) 
-			mid_ramp=20; LR_i=0.001
-			lmbda = lambda t: SB['LR']*(np.tanh(6.0*(t-mid_ramp)/mid_ramp)+1.0)/(2.0+2.0*LR_i)+LR_i 
+			optimizer=optim.LBFGS(SB['nn'].submatrices, max_iter=SB['lbfgs_max_iter'], lr=1.0) 
+			mid_ramp=SB['mid_ramp']; LR_i=SB['LR_o']
+			lmbda = lambda t: SB['LR_f']*(np.tanh(6.0*(t-mid_ramp)/mid_ramp)+1.0)/(2.0+2.0*LR_i)+LR_i 
 			scheduler = optim.lr_scheduler.LambdaLR(optimizer, lmbda,-1)
 		else: 
-			optimizer=optim.LBFGS(SB['nn'].submatrices, lr=SB['LR']) 
+			optimizer=optim.LBFGS(SB['nn'].submatrices, max_iter=SB['lbfgs_max_iter'], lr=SB['LR_f']) 
 set_optim()
 
 def closure():
@@ -104,8 +110,8 @@ while(t<max_iter):
 	delta2=((rmse_m2-rmse)**2.0)**0.5
 
 	#WRITE STUFF
-	if(rmse<1 and t%1==0): writer.log_err([t,rmse,OBE1,OB_DU,OBL1, \
-				  OBLP,OBT,SB['nn'].maxwb])  #,optimizer.param_groups[0]['lr']
+	if(rmse<100 and t%10==0): writer.log_err([t,rmse,OBE1,OB_DU,OBL1, \
+				  OBLP,OBT,SB['nn'].maxwb,optimizer.param_groups[0]['lr']])  #
 	if(t%SB['save_every1']==0 or t%SB['save_every2']==0):  util.chkpnt(SB,t);   
 
 	if(delta1<SB['rmse_tol'] and delta2<SB['rmse_tol'] and t-last_add>50): 
@@ -122,7 +128,7 @@ while(t<max_iter):
 		else:
 			writer.log("STOPPING CRITERION MET:"); t=max_iter
 
-	if(rmse<SB['rmse_final']): 
+	if(rmse<SB['rmse_stop']): 
 		writer.log("STOPPING CRITERION MET:"); t=max_iter
 		writer.log(["NFIT=",SB['nn'].info['num_fit_param']]); t=max_iter
 

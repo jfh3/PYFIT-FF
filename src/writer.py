@@ -73,7 +73,7 @@ def write_NN(nn,step):
 		f.write('\n')
 		for i in WB:	f.write('%16.8e %8.4f\n'%  (i,0.0))
 		f.write('\n')
-
+	#exit()
 def write_poscar(x):
 	# x=structure object
 	if(str(type(x))!="<class 'dataset.Structure'>"): raise ValueError("EXPECTED STRUCTURE OBJECT BUT GOT SOMETHING ELSE")

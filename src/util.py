@@ -4,6 +4,7 @@ import 	time
 import  random
 from 	os	import  path 
 import  data
+import  torch
 
 def get_run_parameters(SB):
 	#GET MISCELANEOUS RUN PARAMETERS
@@ -39,6 +40,61 @@ def chkpnt(SB,t):
 		for ds_name in SB['datasets']:
 			SB[ds_name].report(SB,t)
 		SB['nn'].set_grad()
+
+
+def collect_all_lsp(SB):
+	#COLLECT ALL Gi INTO ONE MATRIX 
+	FIRST=True
+	for ds_name in SB['datasets']:
+		if(ds_name != 'no_dft_set'):
+			#print(ds_name,SB[ds_name].Gis.shape)
+			if(FIRST):
+				FULL=SB[ds_name].Gis
+				FIRST=False
+			else:
+				FULL = torch.cat((FULL, SB[ds_name].Gis), 0)
+	SB['all_GIS']=FULL
+
+def normalize_lsp(SB):
+	if(SB['pot_type']=='NN'):
+		STD_1=SB['all_GIS'].std(dim=0)
+		MEAN_1=0 #SB['all_GIS'].mean(dim=0)
+
+		SB['Gi_std']=STD_1
+		SB['Gi_mean']=MEAN_1	#USE FOR LATER TRANSFORMING NN WEIGHTS
+
+		for ds_name in SB['datasets']:
+			SB[ds_name].Gis=(SB[ds_name].Gis-MEAN_1)/STD_1 
+
+
+
+
+ #ONLY WORKS WITH BULK STRUCTURES AND IF EVERY STRUCTURES IS DIFFERENT
+ 	#I.E DEFECTS HAVE MANY EQ DC ATOMS AND WOULD BE NON-UNIQUE
+def check_lsp_uniqueness(SB):
+	print("CHECKING UNIQUENESS")
+	NaMAX=10
+	#DOUBLE LOOP OVER ALL STRUCTURES 
+	for structure1 in SB['full_set'].structures.values():
+		if(structure1.N<=NaMAX): 
+			for structure2 in SB['full_set'].structures.values():
+				if(structure2.N<=NaMAX): 
+					#print(structure1,structure2) 
+					if(structure1 != structure2):
+						#print(structure1,structure2) 
+						#exit()
+						for Gi1 in structure1.lsps:
+
+							for Gi2 in structure2.lsps:
+								test=np.all(np.isclose(Gi1,Gi2)) 
+								if(test and structure1.gid!=structure2.gid and ((structure1.u-structure2.u)**2.0)**0.5>0.0001 ):
+									print("FOUND DUPLICATE")
+									print(Gi1)
+									print(Gi2)
+									print(structure1.sid,structure1.gid,structure1.v,structure1.u,structure1.N)
+									print(structure2.sid,structure2.gid,structure2.v,structure2.u,structure2.N)
+
+
 
 def partition_data(SB):
 
@@ -94,7 +150,8 @@ def partition_data(SB):
 					keep=True
 				else:
 					keep=False; break
-			if(key in GID and key != GID and keep and GID != "NO_DFT"):
+			if(key in SB['test_set_gids']): keep=False
+			if(key in GID and keep and GID != "NO_DFT"):
 				SB['test_set_gids'].append(GID)
 
 	writer.log("	TEST SET (UNTRAINED):")
@@ -167,10 +224,14 @@ def partition_data(SB):
 	training_set.build_arrays(SB)
 	validation_set.build_arrays(SB)
 
-	SB['test_set']=test_set
-	SB['training_set']=training_set
-	SB['validation_set']=validation_set
-	SB['datasets']=['test_set','training_set','validation_set']
+	SB['training_set']=training_set;    SB['datasets']=['training_set']
+
+	if(validation_set.Ns>0):
+		SB['validation_set']=validation_set
+		SB['datasets'].append('validation_set')
+	if(test_set.Ns>0):
+		SB['test_set']=test_set
+		SB['datasets'].append('test_set')
 
 	if("NO_DFT" in SB['full_set'].group_sids.keys()):
 		no_dft_set.build_arrays(SB)

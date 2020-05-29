@@ -1,0 +1,104 @@
+-------------------------------------------------------------- 
+-------------------------PYFIT-FF----------------------------- 
+-------------------------------------------------------------- 
+RUN PARAMETERS: 
+	  input_file          	:	input.json	 
+	  src_path            	:	/home/james/HOME/SRC/PY-FIT/PYFIT-FF-STABLE/src	 
+	  run_path            	:	/home/james/HOME/SRC/PY-FIT/PYFIT-FF-STABLE/example/	 
+	  start_time          	:	2020-04-13-H11-M48-S39	 
+READING DEFAULT PARAMETERS USING FILE:	/home/james/HOME/SRC/PY-FIT/PYFIT-FF-STABLE/src/defaults.json	 
+	  pot_type            	:	NN	 
+	  pot_file            	:	NN1.dat	 
+	  dataset_path        	:	train.dat	 
+	  train_RMSE          	:	True	 
+	  max_iter            	:	100000	 
+	  rmse_dU             	:	0.0	 
+	  rmse_tol            	:	0.0	 
+	  rmse_stop           	:	0.0	 
+	  normalize_ei        	:	False	 
+	  normalize_gi        	:	True	 
+	  fraction_train      	:	0.8	 
+	  re_randomize        	:	True	 
+	  dynamic_NN          	:	False	 
+	  start_fresh         	:	False	 
+	  try_n_times         	:	1	 
+	  lbfgs_max_iter      	:	20	 
+	  ramp_LR             	:	True	 
+	  mid_ramp            	:	20	 
+	  LR_f                	:	0.1	 
+	  LR_o                	:	0.001	 
+	  lambda_E1           	:	1.0	 
+	  lambda_dU           	:	1.0	 
+	  lambda_L1           	:	0.0	 
+	  lambda_Lp           	:	0.01	 
+	  LP                  	:	2.0	 
+	  constrain_WB        	:	0.0	 
+	  cnst_final_bias     	:	True	 
+	  final_bias          	:	0.0	 
+	  save_every1         	:	100	 
+	  save_every2         	:	100	 
+	  u_shift             	:	0.795023	 
+	  train_edges         	:	True	 
+	  dump_poscars        	:	False	 
+	  write_lsp           	:	True	 
+	  weight_selector     	:	['DC', 'AIMD', 'Wurt']	 
+	  default_weight1     	:	1.0	 
+	  default_weight2     	:	0.0	 
+	  mod_weight1         	:	1.0	 
+	  mod_weight2         	:	0.0	 
+	  use_cuda            	:	False	 
+	  test_set_tags       	:	[]	 
+	  n_rand_GIDS         	:	5	 
+	  fix_rand_seed       	:	False	 
+	  exclude_from_test   	:	['DC', 'BSN', 'ROSE', 'ISOLATED', 'Wurt', 'AMORP', 'LIQ', 'DIM']	 
+OVERWRITING SELECT DEFAULTS USING INPUT FILE:	input.json	 
+	  pot_type            	:	NN	 
+	  pot_file            	:	NN2.dat	 
+	  dataset_path        	:	train.dat	 
+READING NEURAL NETWORK FILE: 
+	 RANDOMIZING NN MIN/MAX	=	0.25	 
+	  lsp_type            	:	5	 
+	  pot_type            	:	NN	 
+	  lsp_shift           	:	0.0	 
+	  activation          	:	1	 
+	  num_species         	:	1	 
+	  species             	:	Si	 
+	  atomic_weight       	:	28.0855	 
+	  randomize_nn        	:	False	 
+	  max_rand_wb         	:	0.25	 
+	  cutoff_dist         	:	4.5	 
+	  cutoff_range        	:	1.0	 
+	  lsp_sigma           	:	1.5	 
+	  N_lg_poly           	:	5	 
+	  lsp_lg_poly         	:	[0, 1, 2, 3, 4]	 
+	  N_ro_val            	:	6	 
+	  lsp_ro_val          	:	[1.0, 1.25, 1.5, 1.75, 4.5, 4.75]	 
+	  ibaseline           	:	True	 
+	  bop_param           	:	[12.1692, 6.17263, 3.11471, 0.755675, 0.404939, 0.036124, 0.650018, 0.57289]	 
+	  nn_layers           	:	[30, 24, 24, 1]	 
+	  cnst_final_bias     	:	True	 
+	  final_bias          	:	0.0	 
+	  start_fresh         	:	False	 
+	  constrain_WB        	:	0.0	 
+	  num_fit_param       	:	1369	 
+READING DATASET FILE: 
+	TOTAL NUMBER OF STRUCTURES:	5279	 
+	TOTAL NUMBER OF ATOMS:		28184	 
+COMPUTING NEIGHBOR LIST (NBL):	 
+	NBL CONSTRUCTION TIME (SEC)	=	12.641782283782959	 
+COMPUTING LOCAL STRUCTURE PARAMETERS (LSP):	 
+	LSP CONSTRUCTION TIME (SEC)	=	21.902439832687378	 
+PARTITIONING DATA: 
+	TOTAL NUMBER OF GROUPS=	48	 
+	TEST SET (UNTRAINED): 
+		GID		: 	GRP-FCC-P-UNPERTURBED+ISO	 
+		GID		: 	GRP-cP46-C-UNPERTURBED+ISO	 
+		GID		: 	GRP-Si5_1-PENTAMER-PENTAGON-UNPERTURBED+ISO	 
+		GID		: 	GRP-Si6_5-HEXAMER-HEXAGON-UNPERTURBED+ISO	 
+		GID		: 	GRP-SILICENE-1-LAYER-DUMBELL-UNPERTURBED+ISO	 
+	N_train_structures	: 	3176	 
+	N_val_structures	: 	758	 
+	N_test_structures	: 	345	 
+	N_combined		: 	4279	 
+STARTING FITTING LOOP: 
+	INITIAL LR:	   0.00100	 

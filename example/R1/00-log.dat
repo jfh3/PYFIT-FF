@@ -3,52 +3,57 @@
 -------------------------------------------------------------- 
 RUN PARAMETERS: 
 	  input_file          	:	input.json	 
-	  src_path            	:	/media/james/EXT4-2TB/HOME/SRC/PY-FIT/PYFIT-FF/src	 
-	  run_path            	:	/media/james/EXT4-2TB/HOME/SRC/PY-FIT/PYFIT-FF/example/	 
-	  start_time          	:	2020-03-13-H11-M33-S59	 
-READING DEFAULT PARAMETERS USING FILE:	/media/james/EXT4-2TB/HOME/SRC/PY-FIT/PYFIT-FF/src/defaults.json	 
+	  src_path            	:	/home/james/HOME/SRC/PY-FIT/PYFIT-FF-STABLE/src	 
+	  run_path            	:	/home/james/HOME/SRC/PY-FIT/PYFIT-FF-STABLE/example/	 
+	  start_time          	:	2020-04-10-H21-M40-S15	 
+READING DEFAULT PARAMETERS USING FILE:	/home/james/HOME/SRC/PY-FIT/PYFIT-FF-STABLE/src/defaults.json	 
 	  pot_type            	:	NN	 
-	  pot_file            	:	nn0.dat	 
+	  pot_file            	:	NN1.dat	 
 	  dataset_path        	:	train.dat	 
-	  max_iter            	:	50000	 
-	  fraction_train      	:	0.5	 
+	  train_RMSE          	:	True	 
+	  max_iter            	:	100000	 
+	  rmse_dU             	:	0.0	 
+	  rmse_tol            	:	0.0	 
+	  rmse_stop           	:	0.0	 
+	  normalize_ei        	:	False	 
+	  normalize_gi        	:	False	 
+	  fraction_train      	:	0.8	 
 	  re_randomize        	:	True	 
-	  LR                  	:	0.1	 
+	  dynamic_NN          	:	False	 
+	  start_fresh         	:	False	 
+	  try_n_times         	:	1	 
+	  lbfgs_max_iter      	:	20	 
 	  ramp_LR             	:	True	 
+	  mid_ramp            	:	20	 
+	  LR_f                	:	0.1	 
+	  LR_o                	:	0.001	 
 	  lambda_E1           	:	1.0	 
 	  lambda_dU           	:	1.0	 
 	  lambda_L1           	:	0.0	 
-	  lambda_Lp           	:	0.0	 
+	  lambda_Lp           	:	0.0001	 
 	  LP                  	:	2.0	 
 	  constrain_WB        	:	0.0	 
-	  dynamic_NN          	:	False	 
-	  start_fresh         	:	True	 
-	  try_n_times         	:	1	 
-	  rmse_dU             	:	0.0	 
-	  rmse_xtanhx         	:	0.0	 
-	  rmse_tol            	:	0.0	 
-	  rmse_final          	:	0.004	 
 	  cnst_final_bias     	:	True	 
 	  final_bias          	:	0.0	 
 	  save_every1         	:	100	 
-	  save_every2         	:	250	 
+	  save_every2         	:	100	 
 	  u_shift             	:	0.795023	 
 	  train_edges         	:	True	 
 	  dump_poscars        	:	False	 
-	  write_lsp           	:	False	 
+	  write_lsp           	:	True	 
 	  weight_selector     	:	['DC', 'AIMD', 'Wurt']	 
 	  default_weight1     	:	1.0	 
-	  default_weight2     	:	1.0	 
+	  default_weight2     	:	0.0	 
 	  mod_weight1         	:	1.0	 
-	  mod_weight2         	:	1.0	 
+	  mod_weight2         	:	0.0	 
 	  use_cuda            	:	False	 
-	  test_set_gids       	:	[]	 
+	  test_set_tags       	:	[]	 
 	  n_rand_GIDS         	:	5	 
 	  fix_rand_seed       	:	False	 
 	  exclude_from_test   	:	['DC', 'BSN', 'ROSE', 'ISOLATED', 'Wurt', 'AMORP', 'LIQ', 'DIM']	 
 OVERWRITING SELECT DEFAULTS USING INPUT FILE:	input.json	 
 	  pot_type            	:	NN	 
-	  pot_file            	:	NN1.dat	 
+	  pot_file            	:	NN2.dat	 
 	  dataset_path        	:	train.dat	 
 READING NEURAL NETWORK FILE: 
 	 RANDOMIZING NN MIN/MAX	=	0.25	 
@@ -63,37 +68,37 @@ READING NEURAL NETWORK FILE:
 	  max_rand_wb         	:	0.25	 
 	  cutoff_dist         	:	4.5	 
 	  cutoff_range        	:	1.0	 
-	  lsp_sigma           	:	1.0	 
+	  lsp_sigma           	:	1.5	 
 	  N_lg_poly           	:	5	 
 	  lsp_lg_poly         	:	[0, 1, 2, 3, 4]	 
-	  N_ro_val            	:	8	 
-	  lsp_ro_val          	:	[2.15, 2.3, 2.45, 2.6, 2.75, 3.0, 3.5, 4.0]	 
+	  N_ro_val            	:	6	 
+	  lsp_ro_val          	:	[1.0, 1.25, 1.5, 1.75, 4.5, 4.75]	 
 	  ibaseline           	:	True	 
 	  bop_param           	:	[12.1692, 6.17263, 3.11471, 0.755675, 0.404939, 0.036124, 0.650018, 0.57289]	 
-	  nn_layers           	:	[40, 13, 13, 13, 1]	 
+	  nn_layers           	:	[30, 24, 24, 1]	 
 	  cnst_final_bias     	:	True	 
 	  final_bias          	:	0.0	 
-	  start_fresh         	:	True	 
+	  start_fresh         	:	False	 
 	  constrain_WB        	:	0.0	 
-	  num_fit_param       	:	911	 
+	  num_fit_param       	:	1369	 
 READING DATASET FILE: 
-	TOTAL NUMBER OF STRUCTURES:	4292	 
-	TOTAL NUMBER OF ATOMS:		49598	 
+	TOTAL NUMBER OF STRUCTURES:	5279	 
+	TOTAL NUMBER OF ATOMS:		28184	 
 COMPUTING NEIGHBOR LIST (NBL):	 
-	NBL CONSTRUCTION TIME (SEC)	=	17.618584394454956	 
+	NBL CONSTRUCTION TIME (SEC)	=	9.94451379776001	 
 COMPUTING LOCAL STRUCTURE PARAMETERS (LSP):	 
-	LSP CONSTRUCTION TIME (SEC)	=	27.60090136528015	 
+	LSP CONSTRUCTION TIME (SEC)	=	18.147629499435425	 
 PARTITIONING DATA: 
-	TOTAL NUMBER OF GROUPS=	33	 
+	TOTAL NUMBER OF GROUPS=	48	 
 	TEST SET (UNTRAINED): 
 		GID		: 	GRP-FCC-P-UNPERTURBED+ISO	 
-		GID		: 	GRP-BCC-P-UNPERTURBED+ISO	 
-		GID		: 	GRP-A15-C-UNPERTURBED+ISO	 
-		GID		: 	GRP-ST12-P-UNPERTURBED+ANISO	 
-		GID		: 	GRP-ST12-P-PERTURBED+ANISO	 
-	N_train_structures	: 	1461	 
-	N_val_structures	: 	1350	 
-	N_test_structures	: 	481	 
-	N_combined		: 	3292	 
+		GID		: 	GRP-SH-P-HEX-UNPERTURBED+ISO	 
+		GID		: 	GRP-Si8_1-OCTAMER-BI-PYRAMID-UNPERTURBED+ISO	 
+		GID		: 	GRP-Si4_4-TETRAMER-UNPERTURBED+ISO	 
+		GID		: 	GRP-SILICENE-1-LAYER-BUCKLED-UNPERTURBED+ISO	 
+	N_train_structures	: 	3118	 
+	N_val_structures	: 	746	 
+	N_test_structures	: 	415	 
+	N_combined		: 	4279	 
 STARTING FITTING LOOP: 
 	INITIAL LR:	   0.00100	 

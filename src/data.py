@@ -114,13 +114,12 @@ class Dataset:
 		#OBJECTIVE TERM-1 (RMSE OR MAE)
 		err=(self.u1-self.u2) 		#*1000 #convert to meV
 		RMSE=(torch.mean(err**2.0)**0.5).item() #NOT USED IN OBJ 
+		#if(RMSE<SB['rmse_dU']):
 		err=self.swt1*err 			#apply individual structure weights
 
-		if(RMSE<SB['rmse_xtanhx']): #RMAE>1 and RMSE<1
-			OBE1=SB['lambda_E1']*(torch.mean(err*torch.tanh(err))) #**0.5
-			#OBE1=SB['lambda_E1']*(torch.mean(torch.tanh(err)*torch.tanh(err))) #**0.5
-		else:
-			OBE1=SB['lambda_E1']*(torch.mean(err**2.0)**0.5)
+		OBE1=torch.mean(err**2.0) 
+		if(SB['train_RMSE']): OBE1=OBE1**0.5
+		OBE1=SB['lambda_E1']*OBE1
 
 		#OBJECTIVE TERM-2 (DIFF)
 		OB_DU=torch.tensor(0.0) #.type(SB['dtype'])
@@ -128,33 +127,39 @@ class Dataset:
 		if(RMSE<SB['rmse_dU'] and fit_diff != True):  fit_diff=True
 
 		if(SB['lambda_dU']>0 and fit_diff): 
-
+		#if(SB['lambda_dU']>0 and RMSE<SB['rmse_dU']): 
 			#APPLY MASK TO ONLY USE TERMS WITH NON-ZERO WEIGHTS 
 			self.ud2=self.u2[self.mask2]
 			DIFF1=(self.swt2**0.5)*((self.ud1.view(self.ud1.shape[0],1)-self.ud1.view(1,self.ud1.shape[0])) \
 			-(self.ud2.view(self.ud2.shape[0],1)-self.ud2.view(1,self.ud2.shape[0]))) #*1000.0 
 			DIFF1=(self.swt2**0.5)*torch.t(DIFF1)
-			if(RMSE<SB['rmse_xtanhx']): #RMAE>1 and RMSE<1
-				OB_DU=SB['lambda_dU']*(torch.mean(DIFF1*torch.tanh(DIFF1))) #**0.5
-				#OB_DU=SB['lambda_dU']*(torch.mean(torch.tanh(DIFF1)*torch.tanh(DIFF1))) #**0.5
-			else:
-				OB_DU=SB['lambda_dU']*(torch.mean(DIFF1**2.0)**0.5)
+			OB_DU=SB['lambda_dU']*(torch.mean(DIFF1**2.0)**0.5)
 
 		#OBJECTIVE TERMS 3 AND 4:  L1 AND L2 REG ON NN FITTING PARAM
 		OBL1=torch.tensor(0.0); OBLP=torch.tensor(0.0)
 
 		if(SB['pot_type']=='NN'):
 		
-			S=0.0
+			m1=SB['training_set'].Ns; S=0
+
+			S=0.0; S1=0
 			#L1 REGULARIZATION
 			if(SB['lambda_L1']>0):
-				for i in range(0,len(SB['nn'].submatrices)): S=S+((SB['nn'].submatrices[i]**2.0)**0.5).sum()
-				OBL1=SB['lambda_L1']*S/(SB['nn'].info['num_fit_param']);	     S=0;
+				for i in range(0,len(SB['nn'].submatrices)-1): 
+					#NWB=SB['nn'].submatrices[i].shape[0]*SB['nn'].submatrices[i].shape[1]
+					#S1=torch.sum(SB['nn'].submatrices[i]**SB['LP'])/NWB
+					S1=torch.sum((SB['nn'].submatrices[i]**2.0)**0.5) 
+					S+=S1;
+				OBL1=SB['lambda_L1']*S/2.0/m1; S=0; S1=0
 
 			#LP P=2-->L2 REGULARIZATION 
 			if(SB['lambda_Lp']>0):
-				for i in range(0,len(SB['nn'].submatrices)): S=S+(SB['nn'].submatrices[i]**SB['LP']).sum(); 
-				OBLP=SB['lambda_Lp']*(S/(SB['nn'].info['num_fit_param'])); S=0;
+				for i in range(0,len(SB['nn'].submatrices)-1): 
+					#NWB=SB['nn'].submatrices[i].shape[0]*SB['nn'].submatrices[i].shape[1]
+					#S1=torch.sum(SB['nn'].submatrices[i]**SB['LP'])/NWB
+					S1=torch.sum(SB['nn'].submatrices[i]**SB['LP']) 
+					S+=S1;
+				OBLP=SB['lambda_Lp']*S/2.0/m1; S=0;
 
 		return [RMSE,OBE1,OB_DU,OBL1,OBLP]
 
@@ -172,7 +177,12 @@ class Structure:
 		self.a3			= SF*(np.array(lines[4]).astype(np.float))
 		self.V			= np.absolute(np.dot(self.a1,np.cross(self.a2,self.a3)))
 		self.N      		= int(lines[5])
-		self.U			= float(lines[-1])+self.N*SB['u_shift'] #+ (self.n_atoms * e_shift)
+		self.U			= float(lines[-1])+self.N*SB['u_shift']  
+		
+		if(SB['normalize_ei']): 
+			raise Exception("ERROR: NORMALIZATION OF ENERGIES IS CURRENTLY DISABLED")
+			self.U=self.U/10.0  #change units so energy runs from ~ -1 to 1
+
 		self.v			= self.V/self.N
 		self.u			= self.U/self.N
 		self.species		= SB['species']  #TODO THIS NEEDS TO BE FIXED (GENERALIZE TO BINARY)
@@ -277,9 +287,14 @@ class Structure:
 
 			if(SB['nn'].info['lsp_type']==5):
 				radial_term=np.exp(-((rij-ros)/s)**2.0)*np.exp(-((rik-ros)/s)**2.0)*fcik*fcij/ros2
-			if(SB['nn'].info['lsp_type']==20):
-				radial_term=np.exp(-((rij-s)/ros)**2.0)*np.exp(-(((rik-s)/ros))**2.0)*fcik*fcij 
+				#if(SB["normalize_by_ro"]): radial_term=radial_term/ros2
+				#print(ros2,ros2.shape)
 
+			if(SB['nn'].info['lsp_type']==20):
+				#radial_term=np.exp(-((rij-s)/ros)**2.0)*np.exp(-(((rik-s)/ros))**2.0)*fcik*fcij 
+				radial_term=np.exp(-((rij-0)/ros)**2.0)*np.exp(-(((rik-0)/ros))**2.0)*fcik*fcij 
+			# print(ros.shape,radial_term.shape)
+			# exit()
 			#ANGULAR TERM
 			first=True
 			for m in range(0,max(lgs)+1):
@@ -290,71 +305,33 @@ class Structure:
 				if(m in lgs): 
 					if(first): 
 						gis=(radial_term*(lg_cos1)).sum(axis=1); first=False
+						#print(gis.shape)
+
+						if(SB["normalize_by_ro"]==False): tmp_ros2=ros2
+
 					else:
+						if(SB["normalize_by_ro"]==False): 
+							tmp_ros2=np.concatenate((tmp_ros2,ros2))
+
 						gis=np.concatenate((gis,(radial_term*(lg_cos1)).sum(axis=1)))
+						#print(gis.shape)
+
 				if(m>=1): #define for next iteration of loop 
 						tmp=lg_cos1
 						lg_cos1=((2.0*m+1.0)*cos_ijk1*lg_cos1-m*lg_cos1_m1)/(m+1); lg_cos1_m1=tmp; 
-						
+			
+			#exit()
+			
 			gis=np.arcsinh(gis)
+			#print(gis.shape,(tmp_ros2.flatten()).shape); #exit()
+			if(SB["normalize_by_ro"]==False): gis=(tmp_ros2.flatten())*gis; #exit()
+			#nt(gis.shape,tmp_ros2.shape); exit()
+
 			self.lsps.append(gis)
 
 			if(SB['write_lsp']):
-				str1=''
+				str1=str(self.v)+" "+str(self.u)
 				for i in gis:
 					str1=str1+' %14.12f '%i
+				str1=str1+" "+str(self.gid)
 				writer.write_LSP(str1)
-
-
-				# # for i in range(0,len(SB['nn'].submatrices)):
-				# # 	S=S+torch.sum((SB['nn'].submatrices[i])**2.0) #.sum(); 
-				# 	#print(i,S,len(SB['nn'].submatrices),SB['nn'].submatrices[i]) 
-				# #exit()
-				# first=True
-				# for i in range(0,len(SB['nn'].submatrices)):
-
-				# 	if(first):
-				# 		TMP=(SB['nn'].submatrices[i]).view(SB['nn'].submatrices[i].shape[0]*SB['nn'].submatrices[i].shape[1],1)
-				# 		first=False
-				# 	else: 
-				# 		TMP=torch.cat((TMP,(SB['nn'].submatrices[i]).view(SB['nn'].submatrices[i].shape[0]*SB['nn'].submatrices[i].shape[1],1)))
-				# # print(TMP,(TMP-torch.t(TMP)).shape)
-				# # print(TMP-torch.t(TMP))
-				# # exit()
-				# # (TMP**2.0).sum()
-				# # OBL2=SB['lambda_L2']*((TMP-torch.t(TMP))**2.0).sum()/(SB['nn'].info['num_fit_param'])/(SB['nn'].info['num_fit_param']); S=0;
-				# #exit()
-				# OBL2=SB['lambda_L2']*(TMP**6.0).sum()
-
-
-
-
-			# #ANGULAR TERM
-			# first=True
-			# for m in range(0,max(lgs)+1):
-			# 	if(m==0): 
-			# 		lg_cos1=np.ones((cos_ijk1.shape[0],cos_ijk1.shape[1]))
-			# 		# lg_cos2=np.ones((cos_ijk.shape[0],cos_ijk.shape[1]))
-			# 		# lg_cos3=np.ones((cos_ijk.shape[0],cos_ijk.shape[1]))
-
-			# 	if(m==1): 
-			# 		lg_cos1_m1=lg_cos1;		lg_cos1=cos_ijk1;
-			# 		# lg_cos2_m1=lg_cos2;		lg_cos2=cos_ijk2;
-			# 		# lg_cos3_m1=lg_cos3;		lg_cos3=cos_ijk3;
-
-			# 	#lg_cos=1+jk_mask*lg_cos #(1+lg_cos)
-			# 	# lg_cos=lg_cos*fcik*fcij
-			# 	if(m in lgs): 
-			# 		if(first): 
-			# 			gis=(radial_term*(lg_cos1)).sum(axis=1); first=False
-			# 		else:
-			# 			gis=np.concatenate((gis,(radial_term*(lg_cos1)).sum(axis=1)))
-			# 	if(m>=1): #define for next iteration of loop 
-			# 			tmp=lg_cos1
-			# 			lg_cos1=((2.0*m+1.0)*cos_ijk1*lg_cos1-m*lg_cos1_m1)/(m+1); lg_cos1_m1=tmp;
-			# 			# tmp=lg_cos2
-			# 			# lg_cos2=((2.0*m+1.0)*cos_ijk2*lg_cos2-m*lg_cos2_m1)/(m+1); lg_cos2_m1=tmp;
-			# 			# tmp=lg_cos3
-			# 			# lg_cos3=((2.0*m+1.0)*cos_ijk3*lg_cos3-m*lg_cos3_m1)/(m+1); lg_cos3_m1=tmp;
-
-			# 	#print(np.max(radial_term),np.max(lg_cos))

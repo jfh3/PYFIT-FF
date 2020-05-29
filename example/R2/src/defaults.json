@@ -1,0 +1,82 @@
+{
+
+
+
+
+
+
+"pot_type"		:	"NN",
+"pot_file"		:	"NN1.dat",
+"dataset_path"		:	"train.dat",
+"train_RMSE"		:	true,
+
+
+"max_iter"		:	100000,
+"rmse_dU"		:	0.0,
+"rmse_tol"		:	0.0,	
+"rmse_stop"		:	0.0,	
+
+
+"normalize_ei"		:	false,
+"normalize_gi"		:	false,
+
+
+"fraction_train"	:	0.8,
+"re_randomize"		:	true,
+
+
+
+
+
+"dynamic_NN"		:	false,
+"start_fresh"		:	false, 
+"try_n_times"		:	1,
+"lbfgs_max_iter"	: 	20,
+
+
+
+"ramp_LR"		:	true,
+"mid_ramp"		:	20,
+"LR_f"			:	0.10,
+"LR_o"			:	0.001,
+
+
+
+
+"lambda_E1"		:	1.0,
+"lambda_dU"		:	1.0,
+"lambda_L1"		:	0.0,
+"lambda_Lp"		:	0.001,
+"LP"			:	2.0,
+"constrain_WB"		:	0.0,
+
+
+
+
+"cnst_final_bias"	:	true,
+"final_bias"		:	0.0,
+
+"save_every1" 		:	100,
+"save_every2" 		:	100,
+
+"u_shift"		:	0.795023,
+"train_edges" 		:	true,	
+
+"dump_poscars"		:	false,
+"write_lsp"		:	true,
+
+"weight_selector"	: 	["DC","AIMD","Wurt"],		
+"default_weight1"	: 	1.0,
+"default_weight2"	: 	0.0,
+"mod_weight1"		: 	1.0,		
+"mod_weight2"		: 	0.0,		
+
+"use_cuda"		:	false,
+
+"test_set_tags"		: 	[],		
+"n_rand_GIDS"		:	5,	
+"fix_rand_seed"		:	false,					 
+"exclude_from_test"	:	["DC","BSN","ROSE","ISOLATED","Wurt","AMORP","LIQ","DIM"]					 
+}
+
+

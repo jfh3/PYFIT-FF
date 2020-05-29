@@ -40,6 +40,8 @@ class NN:
 
 		self.info = info
 
+		self.normalize_by_ro=SB["normalize_by_ro"]
+
 		self.dtype=torch.FloatTensor
 		if(SB['use_cuda']): self.dtype=torch.cuda.FloatTensor
 
@@ -136,10 +138,36 @@ class NN:
 	#TAKES AN ARRAY OF NP.ARRAY SUBMATRICES AND RETURNS A LONG VECTOR W OF WEIGHTS AND BIAS  
 	def matrix_combine(self):
 		W=[]
+
+		if(self.normalize_by_ro==False):
+			#ros1=np.array(SB['lsp_ro_val']).reshape(len(SB['lsp_ro_val']),1)
+
+			tmp=self.info['lsp_ro_val'] #torch.tensor(self.info['lsp_ro_val'])
+			for m in range(1,self.info['N_lg_poly']):
+				tmp=tmp+self.info['lsp_ro_val'] #np.concatenate((tmp,torch.tensor(self.info['lsp_ro_val'])))
+			#print(tmp)
+			tmp=torch.tensor([tmp])
+			#print(tmp.shape)
+
 		for l in range(0,len(self.submatrices)):
+	
+			if(l==0 and self.normalize_by_ro==False):
+				#print(self.submatrices[l].shape,tmp.shape) #,tmp.view(1,30),tmp.view(1,30).shape)
+				#print(self.submatrices[l])
+				TMP=self.submatrices[l]*(tmp**2) #tmp.view(1,30)*tmp.view(1,30)
+				#print(self.submatrices[l])
+				print(TMP)
+				print(tmp)
+				#exit()
+
+			print(self.submatrices[l])
 			for j in range(0,len(self.submatrices[l][0])): #len(w1[0])=number of columns
 				for i in range(0,len(self.submatrices[l])): #build down the each row then accros
-					W.append(self.F(self.submatrices[l][i][j]).item())
+					if(l==0 and self.normalize_by_ro==False):
+						W.append(self.F(TMP[i][j]).item())
+						#print("HERE"); exit()
+					else:
+						W.append(self.F(self.submatrices[l][i][j]).item())
 		return W
 
 	#TAKES A LONG VECTOR W OF WEIGHTS AND BIAS AND RETURNS WEIGHT AND BIAS SUBMATRICES
@@ -187,16 +215,16 @@ class NN:
 	#FUNCTION FOR SMOOTHLY CONSTRAINING NN WEIGHTS AND BIAS TERMS (SMOOTH MAX)
 	def F(self,x):
 		if(self.info['constrain_WB']>0):
-
 			return  x*torch.exp(-(x*0.429/self.info['constrain_WB'])**2)
-			# return  self.info['constrain_WB']*x*torch.exp(-x**2)/0.429
 		else:
 			return x
 
 	# #GIVEN AN INPUT MATRIX EVALUATE THE NN
 	def NN_eval(self,x):
 		MAX1=torch.max(torch.max(self.F(self.submatrices[1])),torch.max(self.F(self.submatrices[0])))
+
 		out=(x.Gis).mm(torch.t(self.F(self.submatrices[0])))+torch.t((self.F(self.submatrices[1])).mm(x.M1))
+
 		for i in range(2,int(len(self.submatrices)/2+1)):
 			j=2*(i-1)
 
