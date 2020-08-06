@@ -10,20 +10,21 @@
 
 ## Documentation
 
-This README file only contains information on how to install and run the included example. For more detailed information on what the code is doing and how it works please refer to the manual in (PYFIT-FF/docs/manual.pdf). The manual covers the following topics
+This README file only contains information on how to install and run the included example. For more detailed information on what the code is doing and how it works please refer to the manual in (PYFIT-FF/docs/manual.pdf). 
 
-- Background information relevant to PYFIT
-	* Regression 
-	* Neural network overview
-	* Overview of machine learning potentials 
-	* Atomic fingerprinting schemes 
-- Information on how to use PYFIT-FF
-	* Outline of current functionality and future plans
-	* Overview of how PYFIT works
-	* Description of PYFIT's input and outfiles
-	* Description of PYFIT's input parameters and what they control
-- Getting started: 
-	* Dependency and code download instructions 
++ __Manual contents__: 
+	- Background information relevant to PYFIT
+		* Regression 
+		* Neural network overview
+		* Overview of machine learning potentials 
+		* Atomic fingerprinting schemes 
+	- Information on how to use PYFIT-FF
+		* Outline of current functionality and future plans
+		* Overview of how PYFIT works
+		* Description of PYFIT's input and outfiles
+		* Description of PYFIT's input parameters and what they control
+	- Getting started: 
+		* Dependency and code download instructions 
 
 ## Installation
 
