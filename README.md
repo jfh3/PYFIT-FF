@@ -1,6 +1,6 @@
 # PYFIT-FF: 
 
-## summary
+## Summary
 
 + __Authors__: James Hickman (NIST) and Adam Robinson (GMU) 
 	* Please send any relevant questions, bug reports, or comments to james.hickman@nist.gov
@@ -12,8 +12,11 @@
 		* Fast 
 		* Flexible
 		* Open Source
-		
-+ __Documentation__: This README file only contains information on how to install and use PYFIT-FF. For more detailed information on what the code is doing and how it works please refer to the manual in (PYFIT-FF/docs/manual.pdf). The manual covers the following topics
+	
+## Documentation
+
+This README file only contains information on how to install and use PYFIT-FF. For more detailed information on what the code is doing and how it works please refer to the manual in (PYFIT-FF/docs/manual.pdf). The manual covers the following topics
+
 	- Background information relevant to PYFIT
 		* Regression 
 		* Neural network overview
