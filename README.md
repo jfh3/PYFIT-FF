@@ -17,10 +17,10 @@ This README file only contains information on how to install and run the include
 		* Regression 
 		* Neural network overview
 		* Overview of machine learning potentials 
-		* Atomic fingerprinting schemes 
-	- Information on how to use PYFIT-FF
+		* Atomic fingerprinting 
+	- PYFIT-FF Overview
 		* Outline of current functionality and future plans
-		* Overview of how PYFIT works
+		* Summary of how PYFIT works
 		* Description of PYFIT's input and outfiles
 		* Description of PYFIT's input parameters and what they control
 	- Getting started: 
