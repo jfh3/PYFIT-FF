@@ -6,18 +6,11 @@
 	* Please send any relevant questions, bug reports, or comments to james.hickman@nist.gov
 
 + __Description__: 
-	- PYFIT-FF is a tool for training feed-forward artificial neural network (ANN) interatomic potentials to interpolate between density functional theory energy predictions. This is done by utilizing the automatic differentiation and optimization library [PYTORCH](https://pytorch.org/) for the optimization process.
-	- The main benefits of PYFIT over other NN potentials training tools are the following: 
-		* Highly portable 
-		* Simple
-		* Fast 
-		* Flexible
-		* Open Source
-	
+	- PYFIT-FF is a tool for training feed-forward artificial neural network (ANN) interatomic potentials to interpolate between density functional theory energy predictions. This is done by utilizing the automatic differentiation and optimization library [PYTORCH](https://pytorch.org/) for the optimization process. The main benefits of PYFIT are its portablility, simplicity, speed, flexibilty, and open source design. 
+
 ## Documentation
 
-This README file only contains information on how to install and use PYFIT-FF. For more detailed information on what the code is doing and how it works please refer to the manual in (PYFIT-FF/docs/manual.pdf). 
-The manual covers the following topics
+This README file only contains information on how to install and run the included example. For more detailed information on what the code is doing and how it works please refer to the manual in (PYFIT-FF/docs/manual.pdf). The manual covers the following topics
 
 - Background information relevant to PYFIT
 	* Regression 
