@@ -6,33 +6,31 @@
 	* Please send any relevant questions, bug reports, or comments to james.hickman@nist.gov
 
 + __Description__: 
-	- PYFIT-FF is a tool for training feed-forward artificial neural network (NN) interatomic potentials to interpolate between density functional theory energy predictions. This is done by utilizing the automatic differentiation and optimization library [PYTORCH](https://pytorch.org/) for the optimization process.
+	- PYFIT-FF is a tool for training feed-forward artificial neural network (ANN) interatomic potentials to interpolate between density functional theory energy predictions. This is done by utilizing the automatic differentiation and optimization library [PYTORCH](https://pytorch.org/) for the optimization process.
 	-  The main benefits of PYFIT over other NN potentials training tools are the following: 
 		* Highly portable 
 		* Simple
 		* Fast 
 		* Flexible
 		* Open Source
-	- __NOTE__: This README file only contains information on how to install and use PYFIT-FF. For more detailed information see (PYFIT-FF/docs/DOC.md), generally the information in DOC.md would be useful if you want to get inside the code and modify it.
-
+		
++ __Documentation__: 
+This README file only contains information on how to install and use PYFIT-FF. For more detailed information on what the code is doing and how it works please refer to the manual in (PYFIT-FF/docs/manual.pdf). The manual covers the following topics
+	- Background information relevant to PYFIT
+		* Regression 
+		* Neural network overview
+		* Machine learning potentials 
+		* Atomic fingerprinting schemes 
+	- Information on how to use PYFIT-FF
+		* Dependency and code download instructions 
+		* description of Input and out pfiles
+	- PY
+	- Open Source
+		
 ## Current functionality
 
-+ Single component mathematical NN training using the local atomic environment descriptors developed by [Purja-Pun and Mishin](https://www.nature.com/articles/s41467-019-10343-5).
++ Single component mathematical ANN training using the local atomic environment descriptors developed by [Purja-Pun and Mishin](https://www.nature.com/articles/s41467-019-10343-5).
 
-## Planned updates
-
-We are actively working on extending the PYFIT functionality to the following cases (in more or less chronological order) 
-
-+ single component PINN interatomic potential training
-+ multicomponent neural network interatomic potentials using the [Purja-Pun and Mishin](https://www.nature.com/articles/s41467-019-10343-5) descriptors 
-+ multicomponent neural network interatomic potentials using the Behler-Parrinello descriptors
-+ multicomponent component PINN interatomic potential training
-
-## Citing PYFIT-FF 
-
-If you use PYFIT-FF to generate an interatomic potential used in a publication please use the relevant citation 
-- see PYFIT-FF/docs/cite.bib for relevant bibtex entries
-	
 # Installation
 
 Necessary dependencies (see below for dependency installation instructions):  
@@ -88,29 +86,13 @@ sudo pip3 install torch torchvision numpy
 	- NOTE: I typically put this command in my ~/.bashrc so that it activates automatically and is essentally my default python implementation
 
 
-## Input files 
-
-The following is a discussion of the relevant input files for running PYFIT-FF
- set.dat",
-+ "max_iter"			:	100,
-"lambda_rmse"			:	1.0,
-"lambda_l1"			:	0.0,
-"lambda_l2"			:	0.00001,
-"lambda_dU"			:	0.0,
-"u_shift"			:	0.795023,
-"dump_poscars"			:	false,
-"learning_rate"			:	0.05
-
-
 2) The DFT database file which contains POSCAR files, DFT energies
 
+## Planned updates
 
-# Options
-	
-## Fitting schemes
+We are actively working on extending the PYFIT functionality to the following cases (in more or less chronological order) 
 
-+"RMSE_" stands for RMSE 
-	
-
-# Output files
- 
++ single component PINN interatomic potential training
++ multicomponent neural network interatomic potentials using the [Purja-Pun and Mishin](https://www.nature.com/articles/s41467-019-10343-5) descriptors 
++ multicomponent neural network interatomic potentials using the Behler-Parrinello descriptors
++ multicomponent component PINN interatomic potential training
