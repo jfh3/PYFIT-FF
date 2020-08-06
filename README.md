@@ -30,12 +30,11 @@ This README file only contains information on how to install and run the include
 
 The following instructions can also be found in the file PYFIT-FF/docs/manual.pdf, however, for completeness and quick reference we include them here as well. 
 
-+ __Operating systems__:
+### Operating systems
 
-	- Currently PYFIT has been tested and found to work efficently on macOS and Ubuntu-Linux. The code has not yet been tested on Windows, however, code should work provided the required dependancies are met. 
+Currently PYFIT has been tested and found to work efficently on macOS and Ubuntu-Linux. The code has not yet been tested on Windows, however, code should work provided the required dependancies are met. 
 
-+ __Dependencies__:
-
+### Dependencies 
 
 Necessary dependencies (see below for dependency installation instructions):  
 
