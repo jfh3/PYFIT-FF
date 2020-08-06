@@ -1,4 +1,4 @@
-# PyFit-FF: 
+PyFit-FF: 
 
 ## Summary
 
@@ -46,19 +46,69 @@ In order for the code to run the following  dependencies must be met:
 The following instructions are for Linux and Mac systems. Instructions for Windows machines will be added in the future. 
 
 + __Installation option-1 (recommended)__: 
-  + First install "conda" on your machine (conda is a popular open source python package management system)
-      - The conda installation process is well documented at the following link 
-      - https://docs.conda.io/projects/conda/en/latest/user-guide/install/
-        - for more information on conda see the following: https://www.youtube.com/watch?v=23aQdrS58e0&t=327s
-          2) Use the following commands to create a conda environment with the Python 3.x and PyTorch (numpy will be installed automatically as part of this process) 
+
+  +  [Conda](https://docs.conda.io/en/latest/) is a popular open source software package management system. This method will create a "self-contained" Conda environment to install python3.7 and the various dependencies for PyFit. Because the environment is self containe  it will not effect your system's default python distribution and the currently installed python packages. 
+
+  + **Step-1: Install Conda** 
+
+      + The Conda installation process is well documented at the following link 
+          + https://docs.conda.io/projects/conda/en/latest/user-guide/install/
+
+  + **Step-2: Create a dedicated Conda environment** 
+
+    + Executing the following commands from the command line will create a conda environment named TORCH3.7 and will install the required dependencies. The entire process should only take a few minutes and take up roughly 2.5 GB of disk space.  
+
+    + ```shell
+      conda deactivate											  # exit current conda enviroment if one is activated
+      conda create -n TORCH3.7 python=3.7     # create new conda enviroment named TORCH3.7
+      conda activate TORCH3.7						  	  # activate the TORCH3.7 enviroment 
+      conda install -c pytorch pytorch	      # install the pytorch in the TORCH3.7 enviroment 
+      conda update --all && conda clean -all  # update and clean
+      ```
+
+    + **Note**: Alternatively you can use the following command to  install PyTorch without GPU functionality. This will take up less space on the disk. 
+
+      + conda install pytorch-cpu -c pytorch
+
+    + **Note**: NumPy will automatically be installed with the PyTorch installation 
+
+  + **Useful Conda Commands** 
+
+    ```shell
+    #EXIT AN ACTIVATED CONDA ENVIROMENT: 
+    # To exit the TORCH3.7 enviroment and return to your
+    # "default" shell execute the following 
+    conda deactivate
+    
+    #ACTIVATED AN ENVIROMENT: 
+    #Once it is installed you can use the TORCH3.7 enviroment
+    #any time in the future by simply activating it again 
+    conda activate TORCH3.7	
+    
+    #USEFUL CONDA COMMANGE 
+    conda update --all 										#UPDATE ENVIROMENT PACKAGES
+    conda clean --all											#CLEAN UNNEEDED PACKAGES
+    conda info --envs											#LIST ALL AVAILABLE ENVIROMENTS 
+    conda remove --name TORCH3.7 --all		#PERMANTLY DELETE THE ENVIROMENT 
+    
+    ```
+
 + **Installation option-2 (manual):** 
+
+  + Note, if you already have
+
+    ```shell
+    sudo pip3 install torch torchvision numpy
+    ```
+
+     
+
+    
 
 
 ## Dependencies installation option-1:    
 
 On a linux machine the dependencies can be installed using 
-
-sudo pip3 install torch torchvision numpy
 
 
 
