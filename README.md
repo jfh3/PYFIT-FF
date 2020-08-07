@@ -59,11 +59,16 @@ The following instructions are for Linux and Mac systems. Instructions for Windo
     + Executing the following commands from the command line will create a conda environment named TORCH3.7 and will install the required dependencies. Be sure to answer "yes" to the various prompts. The entire process should only take a few minutes and take up roughly 2.5 GB of disk space.
 
     + ```shell
-      conda deactivate			      # exit current conda enviroment if one is activated
-      conda create -n TORCH3.7 python=3.7     # create new conda enviroment named TORCH3.7
-      conda activate TORCH3.7		      # activate the TORCH3.7 enviroment 
-      conda install -c pytorch pytorch	      # install the pytorch in the TORCH3.7 enviroment 
-      conda update --all && conda clean -all  # update and clean
+      # exit current conda enviroment if one is activated
+      conda deactivate
+      # create new conda enviroment named TORCH3.7
+      conda create -n TORCH3.7 python=3.7
+      # activate the TORCH3.7 enviroment
+      conda activate TORCH3.7
+      # install the pytorch in the TORCH3.7 enviroment 
+      conda install -c pytorch pytorch
+      # update and clean
+      conda update --all && conda clean -all
       ```
 
     + **Note**: Alternatively you can use the following command to  install PyTorch without GPU functionality. This will take up slightly less space on the disk:  "conda install pytorch-cpu -c pytorch"
