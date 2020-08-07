@@ -33,7 +33,7 @@ The following instructions can also be found in the file PYFIT-FF/docs/manual.pd
 
 ### Operating systems
 
-Currently PyFit-FF has been tested and found to work efficently on *macOS and Ubuntu-Linux*. The code has not yet been tested on Windows, however, it should work provided the required dependancies are met.
+Currently PyFit-FF has been tested and found to work efficiently on *macOS and Ubuntu-Linux*. The code has not yet been tested on Windows, however, it should work provided the required dependancies are met.
 
 ### Dependencies
 
