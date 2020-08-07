@@ -30,10 +30,8 @@ class NN:
 		info['nn_layers']		=	 list(map(int,lines[7][1:]))  
 		info['cnst_final_bias']		=	 SB['cnst_final_bias'] 
 		info['final_bias']		=	 SB['final_bias'] 
-	
+		info['start_fresh']		=	 SB['start_fresh'] 
 		info['constrain_WB']		=	 SB['constrain_WB'] 
-
-
 
 		#DETERMINE NUMBER OF FITITNG PARAM AND RANDOMIZE IF NEEDED
 		nfit=0; layers=info['nn_layers']
@@ -83,6 +81,60 @@ class NN:
 		self.submatrices=self.extract_submatrices(WB)
 		self.set_grad()
 
+	#ADD NEURON TO FIRST LAYER  
+	def add_neurons(self):
+		#add N neurons to each hidden layer 
+
+		if( self.info['activation'] != 1): 
+			raise ValueError("ERROR: CAN ONLY ADD NEURONS TO SHIFTD SIGMOID FUNCTION")
+
+		#START FRESH EVERY TIME
+		start_fresh=self.info['start_fresh'] 
+		if(start_fresh):
+			self.randomize(); 		
+			max_rand_wb=self.info['max_rand_wb']
+		else:
+			max_rand_wb=1.0
+
+		self.unset_grad()
+
+		new_nfit=0
+		N_neuron_2_add=2
+		writer.log("ADDING "+str(N_neuron_2_add)+" NEURONS TO EACH LAYER")
+		writer.log(["	original num_fit_param	=",self.info['num_fit_param']])
+
+		for layer_add in range(1,len(self.info['nn_layers'])-1):
+			for neurons in range(0,N_neuron_2_add):
+				for i in range(0,len(self.submatrices)):
+					layer=2*(i-1)
+
+					if(layer_add==(i+2.0)/2):
+						#ADD ROW (WEIGHT MATRIX)
+						shp2=self.submatrices[i].shape[1]
+						TMP=max_rand_wb*torch.empty(1,shp2).uniform_(-1.0, 1.0)
+						self.submatrices[i]=torch.cat((self.submatrices[i],TMP))
+
+						#ADD BIAS 
+						shp2=self.submatrices[i+1].shape[1]
+						TMP=max_rand_wb*torch.empty(1,shp2).uniform_(-1.0, 1.0)
+						self.submatrices[i+1]=torch.cat((self.submatrices[i+1],TMP))
+
+						# #ADD COL (WEIGHT MATRIX)
+						shp1=self.submatrices[i+2].shape[0]
+						TMP=max_rand_wb*torch.empty(shp1,1).uniform_(-1.0, 1.0)
+						self.submatrices[i+2]=torch.cat((self.submatrices[i+2],TMP),1)
+
+						self.info['nn_layers'][layer_add]=self.info['nn_layers'][layer_add]+1
+
+		#COUNT NFIT
+		for i in range(0,len(self.submatrices)):
+			new_nfit+=self.submatrices[i].shape[0]*self.submatrices[i].shape[1]
+
+		self.info['num_fit_param']=new_nfit
+		writer.log(["	new num_fit_param	=",new_nfit])
+
+		self.set_grad()
+
 	#TAKES AN ARRAY OF NP.ARRAY SUBMATRICES AND RETURNS A LONG VECTOR W OF WEIGHTS AND BIAS  
 	def matrix_combine(self):
 		W=[]
@@ -104,8 +156,8 @@ class NN:
 				#print(self.submatrices[l])
 				TMP=self.submatrices[l]*(tmp**2) #tmp.view(1,30)*tmp.view(1,30)
 				#print(self.submatrices[l])
-				print(TMP)
-				print(tmp)
+				#print(TMP)
+				#print(tmp)
 				#exit()
 
 			#print(self.submatrices[l])
@@ -116,12 +168,7 @@ class NN:
 						#print("HERE"); exit()
 					else:
 						W.append(self.F(self.submatrices[l][i][j]).item())
-		#if(True):
-
 		return W
-
-
-
 
 	#TAKES A LONG VECTOR W OF WEIGHTS AND BIAS AND RETURNS WEIGHT AND BIAS SUBMATRICES
 	def extract_submatrices(self,WB):
@@ -196,3 +243,10 @@ class NN:
 
 		return out 
 
+
+
+
+
+		# print(self.info['nn_layers'],self.info['num_fit_param'])
+		# for i in range(0,len(self.submatrices)):
+		# 	print(self.submatrices[i].shape)

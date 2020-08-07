@@ -1,24 +1,22 @@
 {
-"pyfit_version"         :       1.00,
 
+
+"train_RMSE"		:	true,
+"rmse_tol"		:	0.00001,	
+
+"dump_poscars"		:	false,
 
 "u_shift"		:	0.795023,
 
 
-
-"train_RMSE"		:	true,
-"normalize_inputs"	:	true,
-
-"output_file_prefix"	:	"PF",
-"normalize_by_ro"	:	true,
+"ramp_LR"		:	true,
+"mid_ramp"		:	10,
+"LR_o"			:	0.01,
+"LR_f"			:	0.10,
 
 
 
-"rmse_tol"		:	0.00001,	
-
-
-
-"lambda_Lp"		:	0.000001,
+"lambda_Lp"		:	0.00001,
 "LP"			:	2.0,
 "constrain_WB"		:	0.0,
 			
@@ -28,7 +26,7 @@
 "exclude_from_test"	:	["DC","BSN","ROSE","ISOLATED","Wurt","AMORP","LIQ","DIM"],
 
 
-"save_every1" 		:	100,
+"save_every1" 		:	10,
 "save_every2" 		:	100,
 
 "lbfgs_max_iter"	: 	20,
@@ -41,7 +39,7 @@
 
 "max_iter"		:	100000,
 "rmse_dU"		:	0.0,
-"rmse_stop"		:	0.0,	
+"rmse_stop"		:	0.002,	
 
 "fraction_train"	:	0.8,
 "re_randomize"		:	true,
@@ -54,11 +52,9 @@
 
 "use_cuda"		:	false,
 
-
-"ramp_LR"		:	true,
-"mid_ramp"		:	50,
-"LR_o"			:	0.001,
-"LR_f"			:	0.10,
+"dynamic_NN"		:	false,
+"start_fresh"		:	false, 
+"try_n_times"		:	1,
 
 "lambda_E1"		:	1.0,
 "lambda_dU"		:	1.0,
@@ -67,18 +63,11 @@
 "cnst_final_bias"	:	true,
 "final_bias"		:	0.0,
 
+"write_lsp"		:	true,
 
-
-
-
-
-
-
-
-
-"dump_poscars"		:	false,
-"write_lsp"		:	false
-					 
+"normalize_gi"		:	false,
+"normalize_by_ro"	:	false,
+"normalize_ei"		:	false					 
 }
 
 

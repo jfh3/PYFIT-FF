@@ -1,2 +1,2 @@
-rm 00-*; 
+rm PF-*; 
 pyfit input.json

@@ -178,6 +178,11 @@ class Structure:
 		self.V			= np.absolute(np.dot(self.a1,np.cross(self.a2,self.a3)))
 		self.N      		= int(lines[5])
 		self.U			= float(lines[-1])+self.N*SB['u_shift']  
+		
+		if(SB['normalize_ei']): 
+			raise Exception("ERROR: NORMALIZATION OF ENERGIES IS CURRENTLY DISABLED")
+			self.U=self.U/10.0  #change units so energy runs from ~ -1 to 1
+
 		self.v			= self.V/self.N
 		self.u			= self.U/self.N
 		self.species		= SB['species']  #TODO THIS NEEDS TO BE FIXED (GENERALIZE TO BINARY)
@@ -185,7 +190,6 @@ class Structure:
 		#INDIVDUAL STRUCTURE WEIGHTS FOR OBJECTIVE FUNCTION 
 		self.weight1		= SB['default_weight1'] 	#RMSE WEIGHT
 		self.weight2		= SB['default_weight2']		#DIFF WEIGHT
-
 		if(str(type(SB['weight_selector'])) =="<class 'float'>"): #use weight_selector as therehold value
 			if(self.u<SB['weight_selector']):
 				self.weight1		= SB['mod_weight1']

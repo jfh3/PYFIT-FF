@@ -1,20 +1,27 @@
 from  	os 		import  	path,getcwd 
 from	datetime	import		datetime
 from 	string		import 		Template
-from 	json		import		dump,dumps
+from 	json		import		dump
 
 #MISC PARAM
 run_path	=	getcwd()+'/'											#tell module where to write
 start_time 	=	str(datetime.now().strftime("%Y-%m-%d-H%H-M%M-S%S")) 	#file name prefix
+prefix		=	'PF' 													#start_time
 #prefix		=	'PF-'+start_time 													#start_time
-prefix		=	'00'													#start_time
 
 def write_header():
 	log("--------------------------------------------------------------")
 	log("-------------------------PYFIT-FF-----------------------------")
 	log("--------------------------------------------------------------")
 
+def write_E_vs_V(data,t):
+	with open(run_path+prefix+"-e_vs_V-"+str(data.name)+"-"+str(t)+".dat", 'w') as f:
+		for i in range(0,len(data.v1)): #loop over structures
+			f.write('%10f %10f %10f %5d %40s \n' % (data.v1[i],data.u1[i],data.u2[i],data.SIDS1[i],data.GIDS1[i]))	
 
+def write_stats(name,t,RMSE,MAE,MED_AE,STD_AE,MAX_AE,RMS_DU):
+	with open(run_path+prefix+"-stats-"+str(name)+".dat", 'a') as f:
+		f.write('%10f %10f %10f %10f %10f %10f %10f \n' % (t,RMSE,MAE,MED_AE,STD_AE,MAX_AE,RMS_DU))	
 
 def log(x,tab=0,name="-log.dat"):
 	str_out=''
@@ -28,16 +35,6 @@ def log(x,tab=0,name="-log.dat"):
 			f.write('\t  %s \n' % (str_out)); print("\t",str_out);
 		else:		
 			f.write('%s \n' % (str_out));    print(str_out)
-
-
-def write_E_vs_V(data,t):
-	with open(run_path+prefix+"-e_vs_V-"+str(data.name)+"-"+str(t)+".dat", 'w') as f:
-		for i in range(0,len(data.v1)): #loop over structures
-			f.write('%10f %10f %10f %5d %40s \n' % (data.v1[i],data.u1[i],data.u2[i],data.SIDS1[i],data.GIDS1[i]))	
-
-def write_stats(name,t,RMSE,MAE,MED_AE,STD_AE,MAX_AE,RMS_DU):
-	with open(run_path+prefix+"-stats-"+str(name)+".dat", 'a') as f:
-		f.write('%10f %10f %10f %10f %10f %10f %10f \n' % (t,RMSE,MAE,MED_AE,STD_AE,MAX_AE,RMS_DU))	
 
 def log_err(x): 
 	str1=''
@@ -77,24 +74,7 @@ def write_NN(nn,step):
 		f.write('\n')
 		for i in WB:	f.write('%16.8e %8.4f\n'%  (i,0.0))
 		f.write('\n')
-
-def write_json(x):
-	serializable_list=["<class 'bool'>","<class 'str'>","<class 'float'>","<class 'int'>","<class 'list'>"]
-	temp={}
-	#NEED TO WEED OUT THINGS THAT CANT BE SERIALIZED (i.e USER GENERATED OBJECTS AND NP.ARRAYS)
-	for k in x.keys():
-		#print(k,type(x[k]))
-		if(str(type(x[k])) in serializable_list):
-			temp[k]=x[k]
-		if(str(type(x[k]))=="<class 'numpy.ndarray'>"): 
-			temp[k]=x[k].tolist()	
-		if(str(type(x[k]))=="<class 'neural.NN'>"):
-			temp[k]=temp.update(x[k].info); # print(x[k].info)
-	#with open(run_path+prefix+'-SB.json', 'w') as fp: dump(temp,fp)  #UNFORMATTED
-	with open(run_path+prefix+'-SB.json', 'w') as file:		  #PRETTY PRINT
-	    json_string = dumps(temp, default=lambda o: o.__dict__, sort_keys=True, indent=2)
-	    file.write(json_string)
-
+	#exit()
 def write_poscar(x):
 	# x=structure object
 	if(str(type(x))!="<class 'dataset.Structure'>"): raise ValueError("EXPECTED STRUCTURE OBJECT BUT GOT SOMETHING ELSE")

@@ -17,6 +17,7 @@ def get_run_parameters(SB):
 def dump_poscars(SB):
 	for structure in SB['full_set'].structures.values(): 
 		writer.write_poscar(structure)
+		#structure.compute_nbl_for_structure(SB); 
 
 def compute_all_nbls(SB):
 	writer.log(["COMPUTING NEIGHBOR LIST (NBL):"])
@@ -32,52 +33,6 @@ def compute_all_lsps(SB):
 		structure.compute_lsp(SB); 
 	writer.log(["	LSP CONSTRUCTION TIME (SEC)	=",time.time()-start])
 
-	#NORMALIZE ALL LSP IF DESIRED
-		#THESES NORMALIZATION FACTORS WILL BE ABSORBED INTO THE NN WEIGHTS AND BIAS 
-
-	#GET MEAN AND STD OF EACH LSP COMPONENT
-	first=True
-	if(SB['normalize_inputs']):	
-		for structure in SB['full_set'].structures.values():  #loop over all structures
-			if(structure.gid != "NO_DFT"):
-				if(first):
-					all_lsp=np.array(structure.lsps); first=False
-				else:
-					all_lsp=np.concatenate((all_lsp, np.array(structure.lsps)), axis=0)
-			#print(np.array(structure.lsps).shape,all_lsp.shape)
-
-		# u=np.mean(all_lsp,axis=0); SB['lsp_center']=u
-		# s=np.std(all_lsp,axis=0);  SB['lsp_width']=s
-
-		# u=(np.max(all_lsp,axis=0)+np.min(all_lsp,axis=0))/2.0;  SB['lsp_center']=u
-		# s=0.5*(np.max(all_lsp,axis=0)-np.min(all_lsp,axis=0));  SB['lsp_width']=s
-
-		u=0.0*np.mean(all_lsp,axis=0); SB['lsp_center']=u
-		s=np.std(all_lsp,axis=0);      SB['lsp_width']=s
-
-		for structure in SB['full_set'].structures.values():  #loop over all structures
-			structure.lsps=(structure.lsps-u)/s
-
-		#print(np.min(all_lsp,axis=0),np.max(all_lsp,axis=0),np.mean(all_lsp,axis=0),np.std(all_lsp,axis=0))
-		##print("----")
-		#first=True
-		# for structure in SB['full_set'].structures.values():  #loop over all structures
-		# 	if(first):
-		# 		all_lsp=np.array(structure.lsps); first=False
-		# 	else:
-		# 		all_lsp=np.concatenate((all_lsp, np.array(structure.lsps)), axis=0)
-
-
-		# print(np.min(all_lsp,axis=0),np.max(all_lsp,axis=0),np.mean(all_lsp,axis=0),np.std(all_lsp,axis=0))
-		# #print(u.shape,s.shape)
-		# 	#print(np.array(structure.lsps).shape) 
-		# raise Exception("ERROR: NORMALIZATION OF Gi IS CURRENTLY DISABLED")
-		# util.collect_all_lsp(SB) 	#MAKE A SINGLE MATRIX WITH ALL GI
-		# util.normalize_lsp(SB)
-
-	#exit()
-
-
 def chkpnt(SB,t):
 	if(SB['pot_type']=='NN'):
 		SB['nn'].unset_grad()
@@ -86,30 +41,59 @@ def chkpnt(SB,t):
 			SB[ds_name].report(SB,t)
 		SB['nn'].set_grad()
 
-# #LOOP OVER ALL DATA SETS (TEST,TRAIN, ETC)
-# def collect_all_lsp(SB):
-# 	#COLLECT ALL Gi INTO ONE MATRIX 
-# 	FIRST=True
-# 	for ds_name in SB['datasets']:
-# 		if(ds_name != 'no_dft_set'):
-# 			#print(ds_name,SB[ds_name].Gis.shape)
-# 			if(FIRST):
-# 				FULL=SB[ds_name].Gis
-# 				FIRST=False
-# 			else:
-# 				FULL = torch.cat((FULL, SB[ds_name].Gis), 0)
-# 	SB['all_GIS']=FULL
 
-# def normalize_lsp(SB):
-# 	if(SB['pot_type']=='NN'):LSP
-# 		STD_1=SB['all_GIS'].std(dim=0)
-# 		MEAN_1=0 #SB['all_GIS'].mean(dim=0)
+def collect_all_lsp(SB):
+	#COLLECT ALL Gi INTO ONE MATRIX 
+	FIRST=True
+	for ds_name in SB['datasets']:
+		if(ds_name != 'no_dft_set'):
+			#print(ds_name,SB[ds_name].Gis.shape)
+			if(FIRST):
+				FULL=SB[ds_name].Gis
+				FIRST=False
+			else:
+				FULL = torch.cat((FULL, SB[ds_name].Gis), 0)
+	SB['all_GIS']=FULL
 
-# 		SB['Gi_std']=STD_1
-# 		SB['Gi_mean']=MEAN_1	#USE FOR LATER TRANSFORMING NN WEIGHTS
+def normalize_lsp(SB):
+	if(SB['pot_type']=='NN'):
+		STD_1=SB['all_GIS'].std(dim=0)
+		MEAN_1=0 #SB['all_GIS'].mean(dim=0)
 
-# 		for ds_name in SB['datasets']:
-# 			SB[ds_name].Gis=(SB[ds_name].Gis-MEAN_1)/STD_1 
+		SB['Gi_std']=STD_1
+		SB['Gi_mean']=MEAN_1	#USE FOR LATER TRANSFORMING NN WEIGHTS
+
+		for ds_name in SB['datasets']:
+			SB[ds_name].Gis=(SB[ds_name].Gis-MEAN_1)/STD_1 
+
+
+
+
+ #ONLY WORKS WITH BULK STRUCTURES AND IF EVERY STRUCTURES IS DIFFERENT
+ 	#I.E DEFECTS HAVE MANY EQ DC ATOMS AND WOULD BE NON-UNIQUE
+def check_lsp_uniqueness(SB):
+	print("CHECKING UNIQUENESS")
+	NaMAX=10
+	#DOUBLE LOOP OVER ALL STRUCTURES 
+	for structure1 in SB['full_set'].structures.values():
+		if(structure1.N<=NaMAX): 
+			for structure2 in SB['full_set'].structures.values():
+				if(structure2.N<=NaMAX): 
+					#print(structure1,structure2) 
+					if(structure1 != structure2):
+						#print(structure1,structure2) 
+						#exit()
+						for Gi1 in structure1.lsps:
+
+							for Gi2 in structure2.lsps:
+								test=np.all(np.isclose(Gi1,Gi2)) 
+								if(test and structure1.gid!=structure2.gid and ((structure1.u-structure2.u)**2.0)**0.5>0.0001 ):
+									print("FOUND DUPLICATE")
+									print(Gi1)
+									print(Gi2)
+									print(structure1.sid,structure1.gid,structure1.v,structure1.u,structure1.N)
+									print(structure2.sid,structure2.gid,structure2.v,structure2.u,structure2.N)
+
 
 
 def partition_data(SB):
