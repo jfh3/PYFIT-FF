@@ -1,0 +1,82 @@
+{
+
+"u_shift"		:	0.795023,
+
+
+
+"train_RMSE"		:	true,
+"normalize_inputs"	:	true,
+
+"output_file_prefix"	:	"PF",
+"normalize_by_ro"	:	true,
+
+
+
+"rmse_tol"		:	0.00001,	
+
+
+
+"lambda_Lp"		:	0.000001,
+"LP"			:	2.0,
+"constrain_WB"		:	0.0,
+			
+"test_set_tags"		: 	["GRP-Si6_2-HEXAMER-OCTAHEDRON-UNPERTURBED+ISO","GRP-SILICENE-BUCKLED-BILAYER-AA^p-UNPERTURBED+ISO","GRP-Si3_3-TRIMER-EQ-LAT-UNPERTURBED+ISO","GRP-SC-C-UNPERTURBED+ISO","GRP-BCC-P-UNPERTURBED+ISO"],		
+"n_rand_GIDS"		:	0,	
+"fix_rand_seed"		:	false,					 
+"exclude_from_test"	:	["DC","BSN","ROSE","ISOLATED","Wurt","AMORP","LIQ","DIM"],
+
+
+"save_every1" 		:	100,
+"save_every2" 		:	100,
+
+"lbfgs_max_iter"	: 	20,
+
+"train_edges" 		:	true,	
+
+"pot_type"		:	"NN",
+"pot_file"		:	"NN1.dat",
+"dataset_path"		:	"train.dat",
+
+"max_iter"		:	100000,
+"rmse_dU"		:	0.0,
+"rmse_stop"		:	0.0,	
+
+"fraction_train"	:	0.8,
+"re_randomize"		:	true,
+
+"weight_selector"	: 	["DC","AIMD","Wurt"],		
+"default_weight1"	: 	1.0,
+"default_weight2"	: 	0.0,
+"mod_weight1"		: 	1.0,		
+"mod_weight2"		: 	0.0,		
+
+"use_cuda"		:	false,
+
+
+"ramp_LR"		:	true,
+"mid_ramp"		:	50,
+"LR_o"			:	0.001,
+"LR_f"			:	0.10,
+
+"lambda_E1"		:	1.0,
+"lambda_dU"		:	1.0,
+"lambda_L1"		:	0.0,
+
+"cnst_final_bias"	:	true,
+"final_bias"		:	0.0,
+
+
+
+
+
+
+
+
+
+
+"dump_poscars"		:	false,
+"write_lsp"		:	false
+					 
+}
+
+

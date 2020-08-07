@@ -56,12 +56,12 @@ The following instructions are for Linux and Mac systems. Instructions for Windo
 
   + **Step-2: Create a dedicated Conda environment** 
 
-    + Executing the following commands from the command line will create a conda environment named TORCH3.7 and will install the required dependencies. Be sure to answer "yes" to the various prompts. The entire process should only take a few minutes and take up roughly 2.5 GB of disk space.  
+    + Executing the following commands from the command line will create a conda environment named TORCH3.7 and will install the required dependencies. Be sure to answer "yes" to the various prompts. The entire process should only take a few minutes and take up roughly 2.5 GB of disk space.
 
     + ```shell
-      conda deactivate											  # exit current conda enviroment if one is activated
+      conda deactivate			      # exit current conda enviroment if one is activated
       conda create -n TORCH3.7 python=3.7     # create new conda enviroment named TORCH3.7
-      conda activate TORCH3.7						  	  # activate the TORCH3.7 enviroment 
+      conda activate TORCH3.7		      # activate the TORCH3.7 enviroment 
       conda install -c pytorch pytorch	      # install the pytorch in the TORCH3.7 enviroment 
       conda update --all && conda clean -all  # update and clean
       ```
@@ -84,10 +84,10 @@ The following instructions are for Linux and Mac systems. Instructions for Windo
     conda activate TORCH3.7	
     
     #USEFUL CONDA COMMANGE 
-    conda update --all 										#UPDATE ENVIROMENT PACKAGES
-    conda clean --all											#CLEAN UNNEEDED PACKAGES
-    conda info --envs											#LIST ALL AVAILABLE ENVIROMENTS 
-    conda remove --name TORCH3.7 --all		#PERMANTLY DELETE THE ENVIROMENT 
+    conda update --all 				# UPDATE ENVIROMENT PACKAGES
+    conda clean --all				# CLEAN UNNEEDED PACKAGES
+    conda info --envs				# LIST ALL AVAILABLE ENVIROMENTS 
+    conda remove --name TORCH3.7 --all		# PERMANTLY DELETE THE ENVIROMENT 
     
     ```
 
@@ -139,4 +139,5 @@ Once these commands are run your system should automatically find the link to th
 + Additional comments 
   - This code has been tested on Linux and macOS systems, however, assuming the following dependencies are met for your python implementation then the code should run on windows OS as well.
   - Note technically PYFIT can be run directly from
+
 

@@ -1,7 +1,0 @@
- 5 0.000000 1 - Gi version, reference Gi and type of logistic function.
- 1 - number of chemical species in the system.
- Si 28.085500
- 0 0.25 4.5 1.0 1.0
- 5 0 1 2 3 4 
- 8 2.0000   2.2857   2.5714   2.8571   3.1429   3.4286   3.7143   4.0000
- 1 12.169200 6.172630 3.114710 0.755675 0.404939 0.036124 0.650018 0.572890 
