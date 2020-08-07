@@ -56,7 +56,7 @@ The following instructions are for Linux and Mac systems. Instructions for Windo
 
   + **Step-2: Create a dedicated Conda environment** 
 
-    + Executing the following commands from the command line will create a conda environment named TORCH3.7 and will install the required dependencies. The entire process should only take a few minutes and take up roughly 2.5 GB of disk space.  
+    + Executing the following commands from the command line will create a conda environment named TORCH3.7 and will install the required dependencies. Be sure to answer "yes" to the various prompts. The entire process should only take a few minutes and take up roughly 2.5 GB of disk space.  
 
     + ```shell
       conda deactivate											  # exit current conda enviroment if one is activated
@@ -93,7 +93,7 @@ The following instructions are for Linux and Mac systems. Instructions for Windo
 
 + **Installation option-2 (manual):** 
 
-  + Note, if you already have have python3.X installed you can install the PyTorch package using pip. This method is less desirable than the Conda method because the installation may install Numpy and change the version if it is already install which may in turn break things.
+  + **Note**: If you already have have python3.X installed you can install the PyTorch package using the following pip command. If Numpy is already install, this method may re-install Numpy to a different version which potentially could 'break' things.
 
     ```shell
     sudo pip3 install torch  numpy
@@ -105,23 +105,27 @@ Once the dependencies are met then PYFIT can be installed on a linux or Mac syst
 
 **Step-1: Install Conda** 
 
-1) Use the following command to get the PYFIT-FF source code from Github
+Use the following command to get the PYFIT-FF source code from Github. This will make a directory called "PYFIT-FF" on your machine. 
 
 ```shell
 git clone https://github.com/jfh3/PYFIT-FF
 ```
 
-- Alternatively you can  manually use the green "clone or download" button on https://github.com/jfh3/PYFIT-FF
+Alternatively you can manually download the folder using the green "clone or download" button on https://github.com/jfh3/PYFIT-FF
 
-  - This will make a directory called "PYFIT-FF" on your machine 
+**Step-2: Make PyFit "executable" (optional)** 
 
-2) Use the following commands to make PYFIT executable from any directory on your machine  
+Use the following commands to make PYFIT executable from any directory on your machine  
 
-  - mv PYFIT-FF ~/bin
-    - cd ~/bin/
-    - ln -s PYFIT-FF/src/pyfit.py  PYFIT 
+```shell
+mv PYFIT-FF ~/bin
+cd ~/bin/
+ln -s PYFIT-FF/src/pyfit.py  pyfit 
+```
 
-Once these commands are run your system should automatically find the link to PYFIT in ~/bin/ and add it to the PATH which can then be called from the command line. Because pyfit.py has the line #!/usr/bin/env python3 it can be run like executable 
+Once these commands are run your system should automatically find the link to the "pyfit" file in ~/bin/ and add it to the PATH which can then be called from the command line. Because pyfit.py has the line #!/usr/bin/env python3 it can be run like executable 
+
+## Running the example
 
 3) Run PYFIT using the provided example to get started 
 
@@ -135,6 +139,4 @@ Once these commands are run your system should automatically find the link to PY
 + Additional comments 
   - This code has been tested on Linux and macOS systems, however, assuming the following dependencies are met for your python implementation then the code should run on windows OS as well.
   - Note technically PYFIT can be run directly from
-
-## Running the example
 
